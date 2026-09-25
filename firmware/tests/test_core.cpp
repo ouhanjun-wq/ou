@@ -1,0 +1,370 @@
+// Host-side unit tests for the hardware-independent flight code.
+//   g++ -std=c++17 -O1 -Wall -Wextra -I../butterfly_fc test_core.cpp -o test_core && ./test_core
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "ahrs.h"
+#include "filters.h"
+#include "flight.h"
+#include "params.h"
+#include "protocol.h"
+
+static int failures = 0;
+#define CHECK(cond, ...)                                  \
+  do {                                                    \
+    if (!(cond)) {                                        \
+      ++failures;                                         \
+      printf("FAIL %s:%d  ", __FILE__, __LINE__);         \
+      printf(__VA_ARGS__);                                \
+      printf("\n");                                       \
+    }                                                     \
+  } while (0)
+
+static const float PI_F = 3.14159265f;
+
+// Steady-state amplitude of a filter for a sine input at frequency f.
+template <class F>
+static float gainAt(F& filt, float f, float fs, float seconds = 6.0f) {
+  const int n = (int)(seconds * fs);
+  float peak = 0;
+  for (int i = 0; i < n; ++i) {
+    const float y = filt.apply(sinf(2 * PI_F * f * i / fs));
+    if (i > n / 2) peak = fmaxf(peak, fabsf(y));
+  }
+  return peak;
+}
+
+static void testPT1() {
+  PT1 f;
+  f.setCutoff(10, 1000);
+  const float g = gainAt(f, 10, 1000);
+  CHECK(fabsf(g - 0.707f) < 0.03f, "PT1 gain at fc = %.3f (want ~0.707)", g);
+}
+
+static void testNotch() {
+  Notch n;
+  n.set(4.0f, 200.0f, 3.0f);
+  const float atF = gainAt(n, 4.0f, 200.0f, 20.0f);
+  Notch m;
+  m.set(4.0f, 200.0f, 3.0f);
+  const float away = gainAt(m, 20.0f, 200.0f, 20.0f);
+  CHECK(atF < 0.02f, "notch gain at f0 = %.4f", atF);
+  CHECK(away > 0.9f, "notch gain at 5*f0 = %.3f", away);
+  Notch b;
+  b.set(0.0f, 200.0f, 3.0f);
+  CHECK(b.bypass && b.apply(1.23f) == 1.23f, "notch bypass when f0 = 0");
+}
+
+static void testStrokeAvg() {
+  // Window = one period removes the fundamental and every harmonic.
+  StrokeAvg<128> s;
+  const float fs = 200, f = 4;
+  s.setWindow((int)lroundf(fs / f));
+  float peak = 0;
+  for (int i = 0; i < 2000; ++i) {
+    const float t = i / fs;
+    const float x = 10 + 5 * sinf(2 * PI_F * f * t) + 3 * sinf(2 * PI_F * 2 * f * t + 1) +
+                    2 * sinf(2 * PI_F * 3 * f * t);
+    const float y = s.apply(x);
+    if (i > 200) peak = fmaxf(peak, fabsf(y - 10));
+  }
+  CHECK(peak < 0.05f, "stroke average residual ripple = %.4f", peak);
+
+  // Changing the window must not produce a jump for a constant signal.
+  StrokeAvg<128> c;
+  c.setWindow(50);
+  for (int i = 0; i < 300; ++i) c.apply(7.0f);
+  c.setWindow(40);
+  CHECK(fabsf(c.apply(7.0f) - 7.0f) < 1e-4f, "window change glitch");
+}
+
+static void testDecimator() {
+  Decimator d;
+  float out = 0;
+  int produced = 0;
+  for (int i = 0; i < 10; ++i)
+    if (d.push((float)i, 5, out)) ++produced;
+  CHECK(produced == 2 && fabsf(out - 7.0f) < 1e-5f, "decimator mean = %.2f, count %d", out, produced);
+}
+
+static void testAccTrust() {
+  CHECK(accTrust(0, 0, -1) == 1.0f, "trust at 1 g");
+  CHECK(accTrust(0, 0, -1.5f) == 0.0f, "trust at 1.5 g");
+  CHECK(fabsf(accTrust(0, 0, -1.2f) - 0.5f) < 1e-3f, "trust at 1.2 g");
+}
+
+// Specific force (g) seen by a still body at the given roll / pitch (deg), FRD.
+static void stillAccel(float rollDeg, float pitchDeg, float a[3]) {
+  const float r = rollDeg * PI_F / 180, p = pitchDeg * PI_F / 180;
+  a[0] = sinf(p);
+  a[1] = -sinf(r) * cosf(p);
+  a[2] = -cosf(r) * cosf(p);
+}
+
+static void testAhrsSigns() {
+  Mahony m;
+  float a[3];
+  stillAccel(20, 0, a);
+  m.initFromAccel(a);
+  CHECK(fabsf(m.roll - 20) < 0.1f && fabsf(m.pitch) < 0.1f, "init roll: %.2f %.2f", m.roll, m.pitch);
+  stillAccel(0, 15, a);
+  m.initFromAccel(a);
+  CHECK(fabsf(m.pitch - 15) < 0.1f && fabsf(m.roll) < 0.1f, "init pitch: %.2f %.2f", m.roll, m.pitch);
+
+  // Pure gyro integration: +p (right wing down), +q (nose up), +r (nose right)
+  const float d2r = PI_F / 180;
+  struct { int axis; const char* name; } cases[] = {{0, "roll"}, {1, "pitch"}, {2, "yaw"}};
+  for (auto& c : cases) {
+    Mahony g;
+    g.reset();
+    float w[3] = {0, 0, 0};
+    w[c.axis] = 30 * d2r;
+    const float lvl[3] = {0, 0, -1};
+    for (int i = 0; i < 1000; ++i) g.update(w, lvl, 0.0f, 0, 0, 0.001f);  // 1 s, no accel
+    const float got = c.axis == 0 ? g.roll : (c.axis == 1 ? g.pitch : g.yaw);
+    CHECK(fabsf(got - 30) < 0.5f, "gyro %s integration = %.2f (want +30)", c.name, got);
+  }
+
+  // Accelerometer correction pulls a wrong estimate back to the truth.
+  Mahony k;
+  k.reset();                    // believes level
+  stillAccel(25, -10, a);       // truth: roll 25, pitch -10
+  const float zero[3] = {0, 0, 0};
+  for (int i = 0; i < 20000; ++i) k.update(zero, a, 1.0f, 1.0f, 0.0f, 0.001f);
+  CHECK(fabsf(k.roll - 25) < 0.5f && fabsf(k.pitch + 10) < 0.5f,
+        "accel convergence: roll %.2f pitch %.2f", k.roll, k.pitch);
+
+  // Gyro bias is learned by the integral term.
+  Mahony b;
+  float lvl[3];
+  stillAccel(0, 0, lvl);
+  b.initFromAccel(lvl);
+  const float bias[3] = {2 * d2r, -1.5f * d2r, 0};
+  for (int i = 0; i < 60000; ++i) b.update(bias, lvl, 1.0f, 0.5f, 0.05f, 0.001f);
+  CHECK(fabsf(b.roll) < 0.5f && fabsf(b.pitch) < 0.5f, "bias rejection: roll %.2f pitch %.2f", b.roll, b.pitch);
+}
+
+// End-to-end: body rocks +/-10 deg at the flapping frequency around a 5 deg mean roll,
+// the accelerometer sees +/-1.5 g of flapping acceleration. The stroke-averaged estimate
+// must still recover the 5 deg mean.
+static void testFlappingAttitudeChain() {
+  const float fs = 1000, f = 4, meanRoll = 5, rock = 10, d2r = PI_F / 180;
+  Mahony m;
+  float a0[3];
+  stillAccel(meanRoll, 0, a0);
+  m.initFromAccel(a0);
+  PT1 lp[3], alp[3];
+  for (int k = 0; k < 3; ++k) { lp[k].setCutoff(50, fs); alp[k].setCutoff(15, fs); }
+  Decimator dec;
+  StrokeAvg<128> avg;
+  avg.setWindow((int)lroundf(200 / f));
+  float worst = 0;
+  for (int i = 0; i < 20000; ++i) {
+    const float t = i / fs, w = 2 * PI_F * f;
+    const float roll = meanRoll + rock * sinf(w * t);
+    const float p = rock * w * cosf(w * t);                 // deg/s
+    float a[3];
+    stillAccel(roll, 0, a);
+    a[2] += -1.5f * sinf(w * t + 0.7f);                      // flapping heave
+    const float g[3] = {lp[0].apply(p) * d2r, lp[1].apply(0), lp[2].apply(0)};
+    const float af[3] = {alp[0].apply(a[0]), alp[1].apply(a[1]), alp[2].apply(a[2])};
+    m.update(g, af, accTrust(af[0], af[1], af[2]), 0.5f, 0.02f, 1 / fs);
+    float dummy;
+    if (dec.push(0, 5, dummy)) {
+      const float r = avg.apply(m.roll);
+      if (i > 5000) worst = fmaxf(worst, fabsf(r - meanRoll));
+    }
+  }
+  CHECK(worst < 1.5f, "stroke-averaged roll error %.2f deg (want < 1.5)", worst);
+}
+
+// ---------------- flight core ----------------
+static FlightInputs sticks(float thr, float roll, float pitch, float yaw, uint8_t mode, bool arm) {
+  FlightInputs in;
+  in.thr = thr; in.roll = roll; in.pitch = pitch; in.yaw = yaw;
+  in.mode = mode; in.armReq = arm; in.linkOk = true;
+  return in;
+}
+
+static void testArming() {
+  Params p;
+  paramsDefaults(p);
+  FlightCore fc;
+  fc.reinit(p, 200);
+  FlightSensors s;
+  s.imuOk = true;
+  const float dt = 0.005f;
+
+  // Switch already on at power-up -> must not arm.
+  FlightOutput o = fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED && o.armBlocked, "armed with switch already on");
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+  // Throttle high on the arm edge -> refuse.
+  o = fc.step(sticks(0.5f, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED, "armed with throttle high");
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+  o = fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_ARMED, "did not arm with low throttle");
+
+  // Link loss -> failsafe, glide (no flapping).
+  FlightInputs lost = sticks(0.8f, 0.5f, 0, 0, 0, true);
+  lost.linkOk = false;
+  o = fc.step(lost, s, p, dt);
+  CHECK(o.state == proto::ST_FAILSAFE && o.flapHz == 0 && o.mode == proto::MODE_STABILIZE,
+        "failsafe state %d flap %.2f mode %d", o.state, o.flapHz, o.mode);
+  o = fc.step(sticks(0.3f, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_ARMED, "did not recover from failsafe");
+  o = fc.step(sticks(0.3f, 0, 0, 0, 0, false), s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED, "did not disarm");
+
+  // Link lost while disarmed, returns with the switch on -> stays disarmed.
+  FlightInputs gone = sticks(0, 0, 0, 0, 0, false);
+  gone.linkOk = false;
+  fc.step(gone, s, p, dt);
+  o = fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED, "armed on link return with switch already on");
+
+  // Bench mode arms without radio; leaving it disarms (not failsafe).
+  FlightInputs bench = sticks(0.3f, 0, 0, 0, 0, false);
+  bench.linkOk = false;
+  bench.bench = true;
+  o = fc.step(bench, s, p, dt);
+  CHECK(o.state == proto::ST_ARMED && o.flapHz > 0, "bench did not arm");
+  bench.bench = false;
+  o = fc.step(bench, s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED, "bench off -> state %d", o.state);
+
+  // IMU fault forces MANUAL.
+  FlightSensors bad;
+  bad.imuOk = false;
+  o = fc.step(sticks(0, 0, 0, 0, proto::MODE_STABILIZE, false), bad, p, dt);
+  CHECK(o.mode == proto::MODE_MANUAL, "IMU fault did not force MANUAL");
+}
+
+static void testFlappingAndMixer() {
+  Params p;
+  paramsDefaults(p);
+  FlightCore fc;
+  fc.reinit(p, 200);
+  FlightSensors s;
+  s.imuOk = true;
+  const float dt = 0.005f;
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+  fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+
+  // Idle: glide at stroke centre.
+  FlightOutput o = fc.step(sticks(0.0f, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.flapHz == 0 && o.wingL == p.center && o.wingR == p.center, "glide pose L %.1f R %.1f", o.wingL, o.wingR);
+
+  // Full throttle: f_max, symmetric stroke reaching centre +/- amp_max.
+  float lo = 1e9, hi = -1e9, maxAsym = 0;
+  for (int i = 0; i < 400; ++i) {
+    o = fc.step(sticks(1.0f, 0, 0, 0, 0, true), s, p, dt);
+    lo = fminf(lo, o.wingL); hi = fmaxf(hi, o.wingL);
+    maxAsym = fmaxf(maxAsym, fabsf(o.wingL - o.wingR));
+  }
+  CHECK(fabsf(o.flapHz - p.f_max) < 1e-4f, "flap freq %.2f", o.flapHz);
+  CHECK(fabsf(hi - (p.center + p.amp_max)) < 0.5f && fabsf(lo - (p.center - p.amp_max)) < 0.5f,
+        "stroke range %.1f .. %.1f", lo, hi);
+  CHECK(maxAsym < 1e-4f, "wings not symmetric with centred sticks");
+
+  // MANUAL roll: centre offsets move in opposite directions by man_roll.
+  // thr 0.62 -> f = 4 Hz, amp = 32 deg: stays inside wing_limit, 1 s = 4 whole strokes.
+  const float thr = 0.62f;
+  float sumL = 0, sumR = 0;
+  const int n = 200;
+  for (int i = 0; i < n; ++i) {
+    o = fc.step(sticks(thr, 1.0f, 0, 0, 0, true), s, p, dt);
+    sumL += o.wingL; sumR += o.wingR;
+  }
+  CHECK(fabsf(sumL / n - (p.center + p.man_roll)) < 1.0f && fabsf(sumR / n - (p.center - p.man_roll)) < 1.0f,
+        "roll offsets L %.2f R %.2f", sumL / n, sumR / n);
+
+  // MANUAL yaw: amplitude differential.
+  float loL = 1e9, hiL = -1e9, loR = 1e9, hiR = -1e9;
+  for (int i = 0; i < n; ++i) {
+    o = fc.step(sticks(thr, 0, 0, 1.0f, 0, true), s, p, dt);
+    loL = fminf(loL, o.wingL); hiL = fmaxf(hiL, o.wingL);
+    loR = fminf(loR, o.wingR); hiR = fmaxf(hiR, o.wingR);
+  }
+  const float ampL = (hiL - loL) / 2, ampR = (hiR - loR) / 2;
+  const float amp = 32.0f;
+  CHECK(fabsf(ampL - (amp + p.man_yaw)) < 0.5f && fabsf(ampR - (amp - p.man_yaw)) < 0.5f,
+        "yaw amplitudes L %.2f R %.2f", ampL, ampR);
+
+  // Wing limit is never exceeded.
+  p.center = 40; p.man_pitch = 40;
+  for (int i = 0; i < n; ++i) {
+    o = fc.step(sticks(1.0f, 1.0f, 1.0f, 1.0f, 0, true), s, p, dt);
+    CHECK(fabsf(o.wingL) <= p.wing_limit + 1e-4f && fabsf(o.wingR) <= p.wing_limit + 1e-4f,
+          "wing limit exceeded L %.1f R %.1f", o.wingL, o.wingR);
+  }
+}
+
+static void testStabilizeDirection() {
+  Params p;
+  paramsDefaults(p);
+  FlightCore fc;
+  fc.reinit(p, 200);
+  const float dt = 0.005f;
+  FlightSensors s;
+  s.imuOk = true;
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+  fc.step(sticks(0, 0, 0, 0, proto::MODE_STABILIZE, true), s, p, dt);
+
+  // Rolled right 20 deg with centred sticks -> corrective (negative) roll output.
+  s.rollAvg = 20;
+  FlightOutput o = fc.step(sticks(0.5f, 0, 0, 0, proto::MODE_STABILIZE, true), s, p, dt);
+  CHECK(o.ur < 0, "roll correction sign ur = %.3f", o.ur);
+  s.rollAvg = 0;
+  s.pitchAvg = -15;   // nose down -> positive pitch output
+  o = fc.step(sticks(0.5f, 0, 0, 0, proto::MODE_STABILIZE, true), s, p, dt);
+  CHECK(o.up > 0, "pitch correction sign up = %.3f", o.up);
+
+  // Heading hold: a +30 deg turn command produces a positive (right) yaw output.
+  s.pitchAvg = 0;
+  s.yaw = 0;
+  fc.step(sticks(0.5f, 0, 0, 0, proto::MODE_HEADING_HOLD, true), s, p, dt);
+  FlightInputs in = sticks(0.5f, 0, 0, 0, proto::MODE_HEADING_HOLD, true);
+  in.turnDeg = 30;
+  o = fc.step(in, s, p, dt);
+  CHECK(o.uy > 0, "heading-hold turn sign uy = %.3f", o.uy);
+
+  // Integrator is bounded.
+  s.rollAvg = 60;
+  for (int i = 0; i < 4000; ++i) o = fc.step(sticks(1.0f, 0, 0, 0, proto::MODE_STABILIZE, true), s, p, dt);
+  CHECK(fabsf(o.ur) <= 1.5f * p.man_roll + 1e-3f, "roll output bounded: %.2f", o.ur);
+}
+
+static void testProtocol() {
+  proto::ControlPacket c = {};
+  c.thr = 500; c.roll = -100; c.mode = 1; c.armed = 1;
+  proto::seal(c, proto::PKT_CONTROL, 7, 42);
+  proto::ControlPacket out;
+  const uint8_t* raw = reinterpret_cast<const uint8_t*>(&c);
+  CHECK(proto::open(raw, sizeof(c), proto::PKT_CONTROL, 7, out) && out.thr == 500 && out.roll == -100,
+        "control packet round trip");
+  CHECK(!proto::open(raw, sizeof(c), proto::PKT_CONTROL, 8, out), "wrong net id accepted");
+  uint8_t bad[sizeof(c)];
+  memcpy(bad, &c, sizeof(c));
+  bad[5] ^= 0x01;
+  CHECK(!proto::open(bad, sizeof(c), proto::PKT_CONTROL, 7, out), "corrupted packet accepted");
+  CHECK(sizeof(proto::TelemetryPacket) <= 250 && sizeof(proto::ParamPacket) <= 250, "ESP-NOW payload limit");
+}
+
+int main() {
+  testPT1();
+  testNotch();
+  testStrokeAvg();
+  testDecimator();
+  testAccTrust();
+  testAhrsSigns();
+  testFlappingAttitudeChain();
+  testArming();
+  testFlappingAndMixer();
+  testStabilizeDirection();
+  testProtocol();
+  if (failures == 0) printf("all tests passed\n");
+  return failures == 0 ? 0 : 1;
+}
