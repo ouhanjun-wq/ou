@@ -1,0 +1,81 @@
+name: butterfly
+
+on:
+  push:
+    paths: ["butterfly/**", ".github/workflows/butterfly.yml"]
+  pull_request:
+    paths: ["butterfly/**", ".github/workflows/butterfly.yml"]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Host unit tests (filters, AHRS, flight logic, GPS, RTH, protocol)
+        run: |
+          g++ -std=c++17 -O1 -Wall -Wextra -Werror -I butterfly/firmware/butterfly_fc \
+              butterfly/firmware/tests/test_core.cpp -o test_core
+          ./test_core
+      - name: protocol.h identical in both sketches
+        run: diff butterfly/firmware/butterfly_fc/protocol.h butterfly/firmware/ground_station/protocol.h
+      - name: Python tool syntax
+        run: python3 -m py_compile butterfly/tools/gyro_fft.py
+
+  compile-flight-controller:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: arduino/compile-sketches@v1
+        with:
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          fqbn: esp32:esp32:XIAO_ESP32S3
+          sketch-paths: |
+            - butterfly/firmware/butterfly_fc
+          enable-warnings-report: true
+
+  compile-ground-station:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: arduino/compile-sketches@v1
+        with:
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+            - name: esp32-bluepad32:esp32
+              source-url: https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json
+          fqbn: esp32-bluepad32:esp32:dfrobot_firebeetle2_esp32e
+          sketch-paths: |
+            - butterfly/firmware/ground_station
+
+  compile-camera-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: arduino/compile-sketches@v1
+        with:
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          fqbn: esp32:esp32:XIAO_ESP32S3:PSRAM=opi
+          sketch-paths: |
+            - butterfly/firmware/camera_node
+
+  export-cad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Export butterfly parts (fails on any OpenSCAD warning)
+        working-directory: butterfly/cad
+        run: |
+          mkdir -p out
+          openscad --hardwarnings -o out/servo_mount.stl servo_mount.scad
+          openscad --hardwarnings -o out/wing_root_left.stl  -D 'side="left"'  wing_root.scad
+          openscad --hardwarnings -o out/wing_root_right.stl -D 'side="right"' wing_root.scad
+          openscad --hardwarnings -o out/wing_root_kit2.stl -D 'rods=[[9,12,3.0],[-9,-30,3.0]]' wing_root.scad
+          for f in out/*.stl; do test -s "$f" || { echo "empty: $f"; exit 1; }; done
+          ls -l out

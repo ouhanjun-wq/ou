@@ -29,4 +29,8 @@
 | 手柄 | 盖世小鸡 G7 Pro（PC / XInput 模式，USB 线） |
 | 结构 | 6 自由度铝合金机械臂支架套件 + 400 × 300 mm 底板 |
 
-> 以前的版本：ESP32 无线版机械臂在提交 `fe0b446`；仿生蝴蝶在提交 `380c94d`（`git checkout <提交号>` 查看）。
+## 仓库里的另一个项目：仿生蝴蝶 🦋
+
+[`butterfly/`](butterfly/README.md)：ESP32-S3 扑翼仿生蝴蝶（G7 Pro 手柄、陀螺仪增稳、Type-C 充电、GPS 返航）。翅膀用**仿生蝴蝶材料包**做。
+
+> 以前的版本：ESP32 无线版机械臂在提交 `fe0b446`（`git checkout fe0b446` 查看）。
