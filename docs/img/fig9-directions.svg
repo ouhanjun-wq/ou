@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="560" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 9  上下、左右、前后：XYZ 模式下夹爪怎么走</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">View 键切到 XYZ 模式：左摇杆管水平面（前后、左右），右摇杆上下管高度；夹爪走直线，俯仰角不变</text>
+<path d="M60,470 L520,470" fill="none" stroke="#5E6E72" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="110" y="444" width="80" height="26" rx="4" fill="#DDE6EA" stroke="#2B3A3F"/>
+<path d="M150,444 L150,380.0" fill="none" stroke="#8FA3AA" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M150,380.0 L193.09453805903428,261.59872978097553" fill="none" stroke="#8FA3AA" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M193.09453805903428,261.59872978097553 L311.2714684204992,282.43651110100717" fill="none" stroke="#8FA3AA" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M311.2714684204992,282.43651110100717 L435.9791265654584,354.43651110100717" fill="none" stroke="#8FA3AA" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="435.9791265654584" cy="354.43651110100717" r="5" fill="#D23B2F"/>
+<path d="M435.9791265654584,354.43651110100717 L435.9791265654584,264.43651110100717" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M435.9791265654584,264.43651110100717 L440.3,273.4 L431.6,273.4 Z" fill="#1F6FB5"/>
+<path d="M435.9791265654584,354.43651110100717 L435.9791265654584,409.43651110100717" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M435.9791265654584,409.43651110100717 L431.6,400.4 L440.3,400.4 Z" fill="#1F6FB5"/>
+<path d="M435.9791265654584,354.43651110100717 L545.9791265654584,354.43651110100717" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M545.9791265654584,354.43651110100717 L537.0,358.8 L537.0,350.1 Z" fill="#E07B00"/>
+<path d="M435.9791265654584,354.43651110100717 L345.9791265654584,354.43651110100717" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M345.9791265654584,354.43651110100717 L355.0,350.1 L355.0,358.8 Z" fill="#E07B00"/>
+<text x="443.9791265654584" y="258.43651110100717" font-size="13" text-anchor="start" font-weight="700" fill="#1F6FB5">上  右摇杆 ↑</text>
+<text x="443.9791265654584" y="414.43651110100717" font-size="13" text-anchor="start" font-weight="700" fill="#1F6FB5">下  右摇杆 ↓</text>
+<text x="549.9791265654584" y="359.43651110100717" font-size="13" text-anchor="start" font-weight="700" fill="#E07B00">前</text>
+<text x="549.9791265654584" y="378.43651110100717" font-size="12" text-anchor="start" font-weight="400" fill="#E07B00">左摇杆 ↑</text>
+<text x="339.9791265654584" y="344.43651110100717" font-size="13" text-anchor="end" font-weight="700" fill="#E07B00">后  左摇杆 ↓</text>
+<text x="290" y="120" font-size="15" text-anchor="middle" font-weight="700" fill="#1B2A2F">侧视</text>
+<text x="800" y="120" font-size="15" text-anchor="middle" font-weight="700" fill="#1B2A2F">俯视</text>
+<circle cx="800" cy="330" r="40" fill="#DDE6EA" stroke="#2B3A3F"/>
+<path d="M800,330 L970,330" fill="none" stroke="#8FA3AA" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="970" cy="330" r="5" fill="#D23B2F"/>
+<path d="M970,330 L1070,330" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1070,330 L1061.0,334.3 L1061.0,325.7 Z" fill="#E07B00"/>
+<path d="M970,330 L890,330" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M890,330 L899.0,325.7 L899.0,334.3 Z" fill="#E07B00"/>
+<path d="M970,330 L970,230" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M970,230 L974.3,239.0 L965.7,239.0 Z" fill="#1E8A5A"/>
+<path d="M970,330 L970,430" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M970,430 L965.7,421.0 L974.3,421.0 Z" fill="#1E8A5A"/>
+<text x="976" y="224" font-size="13" text-anchor="start" font-weight="700" fill="#1E8A5A">左  左摇杆 ←</text>
+<text x="976" y="448" font-size="13" text-anchor="start" font-weight="700" fill="#1E8A5A">右  左摇杆 →</text>
+<text x="1074" y="335" font-size="13" text-anchor="start" font-weight="700" fill="#E07B00">前</text>
+<text x="800" y="335" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">底座</text>
+<circle cx="50" cy="506" r="10" fill="#1B2A2F"/>
+<text x="50" y="510.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="68" y="510" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">上下、左右、前后是 3 个移动方向轴（6 个方向）；另外还能调俯仰（右摇杆 ←→）、旋转（十字键 ←→）和夹爪</text>
+<circle cx="50" cy="536" r="10" fill="#1B2A2F"/>
+<text x="50" y="540.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="68" y="540" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">左右移动由底座 J1 转动 + 手臂伸缩一起完成：固件的逆运动学自动计算，你只管推摇杆</text>
+</svg>

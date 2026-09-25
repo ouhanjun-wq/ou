@@ -397,6 +397,16 @@ static void testCalibration() {
   CHECK(strstr(r.text("MARK 3 -45"), "not plausible") != nullptr, "implausible slope rejected");
   r.text("PULSE OFF");
   CHECK(!strncmp(r.text("SAVE"), "ok", 2) && saves == 1, "SAVE calls the save hook");
+  Rig z;                                // CENTER before ON: the first pulses are 1500 us
+  z.text("CENTER");
+  z.text("ON");
+  z.run(0.2f);
+  bool centred = true;
+  for (int j = 0; j < NJ; ++j) centred = centred && z.c.pulseUs(j) == 1500;
+  CHECK(centred && z.c.power, "CENTER + ON sends 1500 us to every servo");
+  z.text("PULSE OFF");
+  CHECK(fabsf(z.c.pulseUs(1) - 1500) < 0.05f && fabsf(z.c.q[1] - 90) < 0.05f, "PULSE OFF keeps them (J2 %.2f deg)",
+        z.c.q[1]);
   CHECK(!strncmp(r.text("DEFAULTS"), "error", 5), "DEFAULTS refused while on");
 }
 

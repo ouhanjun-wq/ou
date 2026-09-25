@@ -6,7 +6,8 @@
 //          GRIP 0..100 | OPEN | CLOSE | REC | CLEAR | PLAY [LOOP] | STATUS | HELP
 // Setup (only in the calibration build, SETUP_MODE 1 in config.h, because the Uno's 32 KB of
 // flash cannot hold them next to the gamepad library):
-//          PULSE j us | PULSE OFF | MARK j deg | LIM j min max | GEO d1 l2 l3 l4
+//          CENTER (all servos 1500 us, before ON) | PULSE j us | PULSE OFF | MARK j deg
+//          LIM j min max | GEO d1 l2 l3 l4
 //          POSE HOME|PARK (store the current angles) | SHOW | SAVE | DEFAULTS
 #pragma once
 
@@ -125,7 +126,7 @@ ARM_NOINLINE inline void runCommand(ArmCore& c, const Sensors& sens, char* line,
     o.text(PSTR("ON OFF HOME STOP MODE JOINT|XYZ SPEED J MOVE UP DOWN LEFT RIGHT FORWARD BACK GRIP OPEN CLOSE REC "
                 "CLEAR PLAY STATUS"));
 #if ARM_SETUP_COMMANDS
-    o.text(PSTR(" | setup: PULSE MARK LIM GEO POSE SHOW SAVE DEFAULTS"));
+    o.text(PSTR(" | setup: CENTER PULSE MARK LIM GEO POSE SHOW SAVE DEFAULTS"));
 #endif
     o.end();
     return;
@@ -201,6 +202,11 @@ ARM_NOINLINE inline void runCommand(ArmCore& c, const Sensors& sens, char* line,
     o.text(PSTR(" usdeg "));
     o.dec(P.usdeg[j], 3);
     o.end();
+    return;
+  }
+  if (IS("CENTER")) {   // every servo at 1500 us = the centre pose used during assembly
+    for (int k = 0; k < NJ; ++k) c.rawUs[k] = 1500;
+    okLine(o, PSTR("all servos 1500 us (the assembly centre pose); ON, then PULSE / MARK"));
     return;
   }
   if (IS("PULSE")) {

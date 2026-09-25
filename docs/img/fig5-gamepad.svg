@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
 <rect width="1100" height="620" fill="#FFFFFF"/>
 <text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 5  G7 Pro 按键功能（关节模式 / XYZ 模式）</text>
-<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">View 键切换两种模式；RT / LT 控制夹爪；Menu 上电 / 停放断电</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">View 键切换两种模式；RT / LT 控制夹爪；Menu 上电 / 停放断电；手柄用 USB 线插在 USB Host Shield 上</text>
 <path d="M380,210 Q380,170 430,165 L670,165 Q720,170 720,210 L760,420 Q765,470 715,470 Q680,470 650,420 L620,380 L480,380 L450,420 Q420,470 385,470 Q335,470 340,420 Z" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="2"/>
 <rect x="400" y="140" width="60" height="18" rx="8" fill="#C9D3D6" stroke="#2B3A3F"/>
 <rect x="405" y="112" width="50" height="24" rx="10" fill="#E3E9EB" stroke="#2B3A3F"/>
@@ -39,11 +39,11 @@
 <path d="M505,318 L322,285" fill="none" stroke="#5E6E72" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
 <text x="318" y="290" font-size="13.5" text-anchor="end" font-weight="700" fill="#1B2A2F">十字键</text>
 <text x="318" y="308" font-size="12.5" text-anchor="end" font-weight="400" fill="#5E6E72">← → J5 手腕旋转（两种模式）</text>
-<text x="318" y="326" font-size="12.5" text-anchor="end" font-weight="400" fill="#5E6E72">↓ 删除最后一个路点 · ↑ 长按 1 秒保存路点</text>
+<text x="318" y="326" font-size="12.5" text-anchor="end" font-weight="400" fill="#5E6E72">↓ 删除最后一个路点（路点自动存进 EEPROM）</text>
 <path d="M531,228 L322,375" fill="none" stroke="#5E6E72" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
 <text x="318" y="380" font-size="13.5" text-anchor="end" font-weight="700" fill="#1B2A2F">View  切换 关节 / XYZ 模式</text>
 <path d="M670,124 L778,95" fill="none" stroke="#5E6E72" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="782" y="100" font-size="13.5" text-anchor="start" font-weight="700" fill="#1B2A2F">RT  闭合夹爪（夹到东西会自动停）</text>
+<text x="782" y="100" font-size="13.5" text-anchor="start" font-weight="700" fill="#1B2A2F">RT  闭合夹爪（松开后自动退 3%，减轻堵转）</text>
 <path d="M670,150 L778,130" fill="none" stroke="#5E6E72" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
 <text x="782" y="135" font-size="13.5" text-anchor="start" font-weight="700" fill="#1B2A2F">RB  速度 +</text>
 <path d="M650,205 L778,175" fill="none" stroke="#5E6E72" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
@@ -65,8 +65,8 @@
 <text x="68" y="520" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">播放或执行文字指令时，动一下摇杆 / 扳机 / 十字键 ← →，控制权马上回到手柄</text>
 <circle cx="50" cy="546" r="10" fill="#1B2A2F"/>
 <text x="50" y="550.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
-<text x="68" y="550" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">手柄断开时机械臂停在原地保持姿态；正在播放的路点会继续播放完（B 或文字 STOP 停止）</text>
+<text x="68" y="550" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">手柄拔掉时机械臂停在原地保持姿态；正在播放的路点会继续播放完（B 或串口 STOP 停止）</text>
 <circle cx="50" cy="576" r="10" fill="#1B2A2F"/>
 <text x="50" y="580.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
-<text x="68" y="580" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">手柄震动：短 = 确认 · 长 = 到达极限 / 过载 / 急停</text>
+<text x="68" y="580" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">手柄震动：短 = 确认 · 长 = 到达极限 / 急停</text>
 </svg>

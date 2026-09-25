@@ -124,78 +124,81 @@ class Svg:
 
 C["scl"] = "#0E8C9A"
 
-DEVKIT_L = ["3V3", "EN", "36", "39", "34", "35", "32", "33", "25", "26", "27", "14", "12", "GND",
-            "13", "SD2", "SD3", "CMD", "5V"]
-DEVKIT_R = ["GND", "23", "22", "TX0", "RX0", "21", "GND", "19", "18", "5", "17", "16", "4", "0",
-            "2", "15", "SD1", "SD0", "CLK"]
+UNO_TOP = ["SCL", "SDA", "AREF", "GND", "D13", "D12", "D11", "D10", "D9", "D8", None,
+           "D7", "D6", "D5", "D4", "D3", "D2", "D1", "D0"]
+UNO_BOT = ["", "IOREF", "RST", "3V3", "5V", "GND", "GND", "VIN", None, None, None,
+           "A0", "A1", "A2", "A3", "A4", "A5"]
+SHIELD = {"D9", "D10", "D11", "D12", "D13"}
 
 
-def devkit(s, x, y, used):
-    """ESP32 DevKit (38 pin, ESP32-WROOM-32E) seen from the top, antenna up, USB down,
-    with the real pin order. Returns {name: (x, y)}; the left GND is 'GND_L'."""
-    w, step = 200, 22
-    h = 70 + step * 19 + 20
-    s.box(x, y, w, h, "ESP32 DevKit", "WROOM-32E · 俯视")
-    s.parts.append(f'<rect x="{x + 60}" y="{y + 52}" width="80" height="10" rx="2" fill="#B9C4C1"/>')
-    s.parts.append(f'<rect x="{x + w / 2 - 22}" y="{y + h - 6}" width="44" height="14" rx="4" fill="#B9C4C1"/>')
-    s.text(x + w / 2, y + h + 5, "USB", 9.5, "middle", "700")
+def uno(s, x, y, used):
+    """Arduino Uno R3 seen from the top, USB-B and DC jack on the left, with the real header
+    order. Pins used by the USB Host Shield are light grey. Returns {name: (x, y)}."""
+    w, h, step = 540, 250, 24
+    s.parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" fill="#E3F1F4" stroke="{C["boxline"]}" '
+                   f'stroke-width="1.6"/>')
+    s.text(x + w / 2, y + h / 2 - 6, "Arduino Uno R3", 17, "middle", "700")
+    s.text(x + w / 2, y + h / 2 + 16, "（上面叠插 USB Host Shield，引脚一一对应）", 11.5, "middle", color=C["mute"])
+    s.parts.append(f'<rect x="{x - 14}" y="{y + 40}" width="46" height="50" rx="4" fill="#B9C4C1"/>')
+    s.text(x + 9, y + 70, "USB-B", 9.5, "middle", "700")
+    s.parts.append(f'<rect x="{x - 14}" y="{y + 160}" width="46" height="40" rx="4" fill="#555"/>')
+    s.text(x + 9, y + 184, "DC", 9.5, "middle", "700", "#FFFFFF")
     pins = {}
-    for i, n in enumerate(DEVKIT_L):
-        py = y + 80 + i * step
-        key = "GND_L" if n == "GND" else n
-        s.pin(x, py, n, "left", C["sig"] if key in used else "#9AA5A8")
-        pins[key] = (x, py)
-    for i, n in enumerate(DEVKIT_R):
-        py = y + 80 + i * step
-        key = n if n != "GND" or "GND" not in pins else "GND_R2"
-        s.pin(x + w, py, n, "right", C["sig"] if key in used else "#9AA5A8")
-        pins[key] = (x + w, py)
+    x0 = x + 70
+    for i, n in enumerate(UNO_TOP):
+        if n is None:
+            continue
+        px, py = x0 + i * step, y
+        col = "#C8CDD0" if n in SHIELD else (C["sig"] if n in used else "#9AA5A8")
+        s.parts.append(f'<circle cx="{px}" cy="{py}" r="5" fill="{col}"/>')
+        s.text(px, py + 20, n, 9.5, "middle", "700")
+        pins[n] = (px, py)
+    for i, n in enumerate(UNO_BOT):
+        if not n:
+            continue
+        px, py = x0 + 40 + i * step, y + h
+        col = C["sig"] if n in used else "#9AA5A8"
+        s.parts.append(f'<circle cx="{px}" cy="{py}" r="5" fill="{col}"/>')
+        s.text(px, py - 12, n, 9.5, "middle", "700")
+        key = n if n != "GND" or "GND_B" in pins else "GND_B"
+        pins[key] = (px, py)
     return pins
 
 
 # ---------------------------------------------------------------------------
 def fig_overview():
-    s = Svg(1100, 500, "图 0  系统总览",
-            "手柄通过蓝牙直接连到机械臂上的 ESP32；手机、电脑、语音模块发文字指令；PCA9685 输出 6 路舵机信号")
-    s.box(40, 120, 190, 100, "盖世小鸡 G7 Pro", "模式开关：蓝牙\nXbox 布局按键")
-    s.box(340, 100, 240, 160, "主控 ESP32 DevKit", "Bluepad32 读手柄\n逆运动学 · 平滑 · 示教\nWi-Fi 热点 RobotArm",
+    s = Svg(1100, 500, "图 0  系统总览（Arduino Uno R3 版）",
+            "G7 Pro 用 USB 线插在 USB Host Shield 上；Uno 直接输出 6 路舵机信号；电脑 / AI / 语音走串口")
+    s.box(40, 120, 190, 100, "盖世小鸡 G7 Pro", "PC / XInput 模式\nUSB-C 线（或 2.4G 接收器）")
+    s.box(340, 90, 240, 70, "USB Host Shield 2.0", "MAX3421E · 叠插在 Uno 上")
+    s.box(340, 170, 240, 120, "Arduino Uno R3", "ATmega328P · 32 KB / 2 KB\n逆运动学 · 平滑 · 示教\n路点存 EEPROM",
           fill=C["hi"])
-    s.box(680, 90, 190, 80, "PCA9685", "16 路舵机驱动 · 0x41")
-    s.box(680, 200, 190, 80, "INA226", "舵机电流 / 电压 · 0x40")
+    s.box(690, 110, 180, 120, "舵机分线板", "6 × 3 针排针\n6 V 母线 + GND\n2 × 2200 µF")
     s.box(930, 90, 140, 190, "机械臂", "J1 底座\nJ2 大臂\nJ3 小臂\nJ4 手腕俯仰\nJ5 手腕旋转\nJ6 夹爪")
-    s.box(680, 330, 190, 110, "电源", "12 V 适配器\n→ 6 V 舵机 / 5 V 主控\n急停 + 继电器")
-    s.box(340, 330, 240, 70, "手机浏览器", "192.168.4.1 状态 + 按钮")
-    s.box(40, 290, 190, 70, "可选：语音模块", "离线识别 → 串口文字", dashed=True)
-    s.box(40, 390, 190, 70, "电脑 / AI", "USB 串口或 Wi-Fi", dashed=True)
-    s.wire([(230, 170), (340, 170)], C["rf"], 3, True)
-    s.text(285, 160, "蓝牙", 13, "middle", "700")
-    s.wire([(580, 130), (680, 130)], C["i2c"], 3)
-    s.wire([(580, 240), (680, 240)], C["i2c"], 3)
-    s.text(630, 120, "I²C", 12, "middle", "700", C["i2c"])
-    s.text(630, 230, "I²C", 12, "middle", "700", C["i2c"])
-    s.arrow(870, 130, 928, 130, C["sig"])
-    s.text(899, 120, "PWM×6", 11, "middle", "700", C["sig"])
-    s.arrow(900, 385, 1000, 385, C["v6"])
-    s.wire([(1000, 385), (1000, 282)], C["v6"], 2.5)
-    s.text(935, 375, "6 V", 12, "middle", "700", C["v6"])
-    s.wire([(775, 330), (775, 280)], C["v6"], 2.5)
-    s.text(785, 312, "测电流", 11.5, color=C["mute"])
-    s.wire([(680, 385), (620, 385), (620, 250), (580, 250)], C["v5"], 2.5)
-    s.text(628, 300, "5 V", 12, weight="700", color=C["v5"])
-    s.wire([(460, 260), (460, 330)], C["rf"], 3, True)
-    s.text(470, 300, "Wi-Fi", 12.5, weight="700")
-    s.wire([(230, 325), (290, 325), (290, 230), (340, 230)], C["sig"], 2.5)
-    s.text(250, 318, "UART", 11.5, weight="700", color=C["sig"])
-    s.wire([(230, 425), (300, 425), (300, 250), (340, 250)], C["rf"], 2.5, True)
-    s.legend(40, 485, [("I²C", C["i2c"], False), ("舵机信号", C["sig"], False), ("6 V 舵机电", C["v6"], False),
-                       ("5 V", C["v5"], False), ("无线", C["rf"], True)])
+    s.box(690, 330, 180, 110, "电源", "12 V 适配器\n→ 6 V 舵机 / 5 V Uno\n急停开关")
+    s.box(40, 290, 190, 70, "电脑 / AI", "USB 串口 9600", dashed=True)
+    s.box(40, 390, 190, 70, "可选：语音模块", "TX → D0（RX）", dashed=True)
+    s.wire([(230, 170), (290, 170), (290, 125), (340, 125)], C["sig"], 3)
+    s.text(260, 160, "USB", 13, "middle", "700", C["sig"])
+    s.wire([(580, 230), (690, 230)], C["sig"], 3)
+    s.text(635, 220, "PWM×6", 11.5, "middle", "700", C["sig"])
+    s.text(635, 250, "D2–D6、D8", 11, "middle", color=C["mute"])
+    s.arrow(870, 170, 928, 170, C["v6"], 3)
+    s.wire([(780, 330), (780, 230)], C["v6"], 3)
+    s.text(790, 290, "6 V", 12, weight="700", color=C["v6"])
+    s.wire([(690, 400), (620, 400), (620, 275), (580, 275)], C["v5"], 2.5)
+    s.text(628, 340, "5 V", 12, weight="700", color=C["v5"])
+    s.wire([(230, 325), (300, 325), (300, 250), (340, 250)], C["sig"], 2.5)
+    s.wire([(230, 425), (310, 425), (310, 270), (340, 270)], C["sig"], 2.5, True)
+    s.text(250, 318, "USB", 11.5, weight="700", color=C["sig"])
+    s.legend(40, 485, [("信号 / USB", C["sig"], False), ("6 V 舵机电", C["v6"], False), ("5 V", C["v5"], False),
+                       ("可选", C["sig"], True)])
     s.save("fig0-overview.svg")
 
 
 def fig_power():
-    s = Svg(1100, 720, "图 1  电源：12 V 输入 → 6 V 舵机电（急停 + 继电器 + 电流计）/ 5 V 主控电",
-            "舵机电和主控电分开降压；大电流只走粗线，不经过 ESP32")
-    # row 1: input chain
+    s = Svg(1100, 720, "图 1  电源：12 V → 6 V 舵机电（经过急停）/ 5 V 给 Uno",
+            "舵机电和 Uno 分开降压；大电流只走粗线，不经过 Uno")
     s.box(40, 100, 180, 100, "电源适配器", "12 V 5 A（≥ 60 W）\nDC 5.5×2.1 插头")
     s.box(290, 100, 180, 100, "DC 母座 + 保险丝", "带接线端子\n刀片保险 7.5 A")
     s.box(540, 100, 160, 100, "船型开关", "KCD4 · 16 A")
@@ -205,145 +208,113 @@ def fig_power():
     s.dot(760, 150, C["v12"])
     s.wire([(760, 150), (760, 225), (455, 225), (455, 260)], C["v12"], 3)
     s.tag(710, 125, "12 V", C["v12"])
-    # row 2: converters
     s.box(740, 260, 200, 110, "大电流降压模块", "20 A / 300 W · CC/CV\n12 V → 6.0 V", fill=C["hi"])
-    s.box(360, 260, 190, 110, "MP1584EN 降压", "3 A\n12 V → 5.0 V")
+    s.box(360, 260, 190, 110, "MP1584EN 降压", "3 A\n12 V → 5.3 V")
     s.part(250, 300, 70, 30, "SS14 ▶")
     s.wire([(360, 315), (320, 315)], C["v5"], 3)
     s.wire([(250, 315), (210, 315)], C["v5"], 3)
-    s.box(40, 265, 170, 100, "ESP32 DevKit", "5V 引脚\n（逻辑电，见图 2）")
+    s.box(40, 265, 170, 100, "Arduino Uno", "5V 引脚（≈ 5.0 V）\n不用 DC 口")
     s.text(285, 290, "防 USB 倒灌", 11, "middle", color=C["mute"])
-    # row 3: servo chain (right -> left)
-    s.box(900, 440, 170, 110, "急停开关", "常闭 NC · 22 mm\n蘑菇头 · 10 A")
-    s.box(660, 440, 180, 110, "继电器模块", "COM → NO · 10 A\nIN ← GPIO25（图 2）")
-    s.box(420, 440, 180, 110, "INA226 模块", "VIN+ → VIN−\n采样电阻 0.01 Ω")
-    s.box(40, 440, 320, 110, "舵机电源母线 → PCA9685 V+", "+ 2 × 2200 µF 16 V 电解电容\n6 个舵机都从这里取电（图 3）",
+    s.box(880, 440, 190, 110, "急停开关", "常闭 NC · 22 mm\n蘑菇头 · 10 A")
+    s.box(420, 440, 360, 110, "舵机分线板（6 V 母线）", "+ 2 × 2200 µF 16 V 电解电容\n6 个舵机都从这里取电（图 3）",
           fill=C["hi"])
-    s.wire([(790, 370), (790, 428), (985, 428), (985, 440)], C["v6"], 4)
+    s.wire([(790, 370), (790, 426), (975, 426), (975, 440)], C["v6"], 4)
     s.pin(790, 370, "V+ 出", "bottom", C["v6"])
-    s.tag(800, 400, "6.0 V", C["v6"])
-    s.wire([(900, 525), (840, 525)], C["v6"], 4)
-    s.wire([(660, 525), (600, 525)], C["v6"], 4)
-    s.wire([(420, 525), (360, 525)], C["v6"], 4)
-    s.pin(900, 525, "", "left", C["v6"])
-    s.pin(840, 525, "COM", "right", C["v6"])
-    s.pin(660, 525, "NO", "left", C["v6"])
-    s.pin(600, 525, "VIN+", "right", C["v6"])
-    s.pin(420, 525, "VIN−", "left", C["v6"])
-    s.pin(360, 525, "V+", "right", C["v6"])
-    # grounds as net tags
-    for gx, gy in ((130, 200), (380, 200), (890, 370), (455, 370), (125, 365), (200, 550), (510, 550)):
+    s.tag(800, 398, "6.0 V", C["v6"])
+    s.wire([(880, 520), (780, 520)], C["v6"], 4)
+    s.pin(880, 520, "", "left", C["v6"])
+    s.pin(780, 520, "V+", "right", C["v6"])
+    s.box(40, 440, 300, 110, "急停检测分压", "舵机母线 → 10 kΩ → A3 → 10 kΩ → GND\n6 V 时 A3 ≈ 3 V")
+    s.wire([(420, 470), (340, 470)], C["v6"], 2.5)
+    s.pin(340, 470, "6V", "right", C["v6"])
+    s.pin(340, 515, "A3", "right", C["sig"])
+    s.wire([(340, 515), (380, 515)], C["sig"], 2.5)
+    s.tag(384, 515, "→ Uno A3", C["sig"])
+    for gx, gy in ((130, 200), (380, 200), (890, 370), (455, 370), (125, 365), (600, 550), (190, 550)):
         s.wire([(gx, gy), (gx, gy + 22)], C["gnd"], 2.5)
         s.tag(gx - 22, gy + 33, "GND", C["gnd"])
-    s.text(955, 605, "所有 GND 汇到大降压模块的 GND 端子（星形接地）", 12, "end", color=C["mute"])
-    # notes
-    s.note(40, 640, 1, "先调电压：大降压模块空载调到 6.0 V，MP1584 调到 5.0 V，调好再接负载")
-    s.note(40, 670, 2, "急停串在 6 V 舵机线上：按下 = 舵机断电，机械臂会软下来（手要离开下方）")
-    s.note(560, 640, 3, "继电器由 GPIO25 控制：开机默认断开，按 Menu 才给舵机上电")
-    s.note(560, 670, 4, "6 V 和 GND 大电流线用 18 AWG 硅胶线，其余用 22 AWG")
+    s.text(1060, 610, "所有 GND 汇到大降压模块的 GND 端子（星形接地）", 12, "end", color=C["mute"])
+    s.note(40, 640, 1, "先调电压：大降压模块空载调到 6.0 V，MP1584 调到 5.3 V（经过 SS14 后约 5.0 V）")
+    s.note(40, 670, 2, "急停串在 6 V 舵机线上：按下 = 舵机断电，Uno 从 A3 发现后也停掉舵机信号")
+    s.note(620, 640, 3, "6 V 和 GND 大电流线用 18 AWG，其余用 22 AWG")
+    s.note(620, 670, 4, "不要用 Uno 的 DC 口供电：板载稳压器带不动手柄")
     s.legend(40, 705, [("12 V", C["v12"], False), ("6 V 舵机电", C["v6"], False), ("5 V", C["v5"], False),
-                       ("GND", C["gnd"], False)])
+                       ("GND", C["gnd"], False), ("信号", C["sig"], False)])
     s.save("fig1-power.svg")
 
 
+SERVO_PINS = ["D2", "D3", "D4", "D5", "D6", "D8"]
+
+
 def fig_signals():
-    used = {"3V3", "GND_L", "25", "26", "5V", "22", "21", "17", "16", "GND", "GND_R2", "2"}
-    s = Svg(1100, 760, "图 2  信号接线：ESP32 ↔ PCA9685 / INA226（I²C）· 继电器 · 蜂鸣器 · 语音模块",
-            "彩色标签表示“接到同名的线”；I²C 两个设备并联在同一对线上")
-    p = devkit(s, 450, 100, used)
-    # right side: I2C devices
-    s.box(830, 100, 230, 190, "PCA9685 舵机驱动", "地址 0x41：把 A0 焊盘\n用锡短接\nV+ 端子 ← 6 V（图 1）")
-    for n, (lab, yy, col) in enumerate((("GND", 150, C["gnd"]), ("VCC", 180, C["v33"]), ("SDA", 210, C["i2c"]),
-                                        ("SCL", 240, C["scl"]))):
-        s.pin(830, yy, lab, "left", col)
-    s.box(830, 330, 230, 170, "INA226 电流计", "地址 0x40（默认）\nVIN+ / VIN− 串在\n6 V 线上（图 1）")
-    for lab, yy, col in (("VCC", 380, C["v33"]), ("GND", 410, C["gnd"]), ("SDA", 440, C["i2c"]),
-                         ("SCL", 470, C["scl"])):
-        s.pin(830, yy, lab, "left", col)
-    s.box(830, 540, 230, 150, "可选：离线语音模块", "CI-03T / ASR-PRO 等\n串口输出英文指令行\n9600 bps", dashed=True)
-    for lab, yy, col in (("TX", 590, C["sig"]), ("RX", 620, C["sig"]), ("5V", 650, C["v5"]), ("GND", 675, C["gnd"])):
-        s.pin(830, yy, lab, "left", col)
-    # I2C wiring
-    sda, scl = p["21"], p["22"]
-    s.wire([sda, (740, sda[1]), (740, 440), (830, 440)], C["i2c"], 3)
-    s.wire([(740, 210), (830, 210)], C["i2c"], 3)
-    s.wire([(740, sda[1]), (740, 210)], C["i2c"], 3)
-    s.dot(740, sda[1], C["i2c"])
-    s.wire([scl, (710, scl[1]), (710, 470), (830, 470)], C["scl"], 3)
-    s.wire([(710, 240), (830, 240)], C["scl"], 3)
-    s.dot(710, 240, C["scl"])
-    s.text(700, 330, "SCL", 12, "end", "700", C["scl"])
-    s.text(750, 330, "SDA", 12, "start", "700", C["i2c"])
-    # voice UART: module TX -> GPIO16 (RX2), module RX <- GPIO17 (TX2)
-    s.wire([p["16"], (680, p["16"][1]), (680, 590), (830, 590)], C["sig"], 2.5)
-    s.wire([p["17"], (660, p["17"][1]), (660, 620), (830, 620)], C["sig"], 2.5)
-    s.text(672, 700, "交叉：TX→16，RX←17", 11.5, "middle", color=C["mute"])
-    # power / GND tags on the right devices
-    for yy in (180, 380):
-        s.tag(826, yy, "3V3", C["v33"], "end")
-    for yy in (150, 410, 675):
-        s.tag(826, yy, "GND", C["gnd"], "end")
-    s.tag(826, 650, "5V", C["v5"], "end")
-    # left side: relay, buzzer
-    s.box(40, 250, 250, 170, "继电器模块（1 路）", "5 V 线圈 · 光耦隔离\n跳线设为“高电平触发”\n触点见图 1")
-    for lab, yy, col in (("IN", 356, C["sig"]), ("VCC", 382, C["v5"]), ("GND", 406, C["gnd"])):
-        s.pin(290, yy, lab, "right", col)
-    s.wire([(290, 356), p["25"]], C["sig"], 3)
-    s.box(40, 435, 250, 120, "有源蜂鸣器模块", "高电平响 · 3.3–5 V")
-    for lab, yy, col in (("I/O", 480, C["sig"]), ("VCC", 505, C["v33"]), ("GND", 530, C["gnd"])):
-        s.pin(290, yy, lab, "right", col)
-    s.wire([(290, 480), (360, 480), (360, p["26"][1]), p["26"]], C["sig"], 3)
-    s.tag(295, 382, "5V", C["v5"])
-    s.tag(295, 406, "GND", C["gnd"])
-    s.tag(295, 505, "3V3", C["v33"])
-    s.tag(295, 530, "GND", C["gnd"])
-    # DevKit power pins
-    s.tag(444, p["3V3"][1], "3V3", C["v33"], "end")
-    s.tag(444, p["GND_L"][1], "GND", C["gnd"], "end")
-    s.tag(444, p["5V"][1], "5V ← MP1584 经 SS14（图 1）", C["v5"], "end")
-    s.tag(656, p["GND"][1], "GND", C["gnd"])
-    s.legend(40, 745, [("SDA", C["i2c"], False), ("SCL", C["scl"], False), ("信号", C["sig"], False),
-                       ("3.3 V", C["v33"], False), ("5 V", C["v5"], False)])
+    used = set(SERVO_PINS) | {"A3", "D0", "5V", "GND", "GND_B"}
+    s = Svg(1100, 700, "图 2  信号接线：Arduino Uno R3 引脚",
+            "浅灰 = USB Host Shield 占用（D9–D13），D7 也留空；舵机信号 D2–D6、D8；A3 测舵机电压；D0 接语音模块")
+    p = uno(s, 280, 300, used)
+    s.box(260, 90, 580, 110, "舵机分线板（图 3）", "每个舵机插一个 3 针排针：S（信号）· V+ · GND")
+    for i, pin in enumerate(SERVO_PINS):      # each header sits right above its Uno pin
+        px, py = p[pin]
+        s.pin(px, 200, f"J{i + 1}", "bottom", C["sig"])
+        s.wire([(px, 200), (px, py)], C["sig"], 2.5)
+    s.box(900, 110, 170, 110, "可选：语音模块", "CI-03T / ASR-PRO\n9600 bps", dashed=True)
+    s.pin(900, 190, "TX", "left", C["sig"])
+    px, py = p["D0"]
+    s.wire([(900, 190), (880, 190), (880, 268), (px, 268), (px, py)], C["sig"], 2.5, True)
+    s.text(885, 256, "TX → D0", 11.5, weight="700", color=C["sig"])
+    s.box(40, 90, 190, 150, "USB Host Shield 2.0", "直接叠插在 Uno 上\n占用 D9–D13\nD7 留空\nUSB-A 口插 G7 Pro")
+    s.tag(p["A3"][0] - 20, p["A3"][1] + 34, "A3 ← 分压（图 1）", C["sig"])
+    s.tag(p["5V"][0] - 60, p["5V"][1] + 34, "5V ← MP1584 经 SS14", C["v5"])
+    s.wire([p["GND"], (p["GND"][0], p["GND"][1] + 64), (p["GND"][0] + 40, p["GND"][1] + 64)], C["gnd"], 2)
+    s.tag(p["GND"][0] + 40, p["GND"][1] + 64, "GND（接电源地）", C["gnd"])
+    s.note(40, 640, 1, "舵机信号线用杜邦线；舵机的 V+ / GND 只接分线板，不接 Uno")
+    s.note(40, 670, 2, "上传程序时拔掉语音模块的 TX 线（D0 也是下载口）")
+    s.note(620, 640, 3, "Uno 的 GND 必须和舵机电源 GND 相连")
+    s.legend(620, 675, [("信号", C["sig"], False), ("5 V", C["v5"], False), ("GND", C["gnd"], False)])
     s.save("fig2-signals.svg")
 
 
 SERVOS = [
-    ("J1 底座旋转", "DS3218MG · 20 kg·cm · 180°"),
-    ("J2 大臂（肩）", "DS3225MG · 25 kg·cm · 180°"),
-    ("J3 小臂（肘）", "DS3218MG · 20 kg·cm · 180°"),
-    ("J4 手腕俯仰", "MG996R · 10 kg·cm · 180°"),
-    ("J5 手腕旋转", "MG996R · 10 kg·cm · 180°"),
-    ("J6 夹爪", "MG996R · 10 kg·cm · 180°"),
+    ("J1 底座旋转", "DS3218MG · 20 kg·cm · 180°", "D2"),
+    ("J2 大臂（肩）", "DS3225MG · 25 kg·cm · 180°", "D3"),
+    ("J3 小臂（肘）", "DS3218MG · 20 kg·cm · 180°", "D4"),
+    ("J4 手腕俯仰", "MG996R · 10 kg·cm · 180°", "D5"),
+    ("J5 手腕旋转", "MG996R · 10 kg·cm · 180°", "D6"),
+    ("J6 夹爪", "MG996R · 10 kg·cm · 180°", "D8"),
 ]
 
 
 def fig_servos():
-    s = Svg(1100, 620, "图 3  舵机接线：PCA9685 通道 0–5 → J1–J6",
-            "舵机插头直接插在 PCA9685 的 3 针排针上：棕 = GND，红 = V+，橙 = 信号（PWM）")
-    s.box(40, 100, 330, 470, "PCA9685 板", "")
-    s.text(205, 150, "每个通道 3 针（图中横着画）：PWM · V+ · GND", 11.5, "middle", color=C["mute"])
-    s.parts.append(f'<rect x="60" y="480" width="120" height="60" rx="4" fill="#2E7D32"/>')
-    s.text(120, 505, "V+  GND", 12, "middle", "700", "#FFFFFF")
-    s.text(120, 525, "螺丝端子", 11, "middle", color="#E8F5E9")
-    s.tag(190, 510, "← 6 V 母线（图 1）", C["v6"])
+    s = Svg(1100, 620, "图 3  舵机分线板：6 V 母线 + 信号引出",
+            "一块 5 × 7 cm 洞洞板：两条粗铜线做 V+ / GND 母线，6 组 3 针排针；舵机插头直接插上去")
+    s.box(40, 100, 380, 470, "舵机分线板（洞洞板）", "")
+    s.wire([(80, 150), (80, 520)], C["v6"], 6)
+    s.wire([(110, 150), (110, 520)], C["gnd"], 6)
+    s.text(80, 140, "V+", 12, "middle", "700", C["v6"])
+    s.text(110, 140, "GND", 12, "middle", "700")
+    s.part(60, 530, 30, 26, "")
+    s.part(100, 530, 30, 26, "")
+    s.text(140, 548, "2 × 2200 µF（白条纹接 GND）", 11.5, color=C["mute"])
+    s.tag(150, 115, "← 6 V（急停后，图 1）", C["v6"])
     rows = []
     for i in range(6):
-        cy = 190 + i * 48
-        s.text(70, cy + 5, f"通道 {i}", 13, "start", "700")
-        for k, col in enumerate(("#E3A600", C["v12"], C["gnd"])):
-            s.parts.append(f'<rect x="{150 + k * 24}" y="{cy - 9}" width="18" height="18" rx="2" fill="{col}"/>')
+        cy = 190 + i * 55
+        for k, col in enumerate(("#E3A600", C["v12"], "#5A4A42")):
+            s.parts.append(f'<rect x="{200 + k * 26}" y="{cy - 10}" width="20" height="20" rx="2" fill="{col}"/>')
+        s.wire([(80, cy), (226, cy)], C["v6"], 2)
+        s.wire([(110, cy + 6), (252, cy + 6)], C["gnd"], 2)
+        s.text(290, cy + 5, f"J{i + 1}", 13, "start", "700")
         rows.append(cy)
-    s.text(159, 175, "PWM", 9.5, "middle", "700")
-    s.text(183, 175, "V+", 9.5, "middle", "700")
-    s.text(207, 175, "G", 9.5, "middle", "700")
-    for i, (name, model) in enumerate(SERVOS):
+    s.text(210, 175, "S", 10, "middle", "700")
+    s.text(236, 175, "V+", 10, "middle", "700")
+    s.text(262, 175, "G", 10, "middle", "700")
+    for i, (name, model, pin) in enumerate(SERVOS):
         cy = rows[i]
         bx, by = 560, 100 + i * 78
         s.box(bx, by, 500, 64, name, model, fill=C["hi"] if i == 1 else None)
-        s.wire([(222, cy), (300, cy), (470, by + 32), (560, by + 32)], "#E3A600", 3)
-        s.text(465, by + 26, "延长线" if i >= 3 else "", 11, "end", color=C["mute"])
-    s.note(40, 600, 1, "插反（棕线不在 G 那一侧）舵机不会转，但一般不会坏；插之前核对颜色")
-    s.note(620, 600, 2, "J4–J6 离底座远，用 30–50 cm 舵机延长线（22 AWG 粗线）")
+        s.tag(320, cy, f"S → Uno {pin}", C["sig"])
+        s.wire([(412, cy), (470, by + 32), (560, by + 32)], "#E3A600", 3)
+    s.note(40, 600, 1, "S 排针用杜邦线接到 Uno（图 2）；舵机插头：橙 = S，红 = V+，棕 = GND")
+    s.note(620, 600, 2, "J4–J6 离底座远，用 22 AWG 舵机延长线")
     s.save("fig3-servos.svg")
 
 
@@ -423,7 +394,7 @@ def fig_kinematics():
 
 def fig_gamepad():
     s = Svg(1100, 620, "图 5  G7 Pro 按键功能（关节模式 / XYZ 模式）",
-            "View 键切换两种模式；RT / LT 控制夹爪；Menu 上电 / 停放断电")
+            "View 键切换两种模式；RT / LT 控制夹爪；Menu 上电 / 停放断电；手柄用 USB 线插在 USB Host Shield 上")
     # controller silhouette
     s.parts.append('<path d="M380,210 Q380,170 430,165 L670,165 Q720,170 720,210 L760,420 Q765,470 715,470 '
                    'Q680,470 650,420 L620,380 L480,380 L450,420 Q420,470 385,470 Q335,470 340,420 Z" '
@@ -457,10 +428,10 @@ def fig_gamepad():
     call(430, 124, 330, 100, ["LT  张开夹爪（按得越深越快）"], "end")
     call(430, 150, 330, 135, ["LB  速度 −（慢 / 中 / 快）"], "end")
     call(450, 230, 330, 200, ["左摇杆", "关节：左右 J1 底座 · 上下 J2 大臂", "XYZ：左右 = 左右移 · 上下 = 前后移"], "end")
-    call(505, 318, 330, 290, ["十字键", "← → J5 手腕旋转（两种模式）", "↓ 删除最后一个路点 · ↑ 长按 1 秒保存路点"],
+    call(505, 318, 330, 290, ["十字键", "← → J5 手腕旋转（两种模式）", "↓ 删除最后一个路点（路点自动存进 EEPROM）"],
          "end")
     call(531, 228, 330, 380, ["View  切换 关节 / XYZ 模式"], "end")
-    call(670, 124, 770, 100, ["RT  闭合夹爪（夹到东西会自动停）"], "start")
+    call(670, 124, 770, 100, ["RT  闭合夹爪（松开后自动退 3%，减轻堵转）"], "start")
     call(670, 150, 770, 135, ["RB  速度 +"], "start")
     call(650, 205, 770, 180, ["Y  回原位（HOME 姿态）"], "start")
     call(675, 230, 770, 210, ["B  停止（过载后按 B 恢复）"], "start")
@@ -470,8 +441,8 @@ def fig_gamepad():
          "start")
     call(571, 228, 770, 400, ["Menu  给舵机上电 / 停放后断电"], "start")
     s.note(40, 520, 1, "播放或执行文字指令时，动一下摇杆 / 扳机 / 十字键 ← →，控制权马上回到手柄")
-    s.note(40, 550, 2, "手柄断开时机械臂停在原地保持姿态；正在播放的路点会继续播放完（B 或文字 STOP 停止）")
-    s.note(40, 580, 3, "手柄震动：短 = 确认 · 长 = 到达极限 / 过载 / 急停")
+    s.note(40, 550, 2, "手柄拔掉时机械臂停在原地保持姿态；正在播放的路点会继续播放完（B 或串口 STOP 停止）")
+    s.note(40, 580, 3, "手柄震动：短 = 确认 · 长 = 到达极限 / 急停")
     s.save("fig5-gamepad.svg")
 
 
@@ -495,9 +466,9 @@ def fig_layout():
     ex, ey = ox + 15, oy + 95
     s.parts.append(f'<rect x="{ex}" y="{ey}" width="90" height="110" rx="6" fill="{C["hi"]}" '
                    f'stroke="{C["boxline"]}" stroke-width="1.6"/>')
-    s.text(ex + 45, ey + 40, "电控盒", 13, "middle", "700")
-    s.text(ex + 45, ey + 60, "在底座后方", 11, "middle", color=C["mute"])
-    s.text(ex + 45, ey + 76, "手臂够不到", 11, "middle", color=C["mute"])
+    s.text(ex + 45, ey + 40, "电控托板", 13, "middle", "700")
+    s.text(ex + 45, ey + 60, "Uno · 降压", 11, "middle", color=C["mute"])
+    s.text(ex + 45, ey + 76, "分线板", 11, "middle", color=C["mute"])
     s.wire([(ex + 90, ay - 20), (ax - 50, ay - 20)], C["sig"], 2.5, True)
     s.parts.append(f'<rect x="{ox - 26}" y="{oy + 30}" width="26" height="22" rx="3" fill="#555"/>')
     s.text(ox - 30, oy + 46, "DC 12 V + 开关", 12, "end", "700")
@@ -511,7 +482,7 @@ def fig_layout():
     s.wire([(ex + 45, ey + 110), (ex + 45, 540), (560, 540), (585, 500)], C["v6"], 2.5, True)
     s.text(330, 556, "急停线（6 V 回路，18 AWG）", 11.5, "middle", color=C["v6"])
     for i, line in enumerate(("① 底座用 4 颗 M4 螺丝固定在底板上，不要只靠胶",
-                              "② 电控盒放在底座正后方：J1 只转 ±90°，手臂够不到",
+                              "② 电控托板放在底座正后方：J1 只转 ±90°，手臂够不到",
                               "③ 急停单独装小盒，放在伸展范围外、右手边",
                               "④ 底板后边夹在桌边，两把 F 型夹",
                               "⑤ 第一次运行把速度调到“慢”（LB）")):
@@ -552,8 +523,8 @@ def fig_calibration():
         s.wire([(bx + 40, yy), end], "#8FA3AA", 12)
         s.text(bx + 200, yy - 30 if ang else yy + 5, title, 13, weight="700")
         s.text(bx + 200, (yy - 10) if ang else yy + 25, "用手机水平仪 App 贴在大臂上对准", 11.5, color=C["mute"])
-    s.note(40, 540, 1, "PULSE 2 1500 让舵机先回中；再用 PULSE 2 <µs> 一点点调，调到姿态①")
-    s.note(40, 570, 2, "每个关节都做一遍（夹爪：全开 MARK 6 0，夹紧 MARK 6 100），最后 PULSE OFF、SAVE PARAMS")
+    s.note(40, 540, 1, "标定程序（SETUP_MODE 1）里先 CENTER、再 ON：所有舵机在 1500 µs；用 PULSE 2 <µs> 一点点调到姿态①")
+    s.note(40, 570, 2, "每个关节都做一遍（夹爪：全开 MARK 6 0，刚好合拢 MARK 6 100），最后 PULSE OFF、SAVE")
     s.save("fig7-calibration.svg")
 
 
@@ -581,6 +552,56 @@ def fig_assembly():
     s.save("fig8-assembly.svg")
 
 
+def fig_directions():
+    import math
+    s = Svg(1100, 560, "图 9  上下、左右、前后：XYZ 模式下夹爪怎么走",
+            "View 键切到 XYZ 模式：左摇杆管水平面（前后、左右），右摇杆上下管高度；夹爪走直线，俯仰角不变")
+    k = 1.2
+    table_y, bx = 470, 150
+    s.wire([(60, table_y), (520, table_y)], C["mute"], 3)
+    sh = (bx, table_y - 75 * k)
+
+    def step(p, length, ang):
+        return (p[0] + length * k * math.cos(math.radians(ang)), p[1] - length * k * math.sin(math.radians(ang)))
+
+    el = step(sh, 105, 70)
+    wr = step(el, 100, -10)
+    tp = step(wr, 120, -30)
+    s.parts.append(f'<rect x="{bx - 40}" y="{table_y - 26}" width="80" height="26" rx="4" fill="{C["arm"]}" '
+                   f'stroke="{C["boxline"]}"/>')
+    for a, b in (((bx, table_y - 26), sh), (sh, el), (el, wr), (wr, tp)):
+        s.wire([a, b], "#8FA3AA", 13)
+    s.dot(tp[0], tp[1], C["v12"])
+    tx, ty = tp
+    s.arrow(tx, ty, tx, ty - 90, C["sig"], 3)
+    s.arrow(tx, ty, tx, ty + 55, C["sig"], 3)
+    s.arrow(tx, ty, tx + 110, ty, C["v6"], 3)
+    s.arrow(tx, ty, tx - 90, ty, C["v6"], 3)
+    s.text(tx + 8, ty - 96, "上  右摇杆 ↑", 13, weight="700", color=C["sig"])
+    s.text(tx + 8, ty + 60, "下  右摇杆 ↓", 13, weight="700", color=C["sig"])
+    s.text(tx + 114, ty + 5, "前", 13, weight="700", color=C["v6"])
+    s.text(tx + 114, ty + 24, "左摇杆 ↑", 12, color=C["v6"])
+    s.text(tx - 96, ty - 10, "后  左摇杆 ↓", 13, "end", "700", C["v6"])
+    s.text(290, 120, "侧视", 15, "middle", "700")
+    cx, cy = 800, 330
+    s.text(800, 120, "俯视", 15, "middle", "700")
+    s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="40" fill="{C["arm"]}" stroke="{C["boxline"]}"/>')
+    s.wire([(cx, cy), (cx + 170, cy)], "#8FA3AA", 12)
+    gx, gy = cx + 170, cy
+    s.dot(gx, gy, C["v12"])
+    s.arrow(gx, gy, gx + 100, gy, C["v6"], 3)
+    s.arrow(gx, gy, gx - 80, gy, C["v6"], 3)
+    s.arrow(gx, gy, gx, gy - 100, C["i2c"], 3)
+    s.arrow(gx, gy, gx, gy + 100, C["i2c"], 3)
+    s.text(gx + 6, gy - 106, "左  左摇杆 ←", 13, weight="700", color=C["i2c"])
+    s.text(gx + 6, gy + 118, "右  左摇杆 →", 13, weight="700", color=C["i2c"])
+    s.text(gx + 104, gy + 5, "前", 13, weight="700", color=C["v6"])
+    s.text(cx, cy + 5, "底座", 12, "middle", "700")
+    s.note(40, 510, 1, "上下、左右、前后是 3 个移动方向轴（6 个方向）；另外还能调俯仰（右摇杆 ←→）、旋转（十字键 ←→）和夹爪")
+    s.note(40, 540, 2, "左右移动由底座 J1 转动 + 手臂伸缩一起完成：固件的逆运动学自动计算，你只管推摇杆")
+    s.save("fig9-directions.svg")
+
+
 if __name__ == "__main__":
     fig_overview()
     fig_power()
@@ -591,3 +612,4 @@ if __name__ == "__main__":
     fig_layout()
     fig_calibration()
     fig_assembly()
+    fig_directions()
