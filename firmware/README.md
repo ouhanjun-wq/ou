@@ -3,7 +3,7 @@
 | 目录 | 作用 |
 |---|---|
 | `butterfly_fc/` | **机上飞控**：ICM-42688-P 陀螺仪增稳、扑翼同步滤波、双舵机混控、ESP-NOW 通信、USB 命令行 |
-| `ground_station/` | **遥控器 / 地面站**：摇杆 + 开关，另外提供文本指令接口（语音 / AI / 电脑都通过它控制） |
+| `ground_station/` | **地面站**：Xbox 手柄（BLE）⇢ ESP-NOW 桥接；也支持自制摇杆（`USE_XBOX=0`）；提供文本指令接口（语音 / AI / 电脑） |
 | `tests/` | 主机端单元测试（滤波器、姿态解算、飞行逻辑、通信协议），不需要硬件 |
 | `../tools/gyro_fft.py` | 采集陀螺仪数据并画频谱，调滤波器用 |
 
@@ -18,7 +18,8 @@
    `https://espressif.github.io/arduino-esp32/package_esp32_index.json`
 3. 打开 **开发板管理器**，搜索 `esp32`，安装 **esp32 by Espressif Systems 3.x**。
 4. 开发板选 **XIAO_ESP32S3**，并确认 **USB CDC On Boot = Enabled**。
-5. 分别打开 `butterfly_fc/butterfly_fc.ino` 和 `ground_station/ground_station.ino` 编译上传。**不需要安装任何第三方库。**
+5. 飞控 `butterfly_fc` **不需要第三方库**。
+6. 地面站 `ground_station` 使用 Xbox 手柄时，需要在库管理器中安装 **`XboxSeriesXControllerESP32_asukiaaa`**，它会自动安装依赖 `NimBLE-Arduino` 和 `XboxControllerNotificationParser`。如果用自制摇杆，把文件顶部改成 `#define USE_XBOX 0`，就不需要装这个库。
 
 > 两个工程各有一份 `protocol.h`，内容**必须完全一致**。CI 会自动检查这一点。
 
@@ -62,19 +63,40 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
  电池分压 ─────► D0 (GPIO1)                  5V ◄──┤◄── SS14 ◄── 降压模块 5.0 V
  左舵机信号 ◄─── D1 (GPIO2)                  GND ─── 公共地
  右舵机信号 ◄─── D2 (GPIO3)                  3V3 ──► IMU VCC (+10µF +100nF)
- IMU CS    ◄─── D3 (GPIO4)                  D10 ──► IMU SDI / MOSI
- 充电检测  ────► D6 (GPIO43)                 D9  ◄── IMU SDO / MISO
-                                             D8  ──► IMU SCLK
+ IMU CS    ◄─── D3 (GPIO4)                  D10 ──► IMU SDI / 气压计 SDA  (MOSI)
+ 气压计 CSB ◄─── D4 (GPIO5)                  D9  ◄── IMU SDO / 气压计 SDO  (MISO)
+ 充电检测  ────► D6 (GPIO43)                 D8  ──► IMU SCLK / 气压计 SCL (SCK)
                 └──────────────────────────────────────┘
 ```
 
 - XIAO 自己的 USB-C 口**只用来烧录和调试**。给电池充电走的是充电模块的 Type-C 口。
 - XIAO 的 5V 引脚可以作为电源输入，但**必须串一个二极管**：阳极接电源，阴极接 5V 引脚。这样插着 USB 调试时不会倒灌。
 - D6 的分压电阻**一定要焊上**：其中的 200 kΩ 同时充当下拉电阻。如果暂时不做充电检测，也要用一个 100 kΩ 电阻把 D6 接到 GND。否则 D6 悬空，读数会乱跳，可能导致无法解锁。
-- IMU 用 **SPI** 接法。模块上的丝印可能写成 `SCL/SCLK`、`SDA/SDI`、`SAO/SDO`、`CS`，CS 必须接上。
+- IMU 和气压计**共用一组 SPI 线**，靠各自的 CS 区分。模块上的丝印可能写成 `SCL/SCLK`、`SDA/SDI`、`SAO/SDO`、`CS/CSB`，CS 必须接上。
+- 气压计要用一小块**开孔海绵**盖住，挡住扑翼气流，否则高度读数会随扑翼节奏乱跳。
 - 如果用的是 6 V 舵机（非高压），舵机要改由 **6 V BEC** 供电，不能直接接 2S 电池。
 
-### 遥控器（XIAO ESP32S3）
+### 地面站：Xbox 手柄（默认）
+
+地面站就是一块 XIAO ESP32S3，除了供电不需要接任何线。
+
+1. 手柄固件升级到支持 BLE 的版本（在 Windows 的 “Xbox 配件” 应用里升级）。
+2. 地面站上电后，长按手柄顶部的**配对键**，直到 Xbox 标志快速闪烁；地面站会自动连接第一个找到的 Xbox 手柄。
+3. 按键功能见 [`docs/build-plan.md`](../docs/build-plan.md) 的 “飞行能力与 Xbox 手柄操控”。
+
+| 手柄 | 功能 |
+|---|---|
+| 左摇杆 ↑↓ | AUTO：爬升 / 下降（松手 = 定高）|
+| 左摇杆 ←→ | 转航向 |
+| 右摇杆 ↑↓ | 前推低头加速 / 后拉抬头减速 |
+| 右摇杆 ←→ | 压坡度转弯 |
+| RT | 油门（MANUAL / STAB / HOLD）|
+| A 长按 1 秒 / B | 解锁 / 上锁 |
+| 十字键 ↑ → ↓ ← | AUTO / HOLD / STAB / MANUAL |
+| Y / LB / RB | 掉头 180° / 左转 45° / 右转 45° |
+| View | 陀螺仪校准（上锁时）|
+
+### 地面站：自制摇杆（`USE_XBOX 0` 时）
 
 | 引脚 | 接什么 |
 |---|---|
@@ -108,14 +130,15 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 可以从 USB 串口或 D7（Serial1）输入，每条指令占一行，不区分大小写：
 
 ```
-ARM | DISARM | MODE MANUAL|STAB|HOLD | TAKEOFF | LAND | UP | DOWN | THR 0.6
+ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO | TAKEOFF | LAND | UP | DOWN | THR 0.6
 LEFT 30 | RIGHT 45 | TURN -90 | STICKS | SET rate_p_roll 0.1 | SAVE | CALIB
 TEL ON | TEL OFF | STATUS
 ```
 
-- `TAKEOFF` 会自动切到 HEADING_HOLD 模式，油门缓慢升到 0.75。
+- `TAKEOFF`：在 AUTO 模式下，会自动做起飞手势并爬升 1.5 秒，然后定高；在 HOLD 模式下，油门缓慢升到 0.75。
+- `UP` / `DOWN`：在 AUTO 模式下把目标高度改变 ±1 m；在其他模式下把油门改变 ±0.1。
 - **只要动一下摇杆，控制权立刻交回人手。**
-- 实体 ARM 开关是总开关：开关没打开时，任何文本指令都不能让蝴蝶扑翼。
+- 使用 Xbox 手柄时，按 B 随时可以上锁；使用自制摇杆时，实体 ARM 开关是总开关。
 
 ## 5. 关键参数
 
@@ -132,6 +155,10 @@ TEL ON | TEL OFF | STATUS
 | `rate_p_*` / `rate_i_*` / `rate_d_*` | 0.08 / 0.05 / 0 | 速率环 PID。单位：°（翅膀偏置）每 °/s |
 | `ang_p_roll` / `ang_p_pitch` | 3.0 | 角度环 P。单位：(°/s) 每 ° |
 | `notch_on` / `stroke_avg_on` | 1 / 1 | 扑翼同步陷波 / 整周期平均的开关 |
+| `thr_hover` | 0.65 | AUTO 定高的基准油门。设成手动平飞时的油门值 |
+| `max_climb` / `max_descent` | 1.0 / 0.7 m/s | AUTO 下摇杆推满时的最大爬升 / 下降速度 |
+| `alt_p` / `vz_p` / `vz_i` | 1.0 / 0.15 / 0.1 | 高度环 P / 爬升率环 PI |
+| `baro_lpf_hz` | 2.0 | 气压高度的低通截止频率 |
 
 ## 6. 单元测试
 
@@ -145,7 +172,8 @@ g++ -std=c++17 -O1 -Wall -Wextra -I../butterfly_fc test_core.cpp -o test_core &&
 - 滤波器：PT1 截止频率、陷波深度、整周期平均能清除所有谐波。
 - 姿态解算：Mahony 各轴符号、从加速度收敛、陀螺零偏估计。
 - **扑翼干扰下的姿态仿真**：机体摆动 ±10°、加速度计受 ±1.5 g 干扰时，平均姿态误差小于 1.5°。
-- 解锁逻辑：开机时开关已开不会解锁、油门高时拒绝解锁、失控保护、台架模式。
+- 解锁逻辑：开机时开关已开不会解锁、油门高时拒绝解锁、失控保护、台架模式、充电锁。
+- AUTO 定高：回中才能解锁、起飞手势、松杆定高、`CMD_ALT` 调整目标高度、失控保护恢复后接着定高、没有气压计时降级为 HOLD。
 - 混控：频率和幅值映射、横滚 / 偏航差动、限幅。
 - 增稳方向正确。
 - 通信协议：CRC 校验、网络 ID 过滤。
