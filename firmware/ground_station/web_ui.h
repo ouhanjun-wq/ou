@@ -52,7 +52,7 @@ img{width:100%;border-radius:8px;background:#000;display:block}.mute{color:var(-
 </div>
 <script>
 const $=id=>document.getElementById(id);
-const MODES=["MANUAL","STAB","HOLD","AUTO"],STATES=["未解锁","已解锁","失控保护"];
+const MODES=["MANUAL","STAB","HOLD","AUTO","返航"],STATES=["未解锁","已解锁","失控保护"];
 let track=[],home=null,cur=null,camUrl="",camTry=0;
 function outChina(lat,lon){return lon<72.004||lon>137.8347||lat<0.8293||lat>55.8271}
 function tLat(x,y){let r=-100+2*x+3*y+.2*y*y+.1*x*y+.2*Math.sqrt(Math.abs(x));r+=(20*Math.sin(6*x*Math.PI)+20*Math.sin(2*x*Math.PI))*2/3;r+=(20*Math.sin(y*Math.PI)+40*Math.sin(y/3*Math.PI))*2/3;r+=(160*Math.sin(y/12*Math.PI)+320*Math.sin(y*Math.PI/30))*2/3;return r}
@@ -62,7 +62,7 @@ function enu(p){const k=Math.cos(home[0]*Math.PI/180);return[(p[1]-home[1])*1113
 function chip(t,c){return '<span class="chip '+(c||"")+'">'+t+'</span>'}
 function update(d){
   let h="";
-  if(!d.ok){h+=chip("蝴蝶无信号","bad")}else{h+=chip(STATES[d.state]||"?",d.state==1?"ok":d.state==2?"bad":"");h+=chip(MODES[d.mode]||"?");h+=chip("链路 "+d.link+"/s",d.link>40?"ok":"warn");if(d.flags&2)h+=chip("低电量","bad");if(d.flags&16)h+=chip("充电中","warn")}
+  if(!d.ok){h+=chip("蝴蝶无信号","bad")}else{h+=chip(STATES[d.state]||"?",d.state==1?"ok":d.state==2?"bad":"");h+=chip(MODES[d.mode]||"?");h+=chip("链路 "+d.link+"/s",d.link>40?"ok":"warn");if(d.flags&2)h+=chip("低电量","bad");if(d.flags&16)h+=chip("充电中","warn");if(d.flags&64)h+=chip("返航中","warn")}
   h+=chip(d.xbox?"手柄已连接":"手柄未连接",d.xbox?"ok":"warn");h+=chip(d.fix?"GPS 已定位":"GPS 未定位",d.fix?"ok":"warn");
   $("chips").innerHTML=h;
   $("alt").textContent=d.ok?d.alt.toFixed(1):"—";$("vbat").textContent=d.ok?d.vbat.toFixed(2):"—";

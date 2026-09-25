@@ -24,6 +24,7 @@ enum FlightMode : uint8_t {
   MODE_STABILIZE    = 1,  // sticks = target angle, self-levelling
   MODE_HEADING_HOLD = 2,  // stabilize + hold heading when yaw stick centred
   MODE_AUTO         = 3,  // heading hold + altitude hold; throttle = climb rate (0.5 = hold)
+  MODE_RTH          = 4,  // return to home (GPS), then circle above home; throttle as in AUTO
 };
 
 enum Command : uint8_t {
@@ -42,6 +43,8 @@ enum StatusFlag : uint8_t {
   FLAG_BENCH       = 1 << 3,  // USB bench mode active
   FLAG_CHARGING    = 1 << 4,  // Type-C charger connected (arming locked)
   FLAG_GPS_FIX     = 1 << 5,  // GPS position valid (fresh, quality > 0)
+  FLAG_RTH         = 1 << 6,  // returning home (commanded or failsafe)
+  FLAG_HOME_SET    = 1 << 7,  // butterfly has a home position
 };
 
 struct __attribute__((packed)) Header {

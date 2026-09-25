@@ -96,6 +96,7 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 | A 长按 1 秒 / B | 解锁 / 上锁 |
 | 十字键 ↑ → ↓ ← | AUTO / HOLD / STAB / MANUAL |
 | Y / LB / RB | 掉头 180° / 左转 45° / 右转 45° |
+| X | 自动返航（需要 GPS），动一下摇杆取消 |
 | View | 陀螺仪校准（上锁时）|
 
 ### 地面站：自制摇杆（`USE_XBOX 0` 时）
@@ -129,7 +130,7 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 | `servo <L度> <R度>` / `servo off` | 舵机测试（仅限未解锁时） |
 | `bench <油门0..1> [模式0/1/2]` | 台架扑翼：不用遥控器也能解锁。120 秒后自动关闭 |
 | `bench stick <roll> <pitch> <yaw>` / `bench off` | 台架模式下模拟打杆 / 退出台架模式 |
-| `gps` | GPS 状态：波特率、卫星数、是否定位、坐标 |
+| `gps` | GPS 状态：波特率、卫星数、是否定位、坐标、家的距离、北向对准、返航状态 |
 | `log att` / `log fft` / `log raw` / `log off` | 输出 CSV 日志：姿态 50 Hz / 滤波前后陀螺 200 Hz / 原始陀螺 1 kHz |
 
 ## 4. 遥控器文本指令（语音 / AI 接口）
@@ -137,7 +138,7 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 可以从 USB 串口或 D7（Serial1）输入，每条指令占一行，不区分大小写：
 
 ```
-ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO | TAKEOFF | LAND | UP | DOWN | THR 0.6
+ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO|RTH | RTH | TAKEOFF | LAND | UP | DOWN | THR 0.6
 LEFT 30 | RIGHT 45 | TURN -90 | STICKS | SET rate_p_roll 0.1 | SAVE | CALIB
 TEL ON | TEL OFF | STATUS
 ```
@@ -166,6 +167,8 @@ TEL ON | TEL OFF | STATUS
 | `max_climb` / `max_descent` | 1.0 / 0.7 m/s | AUTO 下摇杆推满时的最大爬升 / 下降速度 |
 | `alt_p` / `vz_p` / `vz_i` | 1.0 / 0.15 / 0.1 | 高度环 P / 爬升率环 PI |
 | `baro_lpf_hz` | 2.0 | 气压高度的低通截止频率 |
+| `rth_enable` / `rth_radius` / `rth_max_s` | 1 / 15 m / 60 s | 失控自动返航开关 / 到家半径 / 最长返航时间 |
+| `rth_thr` / `rth_loiter` | 0.7 / 0.25 | 没有气压计时的返航油门 / 在家上空绕圈的转弯强度 |
 
 ## 6. 单元测试
 
@@ -184,4 +187,5 @@ g++ -std=c++17 -O1 -Wall -Wextra -I../butterfly_fc test_core.cpp -o test_core &&
 - 混控：频率和幅值映射、横滚 / 偏航差动、限幅。
 - 增稳方向正确。
 - 通信协议：CRC 校验、网络 ID 过滤。
+- 自动返航：家的方位计算、北向对准学习、失控返航方向正确、到家后滑翔、超时放弃、没有 GPS 或电量低时不返航、X 键返航后在家上空绕圈、没有对准时不返航。
 - GPS：NMEA 标准例句解析、南纬 / 西经、RMC 地速和航向、校验失败拒收、无定位、乱码输入。

@@ -426,6 +426,85 @@ static void testAutoMode() {
   CHECK(o.mode == proto::MODE_HEADING_HOLD, "no-baro fallback mode %d", o.mode);
 }
 
+static void testReturnToHome() {
+  Params p;
+  paramsDefaults(p);
+  const float dt = 0.005f;
+  CHECK(fabsf(bearingToHome(50, 0) - 180) < 0.01f || fabsf(bearingToHome(50, 0) + 180) < 0.01f,
+        "home due south: %.1f", bearingToHome(50, 0));
+  CHECK(fabsf(bearingToHome(0, -30) - 90) < 0.01f, "home due east: %.1f", bearingToHome(0, -30));
+
+  auto flyingCore = [&](FlightCore& fc, FlightSensors& s) {
+    fc.reinit(p, 200);
+    fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+    fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+    // Straight flight: gyro yaw 10 deg while GPS course is 100 deg -> offset 90 deg.
+    s.gpsCourse = 100; s.yaw = 10; s.gpsSpeed = 3;
+    for (int i = 0; i < 1000; ++i) fc.step(sticks(0.7f, 0, 0, 0, proto::MODE_STABILIZE, true), s, p, dt);
+  };
+
+  FlightSensors s;
+  s.imuOk = true; s.baroOk = true; s.gpsOk = true; s.homeSet = true; s.alt = 5;
+  FlightCore fc;
+  flyingCore(fc, s);
+  CHECK(fc.northValid() && fabsf(fc.northOffset() - 90) < 1.0f, "north offset %.1f valid %d",
+        fc.northOffset(), fc.northValid());
+
+  // Link lost 50 m north of home: RTH in AUTO, still flapping, target yaw = 180 - 90 = 90.
+  s.north = 50; s.east = 0; s.yaw = 0;
+  FlightInputs lost = sticks(0.7f, 0, 0, 0, proto::MODE_STABILIZE, true);
+  lost.linkOk = false;
+  FlightOutput o = fc.step(lost, s, p, dt);
+  CHECK(o.state == proto::ST_FAILSAFE && o.rth && o.mode == proto::MODE_AUTO && o.flapHz > 0,
+        "failsafe RTH: state %d rth %d mode %d f %.2f", o.state, o.rth, o.mode, o.flapHz);
+  CHECK(o.uy > 0, "RTH should turn right towards yaw 90, uy = %.3f", o.uy);
+
+  // Arrived inside the radius: failsafe glides down (no flapping).
+  s.north = 5;
+  o = fc.step(lost, s, p, dt);
+  CHECK(!o.rth && o.flapHz == 0, "inside radius should glide: rth %d f %.2f", o.rth, o.flapHz);
+
+  // Give up after rth_max_s.
+  s.north = 80;
+  for (int i = 0; i < (int)(p.rth_max_s / dt) + 10; ++i) o = fc.step(lost, s, p, dt);
+  CHECK(!o.rth && o.flapHz == 0, "RTH should time out, rth %d", o.rth);
+
+  // No GPS or low battery: plain glide.
+  FlightCore fc2;
+  FlightSensors s2 = s;
+  flyingCore(fc2, s2);
+  s2.north = 50; s2.gpsOk = false;
+  o = fc2.step(lost, s2, p, dt);
+  CHECK(!o.rth && o.flapHz == 0, "no GPS should glide");
+  s2.gpsOk = true;
+  FlightInputs lostLow = lost;
+  lostLow.lowBatt = true;
+  o = fc2.step(lostLow, s2, p, dt);
+  CHECK(!o.rth && o.flapHz == 0, "low battery should glide");
+
+  // Commanded RTH (link OK): flies home; close to home it circles instead of gliding.
+  FlightCore fc3;
+  FlightSensors s3 = s;
+  flyingCore(fc3, s3);
+  s3.north = 40; s3.east = 0;
+  o = fc3.step(sticks(0.5f, 0, 0, 0, proto::MODE_RTH, true), s3, p, dt);
+  CHECK(o.rth && o.state == proto::ST_ARMED && o.flapHz > 0, "commanded RTH");
+  s3.north = 3;
+  o = fc3.step(sticks(0.5f, 0, 0, 0, proto::MODE_RTH, true), s3, p, dt);
+  CHECK(o.rth && o.flapHz > 0, "commanded RTH should loiter near home");
+
+  // Without north alignment (never flew straight with GPS) RTH is not attempted.
+  FlightCore fc4;
+  FlightSensors s4;
+  s4.imuOk = true; s4.baroOk = true; s4.gpsOk = true; s4.homeSet = true; s4.north = 50;
+  fc4.reinit(p, 200);
+  fc4.step(sticks(0, 0, 0, 0, 0, false), s4, p, dt);
+  fc4.step(sticks(0, 0, 0, 0, 0, true), s4, p, dt);
+  fc4.step(sticks(0.7f, 0, 0, 0, proto::MODE_STABILIZE, true), s4, p, dt);
+  o = fc4.step(lost, s4, p, dt);
+  CHECK(!o.rth, "RTH without north alignment");
+}
+
 static void feedLine(NmeaParser& g, const char* body, bool goodChecksum = true) {
   uint8_t sum = 0;
   for (const char* p = body; *p; ++p) sum ^= (uint8_t)*p;
@@ -495,6 +574,7 @@ int main() {
   testStabilizeDirection();
   testAutoMode();
   testGps();
+  testReturnToHome();
   testProtocol();
   if (failures == 0) printf("all tests passed\n");
   return failures == 0 ? 0 : 1;

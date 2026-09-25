@@ -24,6 +24,7 @@ uint32_t gLastRadioMs = 0;
 volatile uint32_t gRadioPktCount = 0;
 float gPendingTurn = 0;
 float gPendingAlt = 0;
+GpsNav gGpsNav;
 volatile bool gCalibRequest = false;
 volatile bool gSaveRequest = false;
 Snapshot gSnap;
@@ -86,6 +87,36 @@ static void gpsPoll() {
     gpsTryStart = now;
     gpsSentencesAtTry = gps.sentences();
   }
+}
+
+// Home = position when the butterfly arms (or the first fix while armed). Publishes
+// position relative to home for the control task.
+static double homeLat = 0, homeLon = 0;
+static bool homeSet = false;
+
+static void navUpdate(uint8_t state) {
+  static uint8_t prevState = proto::ST_DISARMED;
+  const bool fresh = gpsFresh();
+  const GpsFix& g = gps.fix();
+  const bool armed = state != proto::ST_DISARMED;
+  if (fresh && armed && (prevState == proto::ST_DISARMED || !homeSet)) {
+    homeLat = g.lat;
+    homeLon = g.lon;
+    homeSet = true;
+  }
+  prevState = state;
+  GpsNav n;
+  n.ok = fresh;
+  n.homeSet = homeSet;
+  if (fresh && homeSet) {
+    n.north = (float)((g.lat - homeLat) * 111320.0);
+    n.east = (float)((g.lon - homeLon) * 111320.0 * cos(homeLat * 0.017453292519943));
+  }
+  n.course = g.course;
+  n.speed = g.speed;
+  portENTER_CRITICAL(&gMux);
+  gGpsNav = n;
+  portEXIT_CRITICAL(&gMux);
 }
 
 // ---------------- control-task objects ----------------
@@ -262,6 +293,15 @@ static void controlTask(void*) {
     s.alt = alt;
     s.vz = vz;
     s.baroOk = baroOk;
+    portENTER_CRITICAL(&gMux);
+    const GpsNav nav = gGpsNav;
+    portEXIT_CRITICAL(&gMux);
+    s.gpsOk = nav.ok;
+    s.homeSet = nav.homeSet;
+    s.north = nav.north;
+    s.east = nav.east;
+    s.gpsCourse = nav.course;
+    s.gpsSpeed = nav.speed;
 
     // ---- inputs: radio or USB bench ----
     FlightInputs in;
@@ -285,6 +325,8 @@ static void controlTask(void*) {
       chgCount = 0;
     }
     in.charging = charging;
+    const float vb = gVbat;
+    in.lowBatt = vb > 1.0f && vb < P.vcell_warn * P.cells;
     if (bench.active) {
       in.bench = true;
       in.thr = bench.thr;
@@ -317,6 +359,7 @@ static void controlTask(void*) {
     gSnap.out = out;
     gSnap.imuPresent = imuPresent;
     gSnap.imuOk = imuOk;
+    gSnap.northValid = core.northValid();
     gSnap.imuErrors = imu.errors();
     gSnap.loopMaxUs = loopMaxUs;
     portEXIT_CRITICAL(&gMux);
@@ -380,6 +423,10 @@ void loop() {
   cliPoll();
   cliDrainLog();
   gpsPoll();
+  portENTER_CRITICAL(&gMux);
+  const uint8_t stateNow = gSnap.out.state;
+  portEXIT_CRITICAL(&gMux);
+  navUpdate(stateNow);
 
   if (now - lastVbat >= 100) {
     lastVbat = now;
@@ -432,6 +479,8 @@ void loop() {
     t.sats = g.sats;
     t.hdop_d = (uint8_t)constrain(g.hdop * 10.0f, 0.0f, 255.0f);
     if (fixOk) t.flags |= proto::FLAG_GPS_FIX;
+    if (s.out.rth) t.flags |= proto::FLAG_RTH;
+    if (homeSet) t.flags |= proto::FLAG_HOME_SET;
     linkSendTelemetry(t);
   }
 

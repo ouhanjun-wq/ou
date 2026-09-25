@@ -15,6 +15,7 @@ struct Snapshot {
   FlightInputs in;
   FlightOutput out;
   bool imuPresent = false, imuOk = false;
+  bool northValid = false;     // gyro heading aligned to GPS north (needed for RTH)
   uint32_t imuErrors = 0;
   uint32_t loopMaxUs = 0;
 };
@@ -60,6 +61,14 @@ extern volatile uint8_t gLogMode;
 bool logPush(const LogRec& r);
 bool logPop(LogRec& r);
 extern volatile uint32_t gLogDropped;
+
+// GPS navigation state published by loop() for the control task
+struct GpsNav {
+  bool ok = false, homeSet = false;
+  float north = 0, east = 0;   // m from home
+  float course = 0, speed = 0; // deg true, m/s
+};
+extern GpsNav gGpsNav;
 
 // GPS (owned by loop(), see butterfly_fc.ino)
 struct GpsFix;

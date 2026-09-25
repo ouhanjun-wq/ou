@@ -10,10 +10,11 @@
 //   A (hold 1 s) arm       B disarm
 //   D-pad  up AUTO | right HOLD | down STAB | left MANUAL
 //   Y  U-turn 180 deg      LB / RB  turn 45 deg left / right (HOLD, AUTO)
+//   X  return to home (GPS); any stick or D-pad takes back control
 //   View  gyro calibration (disarmed)
 //
 // Text commands (voice / AI / PC) on USB Serial and Serial1 RX (D7), one per line:
-//   ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO | TAKEOFF | LAND | UP | DOWN | THR <0..1>
+//   ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO|RTH | RTH | TAKEOFF | LAND | UP | DOWN | THR <0..1>
 //   LEFT [deg] | RIGHT [deg] | TURN <deg> | STICKS | SET <param> <value> | SAVE | CALIB
 //   TEL ON|OFF | STATUS
 // Moving a stick takes control back from text commands immediately (human override).
@@ -165,6 +166,7 @@ static const char* modeName(int m) {
     case proto::MODE_STABILIZE: return "STAB";
     case proto::MODE_HEADING_HOLD: return "HOLD";
     case proto::MODE_AUTO: return "AUTO";
+    case proto::MODE_RTH: return "RTH";
     default: return "?";
   }
 }
@@ -194,12 +196,12 @@ static void readPilot(Pilot& p) {
 }
 
 static void handleButtons(const Pilot& p) {
-  static bool prev[10] = {false};
+  static bool prev[11] = {false};
   static uint32_t aSince = 0;
   const auto& n = xbox.xboxNotif;
-  const bool now[10] = {(bool)n.btnA, (bool)n.btnB, (bool)n.btnY, (bool)n.btnLB, (bool)n.btnRB,
+  const bool now[11] = {(bool)n.btnA, (bool)n.btnB, (bool)n.btnY, (bool)n.btnLB, (bool)n.btnRB,
                         (bool)n.btnDirUp, (bool)n.btnDirRight, (bool)n.btnDirDown,
-                        (bool)n.btnDirLeft, (bool)n.btnSelect};
+                        (bool)n.btnDirLeft, (bool)n.btnSelect, (bool)n.btnX};
   auto pressed = [&](int i) { return now[i] && !prev[i]; };
 
   // A held for 1 s arms, only with the throttle channel in its safe position.
@@ -208,7 +210,8 @@ static void handleButtons(const Pilot& p) {
     if (aSince == 0) { aSince = millis(); armHandled = false; }
     if (!armed && !armHandled && millis() - aSince >= ARM_HOLD_MS) {
       armHandled = true;
-      const bool thrSafe = mode == proto::MODE_AUTO ? p.climb == 0 : p.thr == 0;
+      const bool centred = mode == proto::MODE_AUTO || mode == proto::MODE_RTH;
+      const bool thrSafe = centred ? p.climb == 0 : p.thr == 0;
       if (thrSafe) armed = true;
       Serial.println(thrSafe ? "ARMED (Xbox A)"
                      : mode == proto::MODE_AUTO ? "arm refused: centre the left stick" : "arm refused: release RT");
@@ -230,6 +233,13 @@ static void handleButtons(const Pilot& p) {
     }
   }
   if (pressed(9) && !armed) { sendCommand(proto::CMD_CALIB_GYRO, 0); Serial.println("gyro calibration sent"); }
+  if (pressed(10)) { mode = proto::MODE_RTH; source = SRC_STICKS; Serial.println("RETURN TO HOME (X)"); }
+  // Any real stick input during RTH hands control back in AUTO.
+  if (mode == proto::MODE_RTH && (fabsf(p.roll) > OVERRIDE || fabsf(p.pitch) > OVERRIDE ||
+                                  fabsf(p.yaw) > OVERRIDE || fabsf(p.climb) > OVERRIDE)) {
+    mode = proto::MODE_AUTO;
+    Serial.println("RTH cancelled by stick: AUTO");
+  }
   memcpy(prev, now, sizeof(prev));
 }
 
@@ -392,8 +402,9 @@ static void printStatus() {
                   t.alt_cm / 100.0f, t.vz_cms / 100.0f, t.vbat_mv / 1000.0f, t.flap_dhz / 10.0f,
                   t.link_pps, t.flags, (t.flags & proto::FLAG_CHARGING) ? " CHARGING (arming locked)" : "");
     if (t.flags & proto::FLAG_GPS_FIX)
-      Serial.printf("GPS: %.7f, %.7f | %u sats | %.1f m/s | home %s\n", t.lat_e7 / 1e7, t.lon_e7 / 1e7, t.sats,
-                    t.gspeed_cms / 100.0f, homeSet ? "set" : "not set");
+      Serial.printf("GPS: %.7f, %.7f | %u sats | %.1f m/s | home %s%s\n", t.lat_e7 / 1e7, t.lon_e7 / 1e7, t.sats,
+                    t.gspeed_cms / 100.0f, homeSet ? "set" : "not set",
+                    (t.flags & proto::FLAG_RTH) ? " | RETURNING HOME" : "");
     else
       Serial.printf("GPS: no fix (%u sats)\n", t.sats);
   }
@@ -428,8 +439,13 @@ static void handleLine(char* line) {
     else if (!strcmp(m, "STAB")) mode = proto::MODE_STABILIZE;
     else if (!strcmp(m, "HOLD")) mode = proto::MODE_HEADING_HOLD;
     else if (!strcmp(m, "AUTO")) mode = proto::MODE_AUTO;
-    else { Serial.println("MODE MANUAL|STAB|HOLD|AUTO"); return; }
+    else if (!strcmp(m, "RTH")) mode = proto::MODE_RTH;
+    else { Serial.println("MODE MANUAL|STAB|HOLD|AUTO|RTH"); return; }
     Serial.printf("mode %s\n", m);
+  } else if (!strcmp(cmd, "RTH") || !strcmp(cmd, "HOME")) {
+    mode = proto::MODE_RTH;
+    source = SRC_STICKS;
+    Serial.println("RETURN TO HOME (needs GPS fix, home and straight flight for north alignment)");
   } else if (!strcmp(cmd, "TAKEOFF")) {
     takeTextControl(p);
     if (mode == proto::MODE_MANUAL || mode == proto::MODE_STABILIZE) mode = proto::MODE_AUTO;
@@ -488,7 +504,7 @@ static void handleLine(char* line) {
   } else if (!strcmp(cmd, "STATUS")) {
     printStatus();
   } else {
-    Serial.println("? ARM DISARM MODE TAKEOFF LAND UP DOWN THR LEFT RIGHT TURN STICKS SET SAVE CALIB TEL STATUS");
+    Serial.println("? ARM DISARM MODE RTH TAKEOFF LAND UP DOWN THR LEFT RIGHT TURN STICKS SET SAVE CALIB TEL STATUS");
   }
 }
 
@@ -570,9 +586,9 @@ void loop() {
       const float step = THR_SLEW * dt;
       vThr += constrain(vThrTarget - vThr, -step, step);
       if (now > textClimbUntil) textClimb = 0;
-      thr = mode == proto::MODE_AUTO ? 0.5f + 0.5f * textClimb : vThr;
+      thr = mode == proto::MODE_AUTO || mode == proto::MODE_RTH ? 0.5f + 0.5f * textClimb : vThr;
     } else {
-      thr = mode == proto::MODE_AUTO ? 0.5f + 0.5f * p.climb : p.thr;
+      thr = mode == proto::MODE_AUTO || mode == proto::MODE_RTH ? 0.5f + 0.5f * p.climb : p.thr;
     }
 
     // No pilot device (e.g. Xbox out of range) and no text control: stop sending,

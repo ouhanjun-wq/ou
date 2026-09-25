@@ -4,7 +4,7 @@
 #pragma once
 #include <stddef.h>
 
-constexpr unsigned PARAMS_VERSION = 2;
+constexpr unsigned PARAMS_VERSION = 3;
 
 struct Params {
   // ---- flapping waveform ----
@@ -54,6 +54,13 @@ struct Params {
   float vz_p, vz_i;            // throttle per (m/s) of climb-rate error
   float baro_lpf_hz;           // altitude smoothing after stroke averaging
 
+  // ---- return to home (GPS) ----
+  float rth_enable;            // 1 = fly home on link loss (needs GPS fix, home, compass alignment)
+  float rth_radius;            // m: inside this, failsafe glides down; commanded RTH circles
+  float rth_max_s;             // s: failsafe RTH gives up and glides after this long
+  float rth_thr;               // throttle used for RTH when there is no barometer
+  float rth_loiter;            // yaw-stick fraction used to circle above home
+
   // ---- safety / misc ----
   float fs_timeout_ms;         // link loss -> failsafe (glide + level)
   float cells;                 // LiPo cell count
@@ -91,6 +98,8 @@ inline void paramsDefaults(Params& p) {
 
   p.thr_hover = 0.65f; p.max_climb = 1.0f; p.max_descent = 0.7f;
   p.alt_p = 1.0f; p.vz_p = 0.15f; p.vz_i = 0.1f; p.baro_lpf_hz = 2.0f;
+
+  p.rth_enable = 1.0f; p.rth_radius = 15.0f; p.rth_max_s = 60.0f; p.rth_thr = 0.7f; p.rth_loiter = 0.25f;
 
   p.fs_timeout_ms = 500.0f;
   p.cells = 2.0f; p.vbat_ratio = 3.0f; p.vcell_warn = 3.5f;

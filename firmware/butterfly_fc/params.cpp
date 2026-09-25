@@ -33,6 +33,8 @@ static const ParamInfo kTable[] = {
   PARAM(thr_hover, 0.1f, 1.0f),    PARAM(max_climb, 0.1f, 3.0f),  PARAM(max_descent, 0.1f, 3.0f),
   PARAM(alt_p, 0.0f, 5.0f),        PARAM(vz_p, 0.0f, 1.0f),       PARAM(vz_i, 0.0f, 1.0f),
   PARAM(baro_lpf_hz, 0.1f, 10.0f),
+  PARAM(rth_enable, 0.0f, 1.0f),   PARAM(rth_radius, 3.0f, 200.0f), PARAM(rth_max_s, 5.0f, 600.0f),
+  PARAM(rth_thr, 0.2f, 1.0f),      PARAM(rth_loiter, 0.0f, 1.0f),
   PARAM(fs_timeout_ms, 100.0f, 5000.0f),
   PARAM(cells, 1.0f, 3.0f),        PARAM(vbat_ratio, 1.0f, 10.0f), PARAM(vcell_warn, 3.0f, 4.0f),
   PARAM(net_id, 0.0f, 255.0f),

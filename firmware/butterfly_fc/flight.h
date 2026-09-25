@@ -49,6 +49,7 @@ struct FlightInputs {
   bool charging = false;          // Type-C charger plugged in: never arm
   float turnDeg = 0;              // pending CMD_TURN (consumed by step)
   float altDelta = 0;             // pending CMD_ALT in metres (consumed by step)
+  bool lowBatt = false;           // battery below warning level: no RTH, just glide down
 };
 
 // AUTO mode reads the throttle channel as a centred climb command:
@@ -66,7 +67,15 @@ struct FlightSensors {
   bool imuOk = false;
   float alt = 0, vz = 0;            // stroke-averaged baro altitude (m), climb rate (m/s, up +)
   bool baroOk = false;
+  bool gpsOk = false, homeSet = false;
+  float north = 0, east = 0;        // position relative to home (m)
+  float gpsCourse = 0, gpsSpeed = 0;  // course over ground (deg true), ground speed (m/s)
 };
+
+// Bearing (deg true, 0 = north, clockwise) from the current position to home.
+inline float bearingToHome(float north, float east) {
+  return atan2f(-east, -north) * 57.29577951f;
+}
 
 struct FlightOutput {
   float wingL = 0, wingR = 0;     // wing angles (deg, + = up), before servo mapping
@@ -77,6 +86,7 @@ struct FlightOutput {
   uint8_t state = proto::ST_DISARMED;
   uint8_t mode = proto::MODE_MANUAL;
   bool armBlocked = false;
+  bool rth = false;               // flying home or circling above it
 };
 
 class FlightCore {
@@ -89,16 +99,35 @@ class FlightCore {
     FlightOutput o;
     FlightInputs in = inRaw;
     updateState(in, p);
+    const bool armed = state_ != proto::ST_DISARMED;
+    learnNorth(s, armed, dt);
 
-    if (state_ == proto::ST_FAILSAFE) {       // glide and level until the link returns
+    // ---- failsafe and return-to-home ----
+    fsTime_ = state_ == proto::ST_FAILSAFE ? fsTime_ + dt : 0.0f;
+    const bool rthWanted = armed && (state_ == proto::ST_FAILSAFE || in.mode == proto::MODE_RTH);
+    if (state_ == proto::ST_FAILSAFE) {       // default: glide and level until the link returns
       in.thr = 0; in.roll = in.pitch = in.yaw = 0;
       in.mode = proto::MODE_STABILIZE;
     }
+    bool rth = false, headHome = false;
+    if (rthWanted && p.rth_enable > 0.5f && s.imuOk && s.gpsOk && s.homeSet && northValid_ &&
+        !in.lowBatt && (state_ != proto::ST_FAILSAFE || fsTime_ < p.rth_max_s)) {
+      const bool far = sqrtf(s.north * s.north + s.east * s.east) > p.rth_radius;
+      if (far || state_ != proto::ST_FAILSAFE) {
+        rth = true;
+        headHome = far;
+        in.roll = in.pitch = 0;
+        in.turnDeg = 0;
+        in.yaw = far ? 0.0f : p.rth_loiter;           // close to home: circle (commanded RTH only)
+        in.mode = s.baroOk ? proto::MODE_AUTO : proto::MODE_HEADING_HOLD;
+        in.thr = s.baroOk ? 0.5f : p.rth_thr;         // AUTO: hold altitude
+      }
+    }
+    if (in.mode == proto::MODE_RTH) in.mode = proto::MODE_AUTO;  // RTH not possible: behave like AUTO
+
     uint8_t mode = s.imuOk ? in.mode : (uint8_t)proto::MODE_MANUAL;
     if (mode > proto::MODE_AUTO) mode = proto::MODE_MANUAL;
     if (mode == proto::MODE_AUTO && !s.baroOk) mode = proto::MODE_HEADING_HOLD;  // no altitude sensor
-
-    const bool armed = state_ != proto::ST_DISARMED;
 
     // ---- altitude hold (AUTO) ----
     float thr = in.thr;
@@ -145,6 +174,10 @@ class FlightCore {
 
       float rSp;
       const bool holdHeading = mode == proto::MODE_HEADING_HOLD || mode == proto::MODE_AUTO;
+      if (headHome) {
+        // Home bearing is true north; the gyro heading has its own zero, aligned by learnNorth().
+        headingTarget_ = wrap180(bearingToHome(s.north, s.east) - northOffset_);
+      }
       if (holdHeading && fabsf(in.yaw) < 0.05f) {
         headingTarget_ = wrap180(headingTarget_ + in.turnDeg);
         rSp = clampf(p.head_p * wrap180(headingTarget_ - s.yaw), -p.max_yaw_rate, p.max_yaw_rate);
@@ -169,6 +202,7 @@ class FlightCore {
     lastFlapHz_ = f;
     o.state = state_;
     o.mode = mode;
+    o.rth = rth;
     o.armBlocked = armBlocked_;
     return o;
   }
@@ -209,8 +243,8 @@ class FlightCore {
       state_ = proto::ST_ARMED;   // pilot regains control
     } else if (state_ == proto::ST_DISARMED) {
       // Throttle must be "safe": low in normal modes, centred (= hold) in AUTO.
-      const bool thrSafe = in.mode == proto::MODE_AUTO ? fabsf(in.thr - 0.5f) < 0.1f
-                                                       : in.thr <= p.thr_idle + 0.02f;
+      const bool centred = in.mode == proto::MODE_AUTO || in.mode == proto::MODE_RTH;
+      const bool thrSafe = centred ? fabsf(in.thr - 0.5f) < 0.1f : in.thr <= p.thr_idle + 0.02f;
       if (!prevArmReq_ && thrSafe) state_ = proto::ST_ARMED;
       else armBlocked_ = true;    // switch was already on, or throttle not low
     }
@@ -243,6 +277,23 @@ class FlightCore {
     return clampf(p.thr_hover + p.vz_p * e + vzI_, p.thr_idle + 0.05f, 1.0f);
   }
 
+  // The yaw estimate is gyro-integrated with an arbitrary zero. While flying straight with a
+  // GPS course, learn the offset between the two (circular low-pass, ~3 s) so a true bearing
+  // to home can be turned into a yaw target.
+  void learnNorth(const FlightSensors& s, bool armed, float dt) {
+    if (!armed || !s.gpsOk || s.gpsSpeed < 1.5f || fabsf(s.r) > 30.0f) return;
+    const float meas = wrap180(s.gpsCourse - s.yaw);
+    if (northSamples_ == 0) northOffset_ = meas;
+    northOffset_ = wrap180(northOffset_ + clampf(dt / 3.0f, 0.0f, 1.0f) * wrap180(meas - northOffset_));
+    if (northSamples_ < 1000000) ++northSamples_;
+    northValid_ = northSamples_ * dt > 2.0f;         // about 2 s of straight flight
+  }
+
+ public:
+  float northOffset() const { return northOffset_; }
+  bool northValid() const { return northValid_; }
+
+ private:
   void resetControllers(const FlightSensors& s) {
     pidR_.reset(); pidP_.reset(); pidY_.reset();
     headingTarget_ = s.yaw;
@@ -267,6 +318,9 @@ class FlightCore {
   float altTarget_ = 0, vzI_ = 0, lastFlapHz_ = 0;
   bool autoEngaged_ = false;
   uint8_t lastMode_ = 0xFF;
+  float fsTime_ = 0, northOffset_ = 0;
+  uint32_t northSamples_ = 0;
+  bool northValid_ = false;
   float phase_ = 0;
   uint8_t state_ = proto::ST_DISARMED;
   bool prevArmReq_ = false;

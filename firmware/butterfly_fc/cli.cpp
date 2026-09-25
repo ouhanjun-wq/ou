@@ -12,6 +12,7 @@ static const char* modeName(uint8_t m) {
     case proto::MODE_STABILIZE: return "STABILIZE";
     case proto::MODE_HEADING_HOLD: return "HEADING_HOLD";
     case proto::MODE_AUTO: return "AUTO";
+    case proto::MODE_RTH: return "RTH";
     default: return "?";
   }
 }
@@ -52,6 +53,7 @@ static void printStatus() {
                 stateName(s.out.state), modeName(s.out.mode),
                 s.imuPresent ? (s.imuOk ? "OK" : "FAULT") : "MISSING",
                 (unsigned long)s.imuErrors, gVbat, s.in.charging ? " | CHARGING (arming locked)" : "");
+  if (s.out.rth) Serial.println("RETURNING HOME");
   Serial.printf("link %s | thr %.2f roll %.2f pitch %.2f yaw %.2f | armReq %d%s | flap %.2f Hz\n",
                 s.in.linkOk ? "OK" : "LOST", s.in.thr, s.in.roll, s.in.pitch, s.in.yaw,
                 s.in.armReq, s.out.armBlocked ? " (BLOCKED: flip arm switch off, throttle low)" : "",
@@ -106,6 +108,14 @@ static void handle(char* line) {
       if (gpsFresh())
         Serial.printf("lat %.7f lon %.7f alt %.1f m | speed %.1f m/s course %.0f deg\n",
                       g.lat, g.lon, g.altMsl, g.speed, g.course);
+      portENTER_CRITICAL(&gMux);
+      const GpsNav n = gGpsNav;
+      portEXIT_CRITICAL(&gMux);
+      const Snapshot s = snap();
+      Serial.printf("home %s | distance %.0f m | north aligned %s | RTH %s (rth_enable %.0f)\n",
+                    n.homeSet ? "set" : "not set (set when arming with a fix)",
+                    sqrtf(n.north * n.north + n.east * n.east), s.northValid ? "yes" : "no (fly straight > 1.5 m/s)",
+                    s.out.rth ? "ACTIVE" : "idle", P.rth_enable);
     }
   } else if (!strcmp(cmd, "calib")) {
     if (!isDisarmed()) { Serial.println("refused: disarm first"); return; }
