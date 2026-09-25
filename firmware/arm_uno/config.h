@@ -19,11 +19,6 @@ const uint32_t LOOP_US = 20000;         // control loop 50 Hz
 #define SETUP_MODE 0
 #endif
 
-#ifndef PAD_XBOXONE
-#define PAD_XBOXONE 0   // 0: G7 Pro in XInput mode (Xbox 360 protocol) - default
-                        // 1: G7 Pro in GIP mode (Xbox One protocol), see firmware/README.md
-#endif
-
 // EEPROM (1 KB): parameters at 0, waypoints from 256 (count byte, then 6 x int16 each).
 const int EE_PARAMS = 0;
 const int EE_WAYPOINTS = 256;

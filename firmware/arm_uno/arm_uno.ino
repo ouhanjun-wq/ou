@@ -3,6 +3,7 @@
 //
 // Board: Arduino Uno R3. Library: "USB Host Shield Library 2.0" (Library Manager).
 // G7 Pro: USB cable (or its 2.4G receiver) into the shield's USB-A port, PC / XInput mode.
+// Not detected? The library only accepts known USB IDs: see firmware/README.md ("VID / PID").
 //
 // Gamepad (Xbox layout)            JOINT mode              XYZ mode (straight lines)
 //   Left stick  left / right       J1 base                 tool left / right
@@ -23,11 +24,7 @@
 
 #include "config.h"
 #if !SETUP_MODE
-#if PAD_XBOXONE
-#include <XBOXONE.h>
-#else
 #include <XBOXUSB.h>
-#endif
 #endif
 #define ARM_SETUP_COMMANDS SETUP_MODE
 
@@ -37,22 +34,10 @@
 #define PAD_CONNECTED false
 #else
 USB Usb;
-#if PAD_XBOXONE
-XBOXONE Pad(&Usb);
-#define PAD_CONNECTED (Pad.XboxOneConnected)
-#define TRIG_MAX 1023.0f
-#define BTN_VIEW VIEW
-#define BTN_MENU MENU
-#define RUMBLE(v) Pad.setRumbleOn(0, 0, (v), (v))
-#else
-XBOXUSB Pad(&Usb);
+XBOXUSB Pad(&Usb);   // XInput (Xbox 360 protocol); the G7 Pro's View = BACK, Menu = START
 #define PAD_CONNECTED (Pad.Xbox360Connected)
-#define TRIG_MAX 255.0f
-#define BTN_VIEW BACK
-#define BTN_MENU START
 #define RUMBLE(v) Pad.setRumbleOn((v), (v))
 #endif
-#endif  // SETUP_MODE
 
 // Replies go straight to Serial, piece by piece (no printf: saves flash).
 class SerialOut : public arm::Out {
@@ -135,10 +120,10 @@ static arm::PadInput readPad() {
   in.ly = Pad.getAnalogHat(LeftHatY) / 32768.0f;    // XInput: stick up = positive
   in.rx = Pad.getAnalogHat(RightHatX) / 32768.0f;
   in.ry = Pad.getAnalogHat(RightHatY) / 32768.0f;
-  in.lt = Pad.getButtonPress(LT) / TRIG_MAX;
-  in.rt = Pad.getButtonPress(RT) / TRIG_MAX;
+  in.lt = Pad.getButtonPress(LT) / 255.0f;
+  in.rt = Pad.getButtonPress(RT) / 255.0f;
   // Library button for each arm::PadButton (PB_A .. PB_MENU)
-  static const uint8_t kButtons[arm::PB_COUNT] PROGMEM = {A, B, X, Y, LB, RB, UP, DOWN, LEFT, RIGHT, BTN_VIEW, BTN_MENU};
+  static const uint8_t kButtons[arm::PB_COUNT] PROGMEM = {A, B, X, Y, LB, RB, UP, DOWN, LEFT, RIGHT, BACK, START};
   for (uint8_t i = 0; i < arm::PB_COUNT; ++i) in.btn[i] = Pad.getButtonPress((ButtonEnum)pgm_read_byte(&kButtons[i]));
 #endif
   return in;

@@ -24,10 +24,8 @@ jobs:
     strategy:
       matrix:
         build:
-          - name: normal (G7 Pro, XInput)
+          - name: normal (G7 Pro gamepad)
             flags: ""
-          - name: normal (G7 Pro, Xbox One / GIP)
-            flags: "-DPAD_XBOXONE=1"
           - name: calibration (SETUP_MODE 1)
             flags: "-DSETUP_MODE=1"
     name: compile-uno ${{ matrix.build.name }}
