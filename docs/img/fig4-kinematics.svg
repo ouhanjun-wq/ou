@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="640" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 4  关节编号、尺寸和角度约定（侧视 + 俯视）</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">逆运动学用到的 4 个尺寸：d1、L2、L3、L4（用尺子量，单位 mm）；角度的正方向见箭头</text>
+<path d="M60,540 L660,540" fill="none" stroke="#5E6E72" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="70" y="562" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">桌面 z = 0</text>
+<rect x="135" y="510" width="90" height="30" rx="4" fill="#DDE6EA" stroke="#2B3A3F"/>
+<path d="M180,510 L180,438.75" fill="none" stroke="#8FA3AA" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M180,438.75 L250.875,315.9908990135558" fill="none" stroke="#8FA3AA" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M250.875,315.9908990135558 L383.8240466566481,339.4334029985914" fill="none" stroke="#8FA3AA" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M383.8240466566481,339.4334029985914 L464.8240466566481,479.7295184116705" fill="none" stroke="#8FA3AA" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M456.51020278031746,484.5295184116705 L466.5817418112348,506.77393572363235" fill="none" stroke="#2B3A3F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M473.1378905329787,474.9295184116705 L487.3663515020613,494.77393572363235" fill="none" stroke="#2B3A3F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="180.0" cy="438.8" r="13" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2.5"/>
+<text x="198" y="424.75" font-size="14" text-anchor="start" font-weight="700" fill="#1B2A2F">J2</text>
+<circle cx="250.9" cy="316.0" r="13" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2.5"/>
+<text x="268.875" y="301.9908990135558" font-size="14" text-anchor="start" font-weight="700" fill="#1B2A2F">J3</text>
+<circle cx="383.8" cy="339.4" r="13" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2.5"/>
+<text x="401.8240466566481" y="325.4334029985914" font-size="14" text-anchor="start" font-weight="700" fill="#1B2A2F">J4</text>
+<circle cx="464.8240466566481" cy="479.7295184116705" r="5" fill="#D23B2F"/>
+<text x="478.8240466566481" y="485.7295184116705" font-size="12.5" text-anchor="start" font-weight="700" fill="#D23B2F">工具点（两指中间）</text>
+<text x="232" y="532" font-size="14" text-anchor="start" font-weight="700" fill="#1B2A2F">J1</text>
+<path d="M110,540 L110,438.75" fill="none" stroke="#1F6FB5" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="104" y="489.375" font-size="14" text-anchor="end" font-weight="700" fill="#1F6FB5">d1</text>
+<text x="185.4375" y="377.3704495067779" font-size="15" text-anchor="middle" font-weight="700" fill="#1F6FB5">L2</text>
+<text x="317.34952332832404" y="309.7121510060736" font-size="15" text-anchor="middle" font-weight="700" fill="#1F6FB5">L3</text>
+<text x="450.3240466566481" y="409.58146070513095" font-size="15" text-anchor="middle" font-weight="700" fill="#1F6FB5">L4</text>
+<path d="M180,438.75 L270,438.75" fill="none" stroke="#5E6E72" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="220" y="426.75" font-size="14" text-anchor="start" font-weight="700" fill="#E07B00">θ2</text>
+<path d="M250.875,315.9908990135558 L291.375,245.84284130701627" fill="none" stroke="#5E6E72" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="298.875" y="263.9908990135558" font-size="13" text-anchor="start" font-weight="700" fill="#E07B00">θ3 &lt; 0</text>
+<path d="M383.8240466566481,339.4334029985914 L463.8240466566481,339.4334029985914" fill="none" stroke="#5E6E72" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="447.8240466566481" y="379.4334029985914" font-size="13" text-anchor="start" font-weight="700" fill="#E07B00">φ（工具俯仰）</text>
+<text x="402.3240466566481" y="439.58146070513095" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">J5 绕这根轴转</text>
+<text x="870" y="120" font-size="15" text-anchor="middle" font-weight="700" fill="#1B2A2F">俯视</text>
+<circle cx="870" cy="330" r="46" fill="#DDE6EA" stroke="#2B3A3F"/>
+<path d="M870,330 L1040,330" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1040,330 L1031.0,334.3 L1031.0,325.7 Z" fill="#1B2A2F"/>
+<text x="1042" y="350" font-size="13" text-anchor="end" font-weight="700" fill="#1B2A2F">x（正前方）</text>
+<path d="M870,330 L870,160" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M870,160 L874.3,169.0 L865.7,169.0 Z" fill="#1B2A2F"/>
+<text x="878" y="170" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">y（机械臂的左边）</text>
+<path d="M870,330 L992.8728066433488,243.9635345473431" fill="none" stroke="#8FA3AA" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M950,330 A80,80 0 0 0 935.5,284.1" fill="none" stroke="#E07B00" stroke-width="2.5"/>
+<text x="962" y="308" font-size="13" text-anchor="start" font-weight="700" fill="#E07B00">θ1 &gt; 0（左转）</text>
+<text x="870" y="335" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">J1</text>
+<text x="700" y="470" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">θ1：0 = 正前方，往左转为正</text>
+<text x="700" y="494" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">θ2：大臂和水平面的夹角，90° = 竖直</text>
+<text x="700" y="518" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">θ3：小臂相对大臂的弯角，0 = 伸直，往下弯为负</text>
+<text x="700" y="542" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">θ4：手腕相对小臂的弯角；φ = θ2 + θ3 + θ4</text>
+<text x="700" y="566" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">φ：工具俯仰，0 = 水平，−90° = 竖直朝下</text>
+</svg>

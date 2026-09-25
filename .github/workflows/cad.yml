@@ -1,0 +1,22 @@
+name: cad
+
+on:
+  push:
+    paths: ["cad/**", ".github/workflows/cad.yml"]
+  pull_request:
+    paths: ["cad/**", ".github/workflows/cad.yml"]
+
+jobs:
+  export-stl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Export all parts (fails on any OpenSCAD warning)
+        working-directory: cad
+        run: |
+          mkdir -p out
+          for f in *.scad; do openscad --hardwarnings -o "out/${f%.scad}.stl" "$f"; done
+          for f in out/*.stl; do test -s "$f" || { echo "empty: $f"; exit 1; }; done
+          ls -l out

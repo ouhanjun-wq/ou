@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="600" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 7  两点标定：让“角度”和舵机脉宽一一对应</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">每个关节在两个已知姿态各 MARK 一次，固件自动算出 us0 和 usdeg；公式：脉宽 = us0 + usdeg × 角度</text>
+<path d="M90,440 L520,440" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M90,440 L90,110" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="520" y="470" font-size="12.5" text-anchor="end" font-weight="700" fill="#1B2A2F">关节角度（°）</text>
+<text x="80" y="100" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">脉宽（µs）</text>
+<path d="M84,440 L90,440" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="80" y="444" font-size="11.5" text-anchor="end" font-weight="400" fill="#1B2A2F">500</text>
+<path d="M84,275.0 L90,275.0" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="80" y="279.0" font-size="11.5" text-anchor="end" font-weight="400" fill="#1B2A2F">1500</text>
+<path d="M84,110 L90,110" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="80" y="114" font-size="11.5" text-anchor="end" font-weight="400" fill="#1B2A2F">2500</text>
+<path d="M142,437.3 L500,168.79999999999998" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="200" cy="393.8" r="8" fill="#D23B2F"/>
+<text x="214" y="411.8" font-size="13" text-anchor="start" font-weight="700" fill="#D23B2F">MARK 2 0</text>
+<circle cx="420" cy="228.79999999999998" r="8" fill="#D23B2F"/>
+<text x="434" y="246.79999999999998" font-size="13" text-anchor="start" font-weight="700" fill="#D23B2F">MARK 2 90</text>
+<text x="200" y="458" font-size="11.5" text-anchor="middle" font-weight="400" fill="#1B2A2F">0°</text>
+<text x="420" y="458" font-size="11.5" text-anchor="middle" font-weight="400" fill="#1B2A2F">90°</text>
+<text x="290" y="180" font-size="12.5" text-anchor="start" font-weight="700" fill="#1F6FB5">斜率 = usdeg（正负 = 方向）</text>
+<text x="620" y="125" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">例：J2 大臂</text>
+<path d="M620,290 L800,290" fill="none" stroke="#5E6E72" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="660" cy="250" r="10" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2.5"/>
+<path d="M660,250 L770,250" fill="none" stroke="#8FA3AA" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="820" y="255" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">① 大臂水平 → MARK 2 0</text>
+<text x="820" y="275" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">用手机水平仪 App 贴在大臂上对准</text>
+<path d="M620,480 L800,480" fill="none" stroke="#5E6E72" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="660" cy="440" r="10" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2.5"/>
+<path d="M660,440 L660,335" fill="none" stroke="#8FA3AA" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="820" y="410" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">② 大臂竖直 → MARK 2 90</text>
+<text x="820" y="430" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">用手机水平仪 App 贴在大臂上对准</text>
+<circle cx="50" cy="536" r="10" fill="#1B2A2F"/>
+<text x="50" y="540.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="68" y="540" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">PULSE 2 1500 让舵机先回中；再用 PULSE 2 &lt;µs&gt; 一点点调，调到姿态①</text>
+<circle cx="50" cy="566" r="10" fill="#1B2A2F"/>
+<text x="50" y="570.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="68" y="570" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">每个关节都做一遍（夹爪：全开 MARK 6 0，夹紧 MARK 6 100），最后 PULSE OFF、SAVE PARAMS</text>
+</svg>

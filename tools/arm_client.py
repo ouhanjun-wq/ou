@@ -7,7 +7,7 @@ Two ways to reach the arm:
 
 Examples
   python3 tools/arm_client.py --http STATUS
-  python3 tools/arm_client.py --http ON "MOVE 180 0 60 -90" "GRIP CLOSE" "UP 50" HOME
+  python3 tools/arm_client.py --http ON "MOVE 160 0 40 -90" "GRIP CLOSE" "UP 50" HOME
   python3 tools/arm_client.py --serial /dev/ttyUSB0 --file demo.txt     # one command per line
   python3 tools/arm_client.py --http                                    # interactive prompt
 

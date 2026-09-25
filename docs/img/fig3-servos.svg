@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="620" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 3  舵机接线：PCA9685 通道 0–5 → J1–J6</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">舵机插头直接插在 PCA9685 的 3 针排针上：棕 = GND，红 = V+，橙 = 信号（PWM）</text>
+<rect x="40" y="100" width="330" height="470" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="205.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">PCA9685 板</text>
+<text x="205" y="150" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">每个通道 3 针（图中横着画）：PWM · V+ · GND</text>
+<rect x="60" y="480" width="120" height="60" rx="4" fill="#2E7D32"/>
+<text x="120" y="505" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">V+  GND</text>
+<text x="120" y="525" font-size="11" text-anchor="middle" font-weight="400" fill="#E8F5E9">螺丝端子</text>
+<rect x="190" y="499" width="144.8" height="22" rx="11" fill="#E07B00"/>
+<text x="262.4" y="514.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">← 6 V 母线（图 1）</text>
+<text x="70" y="195" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">通道 0</text>
+<rect x="150" y="181" width="18" height="18" rx="2" fill="#E3A600"/>
+<rect x="174" y="181" width="18" height="18" rx="2" fill="#D23B2F"/>
+<rect x="198" y="181" width="18" height="18" rx="2" fill="#222222"/>
+<text x="70" y="243" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">通道 1</text>
+<rect x="150" y="229" width="18" height="18" rx="2" fill="#E3A600"/>
+<rect x="174" y="229" width="18" height="18" rx="2" fill="#D23B2F"/>
+<rect x="198" y="229" width="18" height="18" rx="2" fill="#222222"/>
+<text x="70" y="291" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">通道 2</text>
+<rect x="150" y="277" width="18" height="18" rx="2" fill="#E3A600"/>
+<rect x="174" y="277" width="18" height="18" rx="2" fill="#D23B2F"/>
+<rect x="198" y="277" width="18" height="18" rx="2" fill="#222222"/>
+<text x="70" y="339" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">通道 3</text>
+<rect x="150" y="325" width="18" height="18" rx="2" fill="#E3A600"/>
+<rect x="174" y="325" width="18" height="18" rx="2" fill="#D23B2F"/>
+<rect x="198" y="325" width="18" height="18" rx="2" fill="#222222"/>
+<text x="70" y="387" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">通道 4</text>
+<rect x="150" y="373" width="18" height="18" rx="2" fill="#E3A600"/>
+<rect x="174" y="373" width="18" height="18" rx="2" fill="#D23B2F"/>
+<rect x="198" y="373" width="18" height="18" rx="2" fill="#222222"/>
+<text x="70" y="435" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">通道 5</text>
+<rect x="150" y="421" width="18" height="18" rx="2" fill="#E3A600"/>
+<rect x="174" y="421" width="18" height="18" rx="2" fill="#D23B2F"/>
+<rect x="198" y="421" width="18" height="18" rx="2" fill="#222222"/>
+<text x="159" y="175" font-size="9.5" text-anchor="middle" font-weight="700" fill="#1B2A2F">PWM</text>
+<text x="183" y="175" font-size="9.5" text-anchor="middle" font-weight="700" fill="#1B2A2F">V+</text>
+<text x="207" y="175" font-size="9.5" text-anchor="middle" font-weight="700" fill="#1B2A2F">G</text>
+<rect x="560" y="100" width="500" height="64" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="810.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">J1 底座旋转</text>
+<text x="810.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">DS3218MG · 20 kg·cm · 180°</text>
+<path d="M222,190 L300,190 L470,132 L560,132" fill="none" stroke="#E3A600" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="465" y="126" font-size="11" text-anchor="end" font-weight="400" fill="#5E6E72"></text>
+<rect x="560" y="178" width="500" height="64" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="810.0" y="200" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">J2 大臂（肩）</text>
+<text x="810.0" y="218" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">DS3225MG · 25 kg·cm · 180°</text>
+<path d="M222,238 L300,238 L470,210 L560,210" fill="none" stroke="#E3A600" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="465" y="204" font-size="11" text-anchor="end" font-weight="400" fill="#5E6E72"></text>
+<rect x="560" y="256" width="500" height="64" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="810.0" y="278" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">J3 小臂（肘）</text>
+<text x="810.0" y="296" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">DS3218MG · 20 kg·cm · 180°</text>
+<path d="M222,286 L300,286 L470,288 L560,288" fill="none" stroke="#E3A600" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="465" y="282" font-size="11" text-anchor="end" font-weight="400" fill="#5E6E72"></text>
+<rect x="560" y="334" width="500" height="64" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="810.0" y="356" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">J4 手腕俯仰</text>
+<text x="810.0" y="374" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">MG996R · 10 kg·cm · 180°</text>
+<path d="M222,334 L300,334 L470,366 L560,366" fill="none" stroke="#E3A600" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="465" y="360" font-size="11" text-anchor="end" font-weight="400" fill="#5E6E72">延长线</text>
+<rect x="560" y="412" width="500" height="64" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="810.0" y="434" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">J5 手腕旋转</text>
+<text x="810.0" y="452" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">MG996R · 10 kg·cm · 180°</text>
+<path d="M222,382 L300,382 L470,444 L560,444" fill="none" stroke="#E3A600" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="465" y="438" font-size="11" text-anchor="end" font-weight="400" fill="#5E6E72">延长线</text>
+<rect x="560" y="490" width="500" height="64" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="810.0" y="512" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">J6 夹爪</text>
+<text x="810.0" y="530" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">MG996R · 10 kg·cm · 180°</text>
+<path d="M222,430 L300,430 L470,522 L560,522" fill="none" stroke="#E3A600" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="465" y="516" font-size="11" text-anchor="end" font-weight="400" fill="#5E6E72">延长线</text>
+<circle cx="50" cy="596" r="10" fill="#1B2A2F"/>
+<text x="50" y="600.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="68" y="600" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">插反（棕线不在 G 那一侧）舵机不会转，但一般不会坏；插之前核对颜色</text>
+<circle cx="630" cy="596" r="10" fill="#1B2A2F"/>
+<text x="630" y="600.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="648" y="600" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">J4–J6 离底座远，用 30–50 cm 舵机延长线（22 AWG 粗线）</text>
+</svg>

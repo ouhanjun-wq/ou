@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the wiring / layout diagrams (SVG) used by docs/assembly-guide.md.
+"""Generate the robot-arm diagrams (SVG) used by docs/assembly-guide.md and docs/build-plan.md.
 
     python docs/img/make_diagrams.py
 
@@ -12,19 +12,20 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 FONT = "'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif"
 
 C = {
-    "bat": "#D23B2F",    # battery / SYS+ (7.4-8.4 V)
-    "v5": "#E07B00",     # 5 V
+    "v12": "#D23B2F",    # 12 V input
+    "v6": "#E07B00",     # 6 V servo supply
+    "v5": "#A87B00",     # 5 V logic supply
     "v33": "#7A4CC2",    # 3.3 V
     "gnd": "#222222",    # ground
     "sig": "#1F6FB5",    # signals
-    "spi": "#1E8A5A",    # SPI bus
-    "bal": "#8A8A8A",    # balance lead
+    "i2c": "#1E8A5A",    # I2C bus
     "rf": "#8A8A8A",     # wireless (dashed)
     "ink": "#1B2A2F",
     "mute": "#5E6E72",
     "box": "#F3F6F5",
     "boxline": "#2B3A3F",
     "hi": "#FFF3D6",
+    "arm": "#DDE6EA",
 }
 
 
@@ -78,7 +79,7 @@ class Svg:
         self.parts.append(f'<path d="M{x2},{y2} L{p1[0]:.1f},{p1[1]:.1f} L{p2[0]:.1f},{p2[1]:.1f} Z" fill="{color}"/>')
 
     def marker(self, x, y, n):
-        self.parts.append(f'<circle cx="{x}" cy="{y}" r="11" fill="{C["bat"]}" stroke="#FFFFFF" stroke-width="2"/>')
+        self.parts.append(f'<circle cx="{x}" cy="{y}" r="11" fill="{C["v12"]}" stroke="#FFFFFF" stroke-width="2"/>')
         self.text(x, y + 4.5, str(n), 12, "middle", "700", "#FFFFFF")
 
     def dot(self, x, y, color):
@@ -119,642 +120,474 @@ class Svg:
             f.write("\n".join(self.parts))
 
 
-def xiao(s, x, y, title="XIAO ESP32S3", sub="飞控（俯视，USB-C 朝上）"):
-    """Seeed XIAO ESP32S3 drawn with its real pin order.
-    Left column top->bottom: D0..D6, right column: 5V, GND, 3V3, D10, D9, D8, D7."""
-    w, h = 170, 330
-    s.box(x, y, w, h, title, sub)
-    s.parts.append(f'<rect x="{x + w / 2 - 22}" y="{y - 10}" width="44" height="14" rx="4" fill="#B9C4C1"/>')
-    s.text(x + w / 2, y + 1, "USB-C", 9.5, "middle", "700")
-    left = ["D0", "D1", "D2", "D3", "D4", "D5", "D6"]
-    right = ["5V", "GND", "3V3", "D10", "D9", "D8", "D7"]
+
+
+C["scl"] = "#0E8C9A"
+
+DEVKIT_L = ["3V3", "EN", "36", "39", "34", "35", "32", "33", "25", "26", "27", "14", "12", "GND",
+            "13", "SD2", "SD3", "CMD", "5V"]
+DEVKIT_R = ["GND", "23", "22", "TX0", "RX0", "21", "GND", "19", "18", "5", "17", "16", "4", "0",
+            "2", "15", "SD1", "SD0", "CLK"]
+
+
+def devkit(s, x, y, used):
+    """ESP32 DevKit (38 pin, ESP32-WROOM-32E) seen from the top, antenna up, USB down,
+    with the real pin order. Returns {name: (x, y)}; the left GND is 'GND_L'."""
+    w, step = 200, 22
+    h = 70 + step * 19 + 20
+    s.box(x, y, w, h, "ESP32 DevKit", "WROOM-32E · 俯视")
+    s.parts.append(f'<rect x="{x + 60}" y="{y + 52}" width="80" height="10" rx="2" fill="#B9C4C1"/>')
+    s.parts.append(f'<rect x="{x + w / 2 - 22}" y="{y + h - 6}" width="44" height="14" rx="4" fill="#B9C4C1"/>')
+    s.text(x + w / 2, y + h + 5, "USB", 9.5, "middle", "700")
     pins = {}
-    for i, n in enumerate(left):
-        py = y + 80 + i * 38
-        s.pin(x, py, n, "left")
-        pins[n] = (x, py)
-    for i, n in enumerate(right):
-        py = y + 80 + i * 38
-        s.pin(x + w, py, n, "right")
-        pins[n] = (x + w, py)
+    for i, n in enumerate(DEVKIT_L):
+        py = y + 80 + i * step
+        key = "GND_L" if n == "GND" else n
+        s.pin(x, py, n, "left", C["sig"] if key in used else "#9AA5A8")
+        pins[key] = (x, py)
+    for i, n in enumerate(DEVKIT_R):
+        py = y + 80 + i * step
+        key = n if n != "GND" or "GND" not in pins else "GND_R2"
+        s.pin(x + w, py, n, "right", C["sig"] if key in used else "#9AA5A8")
+        pins[key] = (x + w, py)
     return pins
 
 
 # ---------------------------------------------------------------------------
 def fig_overview():
-    s = Svg(1100, 430, "图 0  系统总览", "谁和谁通信：G7 Pro 手柄 → 地面站 → 蝴蝶；手机通过地面站的 Wi-Fi 查看位置和画面")
-    s.box(40, 130, 180, 110, "盖世小鸡 G7 Pro", "模式开关：蓝牙\nXbox 布局按键")
-    s.box(380, 110, 220, 150, "地面站", "FireBeetle 2 ESP32-E\n+ 1S 锂电池\nWi-Fi 热点 Butterfly-GS")
-    s.box(820, 110, 240, 150, "蝴蝶", "XIAO ESP32S3 飞控\n陀螺仪 · 气压计 · GPS\n2 × 舵机", fill=C["hi"])
-    s.box(380, 320, 220, 80, "手机浏览器", "192.168.4.1：位置 / 轨迹 / 画面")
-    s.box(820, 320, 240, 80, "可选：摄像头节点", "XIAO ESP32S3 Sense", dashed=True)
-    s.box(40, 320, 180, 80, "可选：语音模块", "ASRPRO / CI1302", dashed=True)
-    s.wire([(220, 185), (380, 185)], C["rf"], 3, True)
-    s.text(300, 175, "蓝牙", 13, "middle", "700")
-    s.wire([(600, 185), (820, 185)], C["rf"], 3, True)
-    s.text(710, 175, "ESP-NOW 2.4 GHz", 13, "middle", "700")
-    s.text(710, 205, "控制指令 50 Hz → / ← 遥测 20 Hz", 11.5, "middle", color=C["mute"])
-    s.wire([(490, 260), (490, 320)], C["rf"], 3, True)
-    s.text(500, 295, "Wi-Fi", 13, weight="700")
-    s.wire([(820, 360), (600, 300), (600, 260)], C["rf"], 3, True)
-    s.text(735, 318, "Wi-Fi 视频流", 12, "middle", color=C["mute"])
-    s.wire([(220, 360), (300, 360), (300, 240), (380, 240)], C["sig"], 3)
-    s.text(310, 300, "UART", 12, weight="700", color=C["sig"])
+    s = Svg(1100, 500, "图 0  系统总览",
+            "手柄通过蓝牙直接连到机械臂上的 ESP32；手机、电脑、语音模块发文字指令；PCA9685 输出 6 路舵机信号")
+    s.box(40, 120, 190, 100, "盖世小鸡 G7 Pro", "模式开关：蓝牙\nXbox 布局按键")
+    s.box(340, 100, 240, 160, "主控 ESP32 DevKit", "Bluepad32 读手柄\n逆运动学 · 平滑 · 示教\nWi-Fi 热点 RobotArm",
+          fill=C["hi"])
+    s.box(680, 90, 190, 80, "PCA9685", "16 路舵机驱动 · 0x41")
+    s.box(680, 200, 190, 80, "INA226", "舵机电流 / 电压 · 0x40")
+    s.box(930, 90, 140, 190, "机械臂", "J1 底座\nJ2 大臂\nJ3 小臂\nJ4 手腕俯仰\nJ5 手腕旋转\nJ6 夹爪")
+    s.box(680, 330, 190, 110, "电源", "12 V 适配器\n→ 6 V 舵机 / 5 V 主控\n急停 + 继电器")
+    s.box(340, 330, 240, 70, "手机浏览器", "192.168.4.1 状态 + 按钮")
+    s.box(40, 290, 190, 70, "可选：语音模块", "离线识别 → 串口文字", dashed=True)
+    s.box(40, 390, 190, 70, "电脑 / AI", "USB 串口或 Wi-Fi", dashed=True)
+    s.wire([(230, 170), (340, 170)], C["rf"], 3, True)
+    s.text(285, 160, "蓝牙", 13, "middle", "700")
+    s.wire([(580, 130), (680, 130)], C["i2c"], 3)
+    s.wire([(580, 240), (680, 240)], C["i2c"], 3)
+    s.text(630, 120, "I²C", 12, "middle", "700", C["i2c"])
+    s.text(630, 230, "I²C", 12, "middle", "700", C["i2c"])
+    s.arrow(870, 130, 928, 130, C["sig"])
+    s.text(899, 120, "PWM×6", 11, "middle", "700", C["sig"])
+    s.arrow(900, 385, 1000, 385, C["v6"])
+    s.wire([(1000, 385), (1000, 282)], C["v6"], 2.5)
+    s.text(935, 375, "6 V", 12, "middle", "700", C["v6"])
+    s.wire([(775, 330), (775, 280)], C["v6"], 2.5)
+    s.text(785, 312, "测电流", 11.5, color=C["mute"])
+    s.wire([(680, 385), (620, 385), (620, 250), (580, 250)], C["v5"], 2.5)
+    s.text(628, 300, "5 V", 12, weight="700", color=C["v5"])
+    s.wire([(460, 260), (460, 330)], C["rf"], 3, True)
+    s.text(470, 300, "Wi-Fi", 12.5, weight="700")
+    s.wire([(230, 325), (290, 325), (290, 230), (340, 230)], C["sig"], 2.5)
+    s.text(250, 318, "UART", 11.5, weight="700", color=C["sig"])
+    s.wire([(230, 425), (300, 425), (300, 250), (340, 250)], C["rf"], 2.5, True)
+    s.legend(40, 485, [("I²C", C["i2c"], False), ("舵机信号", C["sig"], False), ("6 V 舵机电", C["v6"], False),
+                       ("5 V", C["v5"], False), ("无线", C["rf"], True)])
     s.save("fig0-overview.svg")
 
 
-def fig_power_in():
-    s = Svg(1100, 620, "图 1  机上电源输入：Type-C 充电 · 保护板 · 内置电池 · 电源开关",
-            "电池内置不拆；充电模块接在开关前面，所以关机也能充电")
-    # charger
-    s.text(40, 100, "⇩ 手机充电器 5 V（USB-C）", 12, color=C["mute"])
-    s.box(40, 110, 210, 160, "Type-C 充电模块", "IP2326 · 2S 升压充电\n充电电流 ≤ 180 mA")
-    s.pin(250, 160, "BAT+", "right", C["bat"])
-    s.pin(250, 230, "BAT−", "right", C["gnd"])
-    s.pin(80, 270, "VBUS 焊点", "bottom", C["v5"])
-    s.wire([(80, 270), (80, 299)], C["v5"])
-    s.tag(40, 310, "VBUS → 充电检测（图 2）", C["v5"])
-    # BMS
-    s.box(390, 110, 210, 160, "2S 保护板（带均衡）", "过流保护 ≥ 5 A")
-    s.pin(390, 160, "P+", "left", C["bat"])
-    s.pin(390, 230, "P−", "left", C["gnd"])
-    s.pin(600, 140, "B+", "right", C["bat"])
-    s.pin(600, 190, "BM", "right", C["bal"])
-    s.pin(600, 240, "B−", "right", C["gnd"])
-    s.wire([(250, 160), (390, 160)], C["bat"])
-    s.wire([(250, 230), (390, 230)], C["gnd"])
-    # battery
-    s.box(740, 90, 170, 200, "内置电池 2S", "7.4 V 180 mAh")
-    for i, cy in enumerate((165, 230)):
-        s.parts.append(f'<rect x="790" y="{cy - 16}" width="80" height="34" rx="4" fill="#FFFFFF" '
-                       f'stroke="{C["boxline"]}"/>')
-        s.text(830, cy + 5, f"电芯 {i + 1}", 11.5, "middle")
-    s.pin(740, 140, "+", "left", C["bat"])
-    s.pin(740, 190, "中", "left", C["bal"])
-    s.pin(740, 240, "−", "left", C["gnd"])
-    s.wire([(600, 140), (740, 140)], C["bat"])
-    s.wire([(600, 190), (740, 190)], C["bal"], 2.5)
-    s.wire([(600, 240), (740, 240)], C["gnd"])
-    # outputs of the power stage
-    s.dot(320, 160, C["bat"])
-    s.dot(340, 230, C["gnd"])
-    s.wire([(340, 230), (340, 330)], C["gnd"])
-    s.tag(347, 330, "GND → 图 2", C["gnd"])
-    # switch
-    s.box(40, 380, 640, 190, "电源开关（P-MOS 软开关，只走微小电流的拨动开关控制大电流）", "")
-    s.wire([(320, 160), (320, 355), (110, 355), (110, 470), (150, 470)], C["bat"])   # P+ -> S
-    s.part(150, 445, 130, 50, "AO3401A")
-    s.text(160, 440, "S(2)", 11, "start", "700")
-    s.text(270, 440, "D(3)", 11, "end", "700")
-    s.text(215, 512, "G(1)", 11, "middle", "700")
-    s.wire([(280, 470), (560, 470), (560, 330), (700, 330)], C["bat"])              # D -> SYS+
-    s.tag(707, 330, "SYS+ → 图 2（开关后的电源）", C["bat"])
-    s.wire([(215, 495), (215, 535)], C["sig"], 2)                                  # G node
-    s.dot(215, 535, C["sig"])
-    s.wire([(110, 470), (110, 535), (130, 535)], C["bat"], 2)
-    s.part(130, 523, 60, 24, "100kΩ")
-    s.wire([(190, 535), (215, 535), (330, 535)], C["sig"], 2)
-    s.part(330, 520, 90, 30, "拨动开关")
-    s.wire([(420, 535), (460, 535)], C["gnd"], 2)
-    s.tag(460, 535, "GND", C["gnd"])
-    s.dot(110, 470, C["bat"])
+def fig_power():
+    s = Svg(1100, 720, "图 1  电源：12 V 输入 → 6 V 舵机电（急停 + 继电器 + 电流计）/ 5 V 主控电",
+            "舵机电和主控电分开降压；大电流只走粗线，不经过 ESP32")
+    # row 1: input chain
+    s.box(40, 100, 180, 100, "电源适配器", "12 V 5 A（≥ 60 W）\nDC 5.5×2.1 插头")
+    s.box(290, 100, 180, 100, "DC 母座 + 保险丝", "带接线端子\n刀片保险 7.5 A")
+    s.box(540, 100, 160, 100, "船型开关", "KCD4 · 16 A")
+    s.wire([(220, 150), (290, 150)], C["v12"], 4)
+    s.wire([(470, 150), (540, 150)], C["v12"], 4)
+    s.wire([(700, 150), (840, 150), (840, 260)], C["v12"], 4)
+    s.dot(760, 150, C["v12"])
+    s.wire([(760, 150), (760, 225), (455, 225), (455, 260)], C["v12"], 3)
+    s.tag(710, 125, "12 V", C["v12"])
+    # row 2: converters
+    s.box(740, 260, 200, 110, "大电流降压模块", "20 A / 300 W · CC/CV\n12 V → 6.0 V", fill=C["hi"])
+    s.box(360, 260, 190, 110, "MP1584EN 降压", "3 A\n12 V → 5.0 V")
+    s.part(250, 300, 70, 30, "SS14 ▶")
+    s.wire([(360, 315), (320, 315)], C["v5"], 3)
+    s.wire([(250, 315), (210, 315)], C["v5"], 3)
+    s.box(40, 265, 170, 100, "ESP32 DevKit", "5V 引脚\n（逻辑电，见图 2）")
+    s.text(285, 290, "防 USB 倒灌", 11, "middle", color=C["mute"])
+    # row 3: servo chain (right -> left)
+    s.box(900, 440, 170, 110, "急停开关", "常闭 NC · 22 mm\n蘑菇头 · 10 A")
+    s.box(660, 440, 180, 110, "继电器模块", "COM → NO · 10 A\nIN ← GPIO25（图 2）")
+    s.box(420, 440, 180, 110, "INA226 模块", "VIN+ → VIN−\n采样电阻 0.01 Ω")
+    s.box(40, 440, 320, 110, "舵机电源母线 → PCA9685 V+", "+ 2 × 2200 µF 16 V 电解电容\n6 个舵机都从这里取电（图 3）",
+          fill=C["hi"])
+    s.wire([(790, 370), (790, 428), (985, 428), (985, 440)], C["v6"], 4)
+    s.pin(790, 370, "V+ 出", "bottom", C["v6"])
+    s.tag(800, 400, "6.0 V", C["v6"])
+    s.wire([(900, 525), (840, 525)], C["v6"], 4)
+    s.wire([(660, 525), (600, 525)], C["v6"], 4)
+    s.wire([(420, 525), (360, 525)], C["v6"], 4)
+    s.pin(900, 525, "", "left", C["v6"])
+    s.pin(840, 525, "COM", "right", C["v6"])
+    s.pin(660, 525, "NO", "left", C["v6"])
+    s.pin(600, 525, "VIN+", "right", C["v6"])
+    s.pin(420, 525, "VIN−", "left", C["v6"])
+    s.pin(360, 525, "V+", "right", C["v6"])
+    # grounds as net tags
+    for gx, gy in ((130, 200), (380, 200), (890, 370), (455, 370), (125, 365), (200, 550), (510, 550)):
+        s.wire([(gx, gy), (gx, gy + 22)], C["gnd"], 2.5)
+        s.tag(gx - 22, gy + 33, "GND", C["gnd"])
+    s.text(955, 605, "所有 GND 汇到大降压模块的 GND 端子（星形接地）", 12, "end", color=C["mute"])
     # notes
-    s.note(740, 400, 1, "充电电流设为 ≤ 1C（180 mAh 电池 ≤ 180 mA）")
-    s.note(740, 430, 2, "焊电池一次只接一根线：B− → BM → B+")
-    s.note(740, 460, 3, "拨动开关闭合 = G 拉到 GND = 开机")
-    s.note(740, 490, 4, "AO3401A 单脚是 3(D)，另一排左 1(G) 右 2(S)")
-    s.note(740, 520, 5, "通电前先量 SYS+ 与 GND 不短路")
-    s.legend(40, 600, [("电池 +", C["bat"], False), ("GND", C["gnd"], False), ("平衡线", C["bal"], False),
-                       ("5 V", C["v5"], False), ("控制", C["sig"], False)])
-    s.save("fig1-power-input.svg")
-
-
-def fig_power_dist():
-    s = Svg(1100, 660, "图 2  机上电源分配：舵机 · 降压 5 V · 飞控 · 电压 / 充电检测",
-            "彩色标签表示“接到同名的线”（SYS+ 来自图 1 开关输出，GND 来自图 1 P−）")
-    p = xiao(s, 470, 150)
-    # rails
-    s.wire([(40, 90), (1060, 90)], C["bat"], 4)
-    s.tag(40, 70, "SYS+ 7.4–8.4 V", C["bat"])
-    s.wire([(40, 610), (1060, 610)], C["gnd"], 4)
-    s.tag(40, 632, "GND", C["gnd"])
-    # servos
-    for i, (bx, name, pin) in enumerate(((60, "左舵机", "D1"), (230, "右舵机", "D2"))):
-        s.box(bx, 350, 140, 80, name, "红 + · 棕 − · 橙 信号")
-        s.pin(bx + 25, 350, "+", "top", C["bat"])
-        s.pin(bx + 115, 350, "信号", "top", C["sig"])
-        s.pin(bx + 70, 430, "−", "bottom", C["gnd"])
-        s.wire([(bx + 25, 350), (bx + 25, 90)], C["bat"])
-        s.dot(bx + 25, 90, C["bat"])
-        s.wire([(bx + 70, 430), (bx + 70, 610)], C["gnd"])
-        s.dot(bx + 70, 610, C["gnd"])
-        s.wire([(bx + 115, 350), (bx + 115, p[pin][1]), p[pin]], C["sig"])
-    # 470 uF: + straight up to SYS+, - straight down to GND
-    s.part(415, 500, 30, 50, "")
-    s.text(408, 518, "470µF", 11.5, "end", "700")
-    s.text(408, 534, "+ 朝上", 11, "end", color=C["mute"])
-    s.wire([(430, 500), (430, 90)], C["bat"])
-    s.dot(430, 90, C["bat"])
-    s.wire([(430, 550), (430, 610)], C["gnd"])
-    s.dot(430, 610, C["gnd"])
-    # battery voltage divider -> D0
-    s.part(300, 140, 70, 24, "200kΩ")
-    s.part(300, 200, 70, 24, "100kΩ")
-    s.wire([(335, 90), (335, 140)], C["bat"], 2)
-    s.dot(335, 90, C["bat"])
-    s.wire([(335, 164), (335, 200)], C["sig"], 2)
-    s.wire([(335, 182), (452, 182), (452, p["D0"][1]), p["D0"]], C["sig"], 2)
-    s.dot(335, 182, C["sig"])
-    s.wire([(335, 224), (335, 250), (290, 250)], C["gnd"], 2)
-    s.tag(290, 250, "GND", C["gnd"], "end")
-    s.text(245, 160, "电池电压 → D0", 12, "end", "700", C["sig"])
-    # charge detect -> D6 (node away from the servo ground wires)
-    y6 = p["D6"][1]
-    s.tag(40, y6, "VBUS（图 1）", C["v5"])
-    s.wire([(150, y6), (190, y6)], C["v5"], 2)
-    s.part(190, y6 - 12, 70, 24, "100kΩ")
-    s.wire([(260, y6), p["D6"]], C["sig"], 2)
-    s.dot(360, y6, C["sig"])
-    s.wire([(360, y6), (360, 560)], C["sig"], 2)
-    s.part(325, 560, 70, 24, "200kΩ")
-    s.wire([(360, 584), (360, 610)], C["gnd"], 2)
-    s.dot(360, 610, C["gnd"])
-    s.text(190, y6 - 20, "充电检测 → D6", 12, "start", "700", C["sig"])
-    # buck + diode -> 5V
-    s.box(830, 140, 200, 110, "Mini-360 降压", "先调到 5.0 V 再接！")
-    s.pin(870, 140, "IN+", "top", C["bat"])
-    s.pin(990, 250, "IN− / OUT−", "bottom", C["gnd"])
-    s.pin(830, 190, "OUT+", "left", C["v5"])
-    s.wire([(870, 140), (870, 90)], C["bat"])
-    s.dot(870, 90, C["bat"])
-    s.wire([(990, 250), (990, 610)], C["gnd"])
-    s.dot(990, 610, C["gnd"])
-    s.part(700, 216, 80, 28, "SS14 ▶|")
-    s.wire([(830, 190), (800, 190), (800, 230), (780, 230)], C["v5"])
-    s.wire([(700, 230), p["5V"]], C["v5"])
-    s.text(740, 266, "条纹端朝 XIAO", 11, "middle", color=C["mute"])
-    s.wire([p["GND"], (760, p["GND"][1]), (760, 610)], C["gnd"])
-    s.dot(760, 610, C["gnd"])
-    # notes
-    s.note(680, 470, 1, "Mini-360 先单独通电调到 5.0 V，再接 XIAO")
-    s.note(680, 500, 2, "SS14 带条纹的一端（阴极）朝 XIAO 5V")
-    s.note(680, 530, 3, "470 µF 贴近舵机插头，长脚 / 无条纹为 +")
-    s.note(680, 560, 4, "高压舵机直接接 SYS+；6 V 舵机不能直接接")
-    s.legend(40, 650, [("电池 +", C["bat"], False), ("GND", C["gnd"], False), ("5 V", C["v5"], False),
-                       ("信号", C["sig"], False)])
-    s.save("fig2-power-distribution.svg")
+    s.note(40, 640, 1, "先调电压：大降压模块空载调到 6.0 V，MP1584 调到 5.0 V，调好再接负载")
+    s.note(40, 670, 2, "急停串在 6 V 舵机线上：按下 = 舵机断电，机械臂会软下来（手要离开下方）")
+    s.note(560, 640, 3, "继电器由 GPIO25 控制：开机默认断开，按 Menu 才给舵机上电")
+    s.note(560, 670, 4, "6 V 和 GND 大电流线用 18 AWG 硅胶线，其余用 22 AWG")
+    s.legend(40, 705, [("12 V", C["v12"], False), ("6 V 舵机电", C["v6"], False), ("5 V", C["v5"], False),
+                       ("GND", C["gnd"], False)])
+    s.save("fig1-power.svg")
 
 
 def fig_signals():
-    s = Svg(1100, 700, "图 3  飞控信号接线：陀螺仪 · 气压计 · GPS",
-            "陀螺仪和气压计共用 3.3 V、GND 和一组 SPI 线（绿色）；片选 CS 各自单独接（看同名标签）")
-    p = xiao(s, 300, 170)
-    s.text(385, 530, "5V、GND 的供电见图 2", 12, "middle", color=C["mute"])
-    # left-side pins
-    for n, lab in (("D0", "电池电压（图 2）"), ("D1", "左舵机信号（图 2）"), ("D2", "右舵机信号（图 2）"),
-                   ("D6", "充电检测（图 2）")):
-        x, y = p[n]
-        s.wire([(x, y), (x - 30, y)], C["sig"], 2)
-        s.text(x - 36, y + 4, lab, 12, "end", color=C["mute"])
-    for n, lab in (("D3", "陀螺仪 CS"), ("D4", "气压计 CSB"), ("D5", "GPS RX（可不接）")):
-        x, y = p[n]
-        s.wire([(x, y), (x - 30, y)], C["sig"], 2.5)
-        s.tag(x - 30, y, lab, C["sig"], "end")
-    # buses: 3V3, GND, MOSI(D10), MISO(D9), SCK(D8)
-    bus = {"3V3": (560, C["v33"]), "GND": (580, C["gnd"]), "D10": (600, C["spi"]), "D9": (620, C["spi"]),
-           "D8": (640, C["spi"])}
-    for n, (bx, col) in bus.items():
-        s.wire([p[n], (bx, p[n][1])], col, 3)
-        s.dot(bx, p[n][1], col)
-    s.text(620, 548, "SPI 总线", 12, "middle", "700", C["spi"])
-    # devices
-    s.box(760, 90, 280, 220, "ICM-42688-P 陀螺仪", "SPI · 3.3 V · X 箭头朝机头")
-    imu = {"VCC": 150, "GND": 180, "SCLK": 210, "SDO": 240, "SDI": 270}
-    s.box(760, 340, 280, 210, "BMP280 气压计", "GY-BMP280-3.3 · SPI · 盖开孔海绵")
-    baro = {"VCC": 400, "GND": 430, "SCL": 460, "SDO": 490, "SDA": 520}
-    s.box(760, 580, 280, 100, "GPS（可选）", "M10 迷你 · 天线朝上")
-    gps = {"VCC": 620, "GND": 650}
-    net = {"VCC": "3V3", "GND": "GND", "SCLK": "D8", "SCL": "D8", "SDO": "D9", "SDI": "D10", "SDA": "D10"}
-    rows = {k: [p[k][1]] for k in bus}
-    for pins in (imu, baro, gps):
-        for n, py in pins.items():
-            bx, col = bus[net[n]]
-            s.pin(760, py, n, "left", col)
-            s.wire([(bx, py), (760, py)], col, 2.5)
-            s.dot(bx, py, col)
-            rows[net[n]].append(py)
-    for n, (bx, col) in bus.items():
-        s.wire([(bx, min(rows[n])), (bx, max(rows[n]))], col, 3)
-    # chip selects and GPS UART
-    s.pin(1040, 120, "CS", "right", C["sig"])
-    s.wire([(1040, 120), (1060, 120)], C["sig"], 2.5)
-    s.tag(1060, 120, "D3", C["sig"])
-    s.pin(1040, 370, "CSB", "right", C["sig"])
-    s.wire([(1040, 370), (1060, 370)], C["sig"], 2.5)
-    s.tag(1060, 370, "D4", C["sig"])
-    s.pin(1040, 620, "TX", "right", C["sig"])
-    s.pin(1040, 650, "RX", "right", C["sig"])
-    s.wire([(1040, 650), (1060, 650)], C["sig"], 2)
-    s.tag(1060, 650, "D5", C["sig"])
-    s.wire([(1040, 620), (1075, 620), (1075, 565), (680, 565), (680, p["D7"][1]), p["D7"]], C["sig"], 2.5)
-    s.text(870, 560, "GPS TX → D7", 12, "middle", "700", C["sig"])
-    # notes
-    s.note(30, 600, 1, "SPI 线尽量短（≤ 10 cm），信号线不要和舵机电源线捆在一起")
-    s.note(30, 630, 2, "三个模块都用 3.3 V；GPS 如果标注 5 V 供电，就改接 5 V")
-    s.note(30, 660, 3, "同名标签相连：CS → D3，CSB → D4，GPS RX → D5")
-    s.legend(30, 110, [("3.3 V", C["v33"], False), ("GND", C["gnd"], False), ("SPI", C["spi"], False),
-                       ("信号", C["sig"], False)])
-    s.save("fig3-signals.svg")
+    used = {"3V3", "GND_L", "25", "26", "5V", "22", "21", "17", "16", "GND", "GND_R2", "2"}
+    s = Svg(1100, 760, "图 2  信号接线：ESP32 ↔ PCA9685 / INA226（I²C）· 继电器 · 蜂鸣器 · 语音模块",
+            "彩色标签表示“接到同名的线”；I²C 两个设备并联在同一对线上")
+    p = devkit(s, 450, 100, used)
+    # right side: I2C devices
+    s.box(830, 100, 230, 190, "PCA9685 舵机驱动", "地址 0x41：把 A0 焊盘\n用锡短接\nV+ 端子 ← 6 V（图 1）")
+    for n, (lab, yy, col) in enumerate((("GND", 150, C["gnd"]), ("VCC", 180, C["v33"]), ("SDA", 210, C["i2c"]),
+                                        ("SCL", 240, C["scl"]))):
+        s.pin(830, yy, lab, "left", col)
+    s.box(830, 330, 230, 170, "INA226 电流计", "地址 0x40（默认）\nVIN+ / VIN− 串在\n6 V 线上（图 1）")
+    for lab, yy, col in (("VCC", 380, C["v33"]), ("GND", 410, C["gnd"]), ("SDA", 440, C["i2c"]),
+                         ("SCL", 470, C["scl"])):
+        s.pin(830, yy, lab, "left", col)
+    s.box(830, 540, 230, 150, "可选：离线语音模块", "CI-03T / ASR-PRO 等\n串口输出英文指令行\n9600 bps", dashed=True)
+    for lab, yy, col in (("TX", 590, C["sig"]), ("RX", 620, C["sig"]), ("5V", 650, C["v5"]), ("GND", 675, C["gnd"])):
+        s.pin(830, yy, lab, "left", col)
+    # I2C wiring
+    sda, scl = p["21"], p["22"]
+    s.wire([sda, (740, sda[1]), (740, 440), (830, 440)], C["i2c"], 3)
+    s.wire([(740, 210), (830, 210)], C["i2c"], 3)
+    s.wire([(740, sda[1]), (740, 210)], C["i2c"], 3)
+    s.dot(740, sda[1], C["i2c"])
+    s.wire([scl, (710, scl[1]), (710, 470), (830, 470)], C["scl"], 3)
+    s.wire([(710, 240), (830, 240)], C["scl"], 3)
+    s.dot(710, 240, C["scl"])
+    s.text(700, 330, "SCL", 12, "end", "700", C["scl"])
+    s.text(750, 330, "SDA", 12, "start", "700", C["i2c"])
+    # voice UART: module TX -> GPIO16 (RX2), module RX <- GPIO17 (TX2)
+    s.wire([p["16"], (680, p["16"][1]), (680, 590), (830, 590)], C["sig"], 2.5)
+    s.wire([p["17"], (660, p["17"][1]), (660, 620), (830, 620)], C["sig"], 2.5)
+    s.text(672, 700, "交叉：TX→16，RX←17", 11.5, "middle", color=C["mute"])
+    # power / GND tags on the right devices
+    for yy in (180, 380):
+        s.tag(826, yy, "3V3", C["v33"], "end")
+    for yy in (150, 410, 675):
+        s.tag(826, yy, "GND", C["gnd"], "end")
+    s.tag(826, 650, "5V", C["v5"], "end")
+    # left side: relay, buzzer
+    s.box(40, 250, 250, 170, "继电器模块（1 路）", "5 V 线圈 · 光耦隔离\n跳线设为“高电平触发”\n触点见图 1")
+    for lab, yy, col in (("IN", 356, C["sig"]), ("VCC", 382, C["v5"]), ("GND", 406, C["gnd"])):
+        s.pin(290, yy, lab, "right", col)
+    s.wire([(290, 356), p["25"]], C["sig"], 3)
+    s.box(40, 435, 250, 120, "有源蜂鸣器模块", "高电平响 · 3.3–5 V")
+    for lab, yy, col in (("I/O", 480, C["sig"]), ("VCC", 505, C["v33"]), ("GND", 530, C["gnd"])):
+        s.pin(290, yy, lab, "right", col)
+    s.wire([(290, 480), (360, 480), (360, p["26"][1]), p["26"]], C["sig"], 3)
+    s.tag(295, 382, "5V", C["v5"])
+    s.tag(295, 406, "GND", C["gnd"])
+    s.tag(295, 505, "3V3", C["v33"])
+    s.tag(295, 530, "GND", C["gnd"])
+    # DevKit power pins
+    s.tag(444, p["3V3"][1], "3V3", C["v33"], "end")
+    s.tag(444, p["GND_L"][1], "GND", C["gnd"], "end")
+    s.tag(444, p["5V"][1], "5V ← MP1584 经 SS14（图 1）", C["v5"], "end")
+    s.tag(656, p["GND"][1], "GND", C["gnd"])
+    s.legend(40, 745, [("SDA", C["i2c"], False), ("SCL", C["scl"], False), ("信号", C["sig"], False),
+                       ("3.3 V", C["v33"], False), ("5 V", C["v5"], False)])
+    s.save("fig2-signals.svg")
 
 
-def fig_ground():
-    s = Svg(1100, 520, "图 4  地面站：FireBeetle 2 ESP32-E + G7 Pro",
-            "地面站只需要插电池；手柄和手机都是无线连接")
-    s.box(420, 120, 250, 250, "FireBeetle 2 ESP32-E", "原版 ESP32（经典蓝牙 + BLE）\n地面站", fill=C["hi"])
-    s.parts.append('<rect x="523" y="110" width="44" height="14" rx="4" fill="#B9C4C1"/>')
-    s.text(545, 121, "USB-C", 9.5, "middle", "700")
-    s.text(545, 92, "USB-C：烧录程序 / 给电池充电", 12, "middle", color=C["mute"])
-    s.pin(545, 370, "PH2.0 电池座", "bottom", C["bat"])
-    s.box(460, 420, 170, 70, "1S 锂电池", "3.7 V 500–1000 mAh")
-    s.wire([(545, 370), (545, 420)], C["bat"])
-    s.pin(420, 250, "GPIO16", "left", C["sig"])
-    s.pin(420, 290, "3V3", "left", C["v33"])
-    s.pin(420, 330, "GND", "left", C["gnd"])
-    s.box(90, 220, 200, 130, "语音模块（可选）", "ASRPRO / CI1302\nUART 115200", dashed=True)
-    s.pin(290, 250, "TX", "right", C["sig"])
-    s.pin(290, 290, "VCC", "right", C["v33"])
-    s.pin(290, 330, "GND", "right", C["gnd"])
-    s.wire([(290, 250), (420, 250)], C["sig"], 2.5)
-    s.wire([(290, 290), (420, 290)], C["v33"], 2.5)
-    s.wire([(290, 330), (420, 330)], C["gnd"], 2.5)
-    s.box(90, 100, 200, 90, "盖世小鸡 G7 Pro", "背面模式开关 → 蓝牙")
-    s.wire([(290, 145), (420, 170)], C["rf"], 3, True)
-    s.text(355, 145, "蓝牙", 13, "middle", "700")
-    s.box(820, 110, 220, 90, "手机", "Wi-Fi：Butterfly-GS\n浏览器 192.168.4.1")
-    s.wire([(670, 170), (820, 155)], C["rf"], 3, True)
-    s.text(745, 150, "Wi-Fi", 13, "middle", "700")
-    s.box(820, 260, 220, 90, "蝴蝶", "ESP-NOW 信道 1", fill=C["hi"])
-    s.wire([(670, 290), (820, 300)], C["rf"], 3, True)
-    s.text(745, 285, "ESP-NOW", 13, "middle", "700")
-    s.note(700, 420, 1, "配对：模式开关拨蓝牙 → 短按 Xbox 键 → 长按配对键")
-    s.note(700, 450, 2, "换手柄：串口输入 PAIR 后重新配对")
-    s.note(700, 480, 3, "地面站必须是原版 ESP32（S3 / C3 不行）")
-    s.save("fig4-ground-station.svg")
+SERVOS = [
+    ("J1 底座旋转", "DS3218MG · 20 kg·cm · 180°"),
+    ("J2 大臂（肩）", "DS3225MG · 25 kg·cm · 180°"),
+    ("J3 小臂（肘）", "DS3218MG · 20 kg·cm · 180°"),
+    ("J4 手腕俯仰", "MG996R · 10 kg·cm · 180°"),
+    ("J5 手腕旋转", "MG996R · 10 kg·cm · 180°"),
+    ("J6 夹爪", "MG996R · 10 kg·cm · 180°"),
+]
 
 
-def fig_camera():
-    s = Svg(1100, 400, "图 5  可选：摄像头供电接线",
-            "摄像头从 Mini-360 的 5 V 输出取电；二选一")
-    s.box(40, 120, 200, 110, "Mini-360（图 2）", "OUT+ 5.0 V")
-    s.pin(240, 160, "OUT+", "right", C["v5"])
-    s.pin(240, 200, "GND", "right", C["gnd"])
-    s.box(460, 90, 270, 120, "方案 B：XIAO ESP32S3 Sense", "摄像头节点 · 带外置天线")
-    s.pin(460, 130, "5V", "left", C["v5"])
-    s.pin(460, 170, "GND", "left", C["gnd"])
-    s.part(330, 116, 80, 28, "SS14 ▶|")
-    s.wire([(240, 160), (290, 160), (290, 130), (330, 130)], C["v5"])
-    s.wire([(410, 130), (460, 130)], C["v5"])
-    s.wire([(240, 200), (300, 200), (300, 170), (460, 170)], C["gnd"])
-    s.box(460, 250, 270, 100, "方案 A：5.8 GHz 一体摄像头", "AIO · 25 mW · 3.3–5 V")
-    s.pin(460, 285, "VCC", "left", C["v5"])
-    s.pin(460, 320, "GND", "left", C["gnd"])
-    s.wire([(290, 160), (290, 285), (460, 285)], C["v5"])
-    s.dot(290, 160, C["v5"])
-    s.wire([(300, 200), (300, 320), (460, 320)], C["gnd"])
-    s.dot(300, 200, C["gnd"])
-    s.note(770, 130, 1, "B：画面在手机网页 192.168.4.1")
-    s.note(770, 160, 2, "B：程序 camera_node，选 OPI PSRAM")
-    s.note(770, 280, 3, "A：Android 手机 + OTG 接收器")
-    s.note(770, 310, 4, "装在机头，下倾 10–20°，垫软胶")
-    s.save("fig5-camera.svg")
+def fig_servos():
+    s = Svg(1100, 620, "图 3  舵机接线：PCA9685 通道 0–5 → J1–J6",
+            "舵机插头直接插在 PCA9685 的 3 针排针上：棕 = GND，红 = V+，橙 = 信号（PWM）")
+    s.box(40, 100, 330, 470, "PCA9685 板", "")
+    s.text(205, 150, "每个通道 3 针（图中横着画）：PWM · V+ · GND", 11.5, "middle", color=C["mute"])
+    s.parts.append(f'<rect x="60" y="480" width="120" height="60" rx="4" fill="#2E7D32"/>')
+    s.text(120, 505, "V+  GND", 12, "middle", "700", "#FFFFFF")
+    s.text(120, 525, "螺丝端子", 11, "middle", color="#E8F5E9")
+    s.tag(190, 510, "← 6 V 母线（图 1）", C["v6"])
+    rows = []
+    for i in range(6):
+        cy = 190 + i * 48
+        s.text(70, cy + 5, f"通道 {i}", 13, "start", "700")
+        for k, col in enumerate(("#E3A600", C["v12"], C["gnd"])):
+            s.parts.append(f'<rect x="{150 + k * 24}" y="{cy - 9}" width="18" height="18" rx="2" fill="{col}"/>')
+        rows.append(cy)
+    s.text(159, 175, "PWM", 9.5, "middle", "700")
+    s.text(183, 175, "V+", 9.5, "middle", "700")
+    s.text(207, 175, "G", 9.5, "middle", "700")
+    for i, (name, model) in enumerate(SERVOS):
+        cy = rows[i]
+        bx, by = 560, 100 + i * 78
+        s.box(bx, by, 500, 64, name, model, fill=C["hi"] if i == 1 else None)
+        s.wire([(222, cy), (300, cy), (470, by + 32), (560, by + 32)], "#E3A600", 3)
+        s.text(465, by + 26, "延长线" if i >= 3 else "", 11, "end", color=C["mute"])
+    s.note(40, 600, 1, "插反（棕线不在 G 那一侧）舵机不会转，但一般不会坏；插之前核对颜色")
+    s.note(620, 600, 2, "J4–J6 离底座远，用 30–50 cm 舵机延长线（22 AWG 粗线）")
+    s.save("fig3-servos.svg")
+
+
+def fig_kinematics():
+    import math
+    s = Svg(1100, 640, "图 4  关节编号、尺寸和角度约定（侧视 + 俯视）",
+            "逆运动学用到的 4 个尺寸：d1、L2、L3、L4（用尺子量，单位 mm）；角度的正方向见箭头")
+    k = 1.35
+    table_y, bx = 540, 180
+    s.wire([(60, table_y), (660, table_y)], C["mute"], 3)
+    s.text(70, table_y + 22, "桌面 z = 0", 12, color=C["mute"])
+    sh = (bx, table_y - 75 * k)
+    t2, t3, t4 = 60, -70, -50
+    a23, phi = t2 + t3, t2 + t3 + t4
+
+    def step(p, length, ang):
+        return (p[0] + length * k * math.cos(math.radians(ang)), p[1] - length * k * math.sin(math.radians(ang)))
+
+    el = step(sh, 105, t2)
+    wr = step(el, 100, a23)
+    tp = step(wr, 120, phi)
+    # base
+    s.parts.append(f'<rect x="{bx - 45}" y="{table_y - 30}" width="90" height="30" rx="4" fill="{C["arm"]}" '
+                   f'stroke="{C["boxline"]}"/>')
+    s.wire([(bx, table_y - 30), sh], "#8FA3AA", 16)
+    for a, b in ((sh, el), (el, wr), (wr, tp)):
+        s.wire([a, b], "#8FA3AA", 14)
+    # gripper fingers
+    for off in (-12, 12):
+        ang = math.radians(phi)
+        nx, ny = -math.sin(ang) * off, -math.cos(ang) * off
+        s.wire([(tp[0] + nx * 0.8, tp[1] + ny * 0.8), step((tp[0] + nx, tp[1] + ny), 18, phi)], C["boxline"], 4)
+    for (px, py), lab in ((sh, "J2"), (el, "J3"), (wr, "J4")):
+        s.parts.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="13" fill="#FFFFFF" stroke="{C["boxline"]}" '
+                       f'stroke-width="2.5"/>')
+        s.text(px + 18, py - 14, lab, 14, weight="700")
+    s.dot(tp[0], tp[1], C["v12"])
+    s.text(tp[0] + 14, tp[1] + 6, "工具点（两指中间）", 12.5, weight="700", color=C["v12"])
+    s.text(bx + 52, table_y - 8, "J1", 14, "start", "700")
+    # dimensions
+    s.wire([(bx - 70, table_y), (bx - 70, sh[1])], C["sig"], 1.5)
+    s.text(bx - 76, (table_y + sh[1]) / 2, "d1", 14, "end", "700", C["sig"])
+    for a, b, lab, dx, dy in ((sh, el, "L2", -30, 0), (el, wr, "L3", 0, -18), (wr, tp, "L4", 26, 0)):
+        s.text((a[0] + b[0]) / 2 + dx, (a[1] + b[1]) / 2 + dy, lab, 15, "middle", "700", C["sig"])
+    # angles
+    s.wire([sh, (sh[0] + 90, sh[1])], C["mute"], 1.5, True)
+    s.text(sh[0] + 40, sh[1] - 12, "θ2", 14, weight="700", color=C["v6"])
+    ext = step(el, 60, t2)
+    s.wire([el, ext], C["mute"], 1.5, True)
+    s.text(el[0] + 48, el[1] - 52, "θ3 < 0", 13, weight="700", color=C["v6"])
+    s.wire([wr, (wr[0] + 80, wr[1])], C["mute"], 1.5, True)
+    s.text(wr[0] + 64, wr[1] + 40, "φ（工具俯仰）", 13, weight="700", color=C["v6"])
+    s.text((wr[0] + tp[0]) / 2 - 22, (wr[1] + tp[1]) / 2 + 30, "J5 绕这根轴转", 12, "end", color=C["mute"])
+    # top view
+    cx, cy = 870, 330
+    s.text(870, 120, "俯视", 15, "middle", "700")
+    s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="46" fill="{C["arm"]}" stroke="{C["boxline"]}"/>')
+    s.arrow(cx, cy, cx + 170, cy, C["ink"], 2)
+    s.text(cx + 172, cy + 20, "x（正前方）", 13, "end", "700")
+    s.arrow(cx, cy, cx, cy - 170, C["ink"], 2)
+    s.text(cx + 8, cy - 160, "y（机械臂的左边）", 13, weight="700")
+    ang = math.radians(35)
+    s.wire([(cx, cy), (cx + 150 * math.cos(ang), cy - 150 * math.sin(ang))], "#8FA3AA", 12)
+    s.parts.append(f'<path d="M{cx + 80},{cy} A80,80 0 0 0 {cx + 80 * math.cos(ang):.1f},{cy - 80 * math.sin(ang):.1f}" '
+                   f'fill="none" stroke="{C["v6"]}" stroke-width="2.5"/>')
+    s.text(cx + 92, cy - 22, "θ1 > 0（左转）", 13, weight="700", color=C["v6"])
+    s.text(cx, cy + 5, "J1", 13, "middle", "700")
+    # conventions
+    for i, line in enumerate(("θ1：0 = 正前方，往左转为正",
+                              "θ2：大臂和水平面的夹角，90° = 竖直",
+                              "θ3：小臂相对大臂的弯角，0 = 伸直，往下弯为负",
+                              "θ4：手腕相对小臂的弯角；φ = θ2 + θ3 + θ4",
+                              "φ：工具俯仰，0 = 水平，−90° = 竖直朝下")):
+        s.text(700, 470 + i * 24, line, 12.5, color=C["mute"])
+    s.save("fig4-kinematics.svg")
+
+
+def fig_gamepad():
+    s = Svg(1100, 620, "图 5  G7 Pro 按键功能（关节模式 / XYZ 模式）",
+            "View 键切换两种模式；RT / LT 控制夹爪；Menu 上电 / 停放断电")
+    # controller silhouette
+    s.parts.append('<path d="M380,210 Q380,170 430,165 L670,165 Q720,170 720,210 L760,420 Q765,470 715,470 '
+                   'Q680,470 650,420 L620,380 L480,380 L450,420 Q420,470 385,470 Q335,470 340,420 Z" '
+                   f'fill="{C["box"]}" stroke="{C["boxline"]}" stroke-width="2"/>')
+    for x0 in (400, 640):
+        s.parts.append(f'<rect x="{x0}" y="140" width="60" height="18" rx="8" fill="#C9D3D6" stroke="{C["boxline"]}"/>')
+        s.parts.append(f'<rect x="{x0 + 5}" y="112" width="50" height="24" rx="10" fill="#E3E9EB" stroke="{C["boxline"]}"/>')
+    s.text(430, 153, "LB", 11, "middle", "700")
+    s.text(670, 153, "RB", 11, "middle", "700")
+    s.text(430, 129, "LT", 11, "middle", "700")
+    s.text(670, 129, "RT", 11, "middle", "700")
+    for (x0, y0) in ((450, 230), (600, 320)):
+        s.parts.append(f'<circle cx="{x0}" cy="{y0}" r="30" fill="#C9D3D6" stroke="{C["boxline"]}" stroke-width="2"/>')
+        s.parts.append(f'<circle cx="{x0}" cy="{y0}" r="14" fill="#9FAFB4"/>')
+    s.parts.append(f'<path d="M490,310 h14 v-14 h14 v14 h14 v14 h-14 v14 h-14 v-14 h-14 Z" fill="#9FAFB4"/>')
+    for (x0, y0, lab, col) in ((650, 205, "Y", "#E0A800"), (675, 230, "B", "#C62828"), (650, 255, "A", "#2E7D32"),
+                               (625, 230, "X", "#1565C0")):
+        s.parts.append(f'<circle cx="{x0}" cy="{y0}" r="12" fill="{col}"/>')
+        s.text(x0, y0 + 4.5, lab, 12, "middle", "700", "#FFFFFF")
+    s.parts.append(f'<rect x="522" y="222" width="18" height="12" rx="3" fill="#9FAFB4"/>')
+    s.parts.append(f'<rect x="562" y="222" width="18" height="12" rx="3" fill="#9FAFB4"/>')
+    s.text(531, 250, "View", 10, "middle", "700")
+    s.text(571, 250, "Menu", 10, "middle", "700")
+
+    def call(px, py, tx, ty, lines, anchor):
+        s.wire([(px, py), (tx + (8 if anchor == "start" else -8), ty - 5)], C["mute"], 1.2)
+        for i, ln in enumerate(lines):
+            s.text(tx + (12 if anchor == "start" else -12), ty + i * 18, ln, 12.5 if i else 13.5, anchor,
+                   "700" if i == 0 else "400", None if i == 0 else C["mute"])
+
+    call(430, 124, 330, 100, ["LT  张开夹爪（按得越深越快）"], "end")
+    call(430, 150, 330, 135, ["LB  速度 −（慢 / 中 / 快）"], "end")
+    call(450, 230, 330, 200, ["左摇杆", "关节：左右 J1 底座 · 上下 J2 大臂", "XYZ：左右 = 左右移 · 上下 = 前后移"], "end")
+    call(505, 318, 330, 290, ["十字键", "← → J5 手腕旋转（两种模式）", "↓ 删除最后一个路点 · ↑ 长按 1 秒保存路点"],
+         "end")
+    call(531, 228, 330, 380, ["View  切换 关节 / XYZ 模式"], "end")
+    call(670, 124, 770, 100, ["RT  闭合夹爪（夹到东西会自动停）"], "start")
+    call(670, 150, 770, 135, ["RB  速度 +"], "start")
+    call(650, 205, 770, 180, ["Y  回原位（HOME 姿态）"], "start")
+    call(675, 230, 770, 210, ["B  停止（过载后按 B 恢复）"], "start")
+    call(650, 255, 770, 240, ["A  记录路点 · 长按 2 秒清空全部"], "start")
+    call(625, 230, 770, 270, ["X  播放一次 · 长按 1 秒循环播放"], "start")
+    call(600, 320, 770, 320, ["右摇杆", "关节：上下 J3 小臂 · 左右 J4 手腕俯仰", "XYZ：上下 = 升降 · 左右 = 工具俯仰"],
+         "start")
+    call(571, 228, 770, 400, ["Menu  给舵机上电 / 停放后断电"], "start")
+    s.note(40, 520, 1, "播放或执行文字指令时，动一下摇杆 / 扳机 / 十字键 ← →，控制权马上回到手柄")
+    s.note(40, 550, 2, "手柄断开时机械臂停在原地保持姿态；正在播放的路点会继续播放完（B 或文字 STOP 停止）")
+    s.note(40, 580, 3, "手柄震动：短 = 确认 · 长 = 到达极限 / 过载 / 急停")
+    s.save("fig5-gamepad.svg")
 
 
 def fig_layout():
-    s = Svg(1200, 700, "图 6  机身布局（俯视）", "重的东西靠近重心；传感器远离舵机；左右严格对称")
-    cx = 550
-    # wings
-    wing = C["hi"]
-    for sgn in (-1, 1):
-        s.parts.append(
-            f'<path d="M{cx + sgn * 40},230 C{cx + sgn * 200},110 {cx + sgn * 380},120 {cx + sgn * 400},240 '
-            f'C{cx + sgn * 330},330 {cx + sgn * 150},330 {cx + sgn * 40},300 Z" fill="{wing}" '
-            f'stroke="#C9A55A" stroke-width="2"/>')
-        s.parts.append(
-            f'<path d="M{cx + sgn * 40},320 C{cx + sgn * 180},330 {cx + sgn * 300},420 {cx + sgn * 250},520 '
-            f'C{cx + sgn * 170},560 {cx + sgn * 80},470 {cx + sgn * 40},380 Z" fill="{wing}" '
-            f'stroke="#C9A55A" stroke-width="2"/>')
-        s.wire([(cx + sgn * 40, 232), (cx + sgn * 400, 238)], "#555555", 3)
-    s.text(cx - 330, 200, "前缘碳杆 Ø2 mm", 12, "middle", color=C["mute"])
-    # body
-    s.parts.append(f'<rect x="{cx - 40}" y="150" width="80" height="420" rx="30" fill="#E8EEEC" '
-                   f'stroke="{C["boxline"]}" stroke-width="1.8"/>')
-    s.text(cx, 140, "▲ 机头（陀螺仪 X 轴朝这边）", 13, "middle", "700")
-    items = [
-        (175, "摄像头（可选）", "#B9C4C1"),
-        (225, "左 / 右舵机", "#9EC5E8"),
-        (285, "XIAO 飞控", "#C9E4D4"),
-        (335, "陀螺仪 ⊕ 重心", "#F2C9C4"),
-        (385, "电池（前后可调）", "#F6D7A7"),
-        (440, "降压 · 气压计（海绵）", "#E3D5F2"),
-        (495, "GPS（天线朝上）", "#D6E4F0"),
-        (545, "充电板 Type-C 口", "#F7E3B0"),
-    ]
-    for y, label, col in items:
-        s.parts.append(f'<rect x="{cx - 34}" y="{y - 16}" width="68" height="32" rx="6" fill="{col}" '
-                       f'stroke="{C["boxline"]}" stroke-width="1"/>')
-        s.wire([(cx + 34, y), (cx + 420, y)], "#9AA7AB", 1.2)
-        s.text(cx + 426, y + 4, label, 13, weight="600")
-    s.parts.append(f'<circle cx="{cx}" cy="335" r="9" fill="none" stroke="{C["bat"]}" stroke-width="2.5"/>')
-    s.wire([(cx - 9, 335), (cx + 9, 335)], C["bat"], 2)
-    s.wire([(cx, 326), (cx, 344)], C["bat"], 2)
-    s.note(40, 610, 1, "两个舵机轴心对称，舵机臂在中位时装上翅膀")
-    s.note(40, 638, 2, "陀螺仪贴在重心附近，用 VHB 泡棉胶，远离舵机")
-    s.note(40, 666, 3, "GPS 离 XIAO 天线 ≥ 3 cm；Type-C 口朝外方便插线")
+    s = Svg(1100, 600, "图 6  桌面布局（俯视）：底板、机械臂、电控盒、急停",
+            "机械臂伸出去有力矩，底板必须夹在桌子上；虚线是最大伸展范围，里面不要放手和杂物")
+    ox, oy, bw, bh = 120, 120, 400, 300
+    s.parts.insert(2, '<defs><clipPath id="clip"><rect x="0" y="80" width="690" height="500"/></clipPath></defs>')
+    s.parts.append(f'<rect x="{ox}" y="{oy}" width="{bw}" height="{bh}" rx="6" fill="#EFE6D6" '
+                   f'stroke="{C["boxline"]}" stroke-width="2"/>')
+    s.text(ox + 8, oy + bh - 10, "底板 400 × 300 mm（12 mm 多层板 / 5 mm 铝板）", 12.5, weight="700")
+    ax, ay = ox + 170, oy + 150
+    s.parts.append(f'<path d="M{ax},{ay - 325} A325,325 0 0 1 {ax},{ay + 325}" fill="none" stroke="{C["v12"]}" '
+                   f'stroke-width="1.8" stroke-dasharray="8 6" clip-path="url(#clip)"/>')
+    s.text(ax + 330, ay + 5, "最大伸展", 12.5, weight="700", color=C["v12"])
+    s.text(ax + 330, ay + 23, "≈ 325 mm", 12.5, weight="700", color=C["v12"])
+    s.parts.append(f'<circle cx="{ax}" cy="{ay}" r="50" fill="{C["arm"]}" stroke="{C["boxline"]}" stroke-width="2"/>')
+    s.text(ax, ay + 5, "机械臂底座", 12, "middle", "700")
+    s.arrow(ax + 50, ay, ax + 170, ay, C["ink"], 2)
+    s.text(ax + 172, ay - 10, "x 正前方（工作区）", 12, "middle", "700")
+    ex, ey = ox + 15, oy + 95
+    s.parts.append(f'<rect x="{ex}" y="{ey}" width="90" height="110" rx="6" fill="{C["hi"]}" '
+                   f'stroke="{C["boxline"]}" stroke-width="1.6"/>')
+    s.text(ex + 45, ey + 40, "电控盒", 13, "middle", "700")
+    s.text(ex + 45, ey + 60, "在底座后方", 11, "middle", color=C["mute"])
+    s.text(ex + 45, ey + 76, "手臂够不到", 11, "middle", color=C["mute"])
+    s.wire([(ex + 90, ay - 20), (ax - 50, ay - 20)], C["sig"], 2.5, True)
+    s.parts.append(f'<rect x="{ox - 26}" y="{oy + 30}" width="26" height="22" rx="3" fill="#555"/>')
+    s.text(ox - 30, oy + 46, "DC 12 V + 开关", 12, "end", "700")
+    for cy in (oy + 10, oy + bh - 60):
+        s.parts.append(f'<rect x="{ox - 18}" y="{cy}" width="26" height="46" rx="4" fill="#607D8B"/>')
+    s.text(ox - 30, oy + bh - 30, "F 型夹 × 2", 12, "end", "700", "#455A64")
+    s.text(ox - 30, oy + bh - 14, "夹在桌边", 11.5, "end", color="#455A64")
+    s.parts.append(f'<rect x="585" y="455" width="70" height="60" rx="6" fill="#FFD54F" stroke="#7F6000" stroke-width="2"/>')
+    s.parts.append('<circle cx="620" cy="485" r="20" fill="#C62828" stroke="#7F0000" stroke-width="3"/>')
+    s.text(620, 535, "急停盒", 13, "middle", "700", "#C62828")
+    s.wire([(ex + 45, ey + 110), (ex + 45, 540), (560, 540), (585, 500)], C["v6"], 2.5, True)
+    s.text(330, 556, "急停线（6 V 回路，18 AWG）", 11.5, "middle", color=C["v6"])
+    for i, line in enumerate(("① 底座用 4 颗 M4 螺丝固定在底板上，不要只靠胶",
+                              "② 电控盒放在底座正后方：J1 只转 ±90°，手臂够不到",
+                              "③ 急停单独装小盒，放在伸展范围外、右手边",
+                              "④ 底板后边夹在桌边，两把 F 型夹",
+                              "⑤ 第一次运行把速度调到“慢”（LB）")):
+        s.text(720, 170 + i * 30, line, 13)
     s.save("fig6-layout.svg")
 
 
-def fig_body():
-    s = Svg(1200, 660, "图 7  机身结构与材料（侧视）",
-            "碳纤维管做主梁（又轻又硬），3D 打印件夹持舵机，薄托板承载电子件；机身总重目标 8–12 g")
-    y0 = 330
-    # keel tube
-    s.parts.append(f'<rect x="170" y="{y0 - 6}" width="780" height="12" rx="6" fill="#3A3F42"/>')
-    s.text(200, y0 + 34, "① 主梁：碳纤维方管 4×4 mm（或圆管 Ø4/Ø3 mm），长 130–150 mm，约 1.5 g",
-           13, "start", "700")
-    # servo mount (front)
-    s.parts.append(f'<rect x="190" y="{y0 - 70}" width="150" height="64" rx="8" fill="#9EC5E8" '
-                   f'stroke="{C["boxline"]}" stroke-width="1.5"/>')
-    s.text(265, y0 - 44, "舵机 ×2", 13, "middle", "700")
-    s.text(265, y0 - 26, "（左右并排，输出轴朝前）", 11, "middle", color=C["mute"])
-    s.parts.append(f'<path d="M180,{y0 - 80} h170 v94 h-170 z" fill="none" stroke="#C97A1E" '
-                   f'stroke-width="3" stroke-dasharray="8 4"/>')
-    s.wire([(265, y0 - 80), (265, 150)], "#C97A1E", 1.5)
-    s.text(40, 142, "② 舵机座：3D 打印 PETG（cad/servo_mount.scad），套在主梁上，约 2.6 g", 13, "start", "700", "#A5620F")
-    # wing root rods from servo horns
-    s.wire([(300, y0 - 70), (420, 120)], "#555555", 4)
-    s.text(430, 118, "翅膀前缘 Ø2 mm 碳杆 → 舵机臂", 12, color=C["mute"])
-    # deck with electronics
-    s.parts.append(f'<rect x="400" y="{y0 - 22}" width="330" height="10" rx="3" fill="#6B6F72"/>')
-    comps = [(410, 58, "XIAO", "#C9E4D4"), (472, 58, "陀螺仪", "#F2C9C4"), (534, 106, "电池 2S", "#F6D7A7"),
-             (644, 82, "降压 / 气压", "#E3D5F2")]
-    for x, w, lab, col in comps:
-        s.parts.append(f'<rect x="{x}" y="{y0 - 60}" width="{w}" height="38" rx="5" fill="{col}" '
-                       f'stroke="{C["boxline"]}"/>')
-        s.text(x + w / 2, y0 - 36, lab, 11.5, "middle", "600")
-    s.wire([(715, y0 - 12), (715, 440)], "#6B6F72", 1.5)
-    s.text(715, 458, "③ 电子托板：0.5 mm 碳纤维板 或 1.5 mm 轻木板，约 60×18 mm，1–2 g", 13, "middle", "700")
-    s.text(715, 478, "碳板导电：先贴一层 Kapton 胶带或双面胶再放电子件", 12, "middle", color=C["bat"])
-    # tail: charger + GPS
-    s.parts.append(f'<rect x="800" y="{y0 - 50}" width="110" height="38" rx="5" fill="#F7E3B0" '
-                   f'stroke="{C["boxline"]}"/>')
-    s.text(855, y0 - 26, "充电板 Type-C", 11.5, "middle", "600")
-    s.parts.append(f'<rect x="800" y="{y0 - 90}" width="110" height="34" rx="5" fill="#D6E4F0" '
-                   f'stroke="{C["boxline"]}"/>')
-    s.text(855, y0 - 68, "GPS（可选）", 11, "middle", "600")
-    # head / tail pieces
-    s.parts.append(f'<ellipse cx="150" cy="{y0}" rx="40" ry="26" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>')
-    s.text(150, y0 + 4, "头", 12, "middle", "700")
-    s.parts.append(f'<path d="M950,{y0 - 14} L1040,{y0} L950,{y0 + 14} Z" fill="#FFF3D6" stroke="#C9A55A" '
-                   f'stroke-width="2"/>')
-    s.wire([(150, y0 + 26), (150, 400)], "#9AA7AB", 1.2)
-    s.text(40, 418, "④ 头 / 尾：3D 打印薄壳或轻木（可选）", 12, "start", color=C["mute"])
-    s.text(40, y0 - 40, "◀ 机头", 13, "start", "700")
-    # joints
-    s.wire([(690, y0 + 6), (690, 400)], "#9AA7AB", 1.2)
-    s.text(680, 404, "托板与主梁：细线缠绕 + 502，或 2 mm 扎带", 12, "end", color=C["mute"])
-    # notes
-    s.note(40, 540, 1, "主梁选“碳纤维管”：同样重量下比轻木硬很多，扑翼时机身不会扭，控制更准")
-    s.note(40, 570, 2, "XIAO 的天线不要被碳板包住（碳纤维会挡无线信号），天线露在托板边缘外")
-    s.note(40, 600, 3, "切碳管 / 碳板：笔刀绕圈划断或细锯锯断；戴口罩，边缘用砂纸磨圆")
-    s.note(40, 630, 4, "连接处：细线缠 5–6 圈 + 502 渗透，比只用胶结实得多")
-    s.save("fig7-body-structure.svg")
+def fig_calibration():
+    s = Svg(1100, 600, "图 7  两点标定：让“角度”和舵机脉宽一一对应",
+            "每个关节在两个已知姿态各 MARK 一次，固件自动算出 us0 和 usdeg；公式：脉宽 = us0 + usdeg × 角度")
+    x0, y0, w, h = 90, 110, 430, 330
+    s.wire([(x0, y0 + h), (x0 + w, y0 + h)], C["ink"], 2)
+    s.wire([(x0, y0 + h), (x0, y0)], C["ink"], 2)
+    s.text(x0 + w, y0 + h + 30, "关节角度（°）", 12.5, "end", "700")
+    s.text(x0 - 10, y0 - 10, "脉宽（µs）", 12.5, "start", "700")
+    for v, lab in ((0, "500"), (0.5, "1500"), (1, "2500")):
+        yy = y0 + h - v * h
+        s.wire([(x0 - 6, yy), (x0, yy)], C["ink"], 2)
+        s.text(x0 - 10, yy + 4, lab, 11.5, "end")
+    pa, pb = (x0 + 110, y0 + h - 0.14 * h), (x0 + 330, y0 + h - 0.64 * h)
+    slope = (pb[1] - pa[1]) / (pb[0] - pa[0])
+    s.wire([(x0 + 52, pa[1] + slope * (x0 + 52 - pa[0])), (x0 + 410, pa[1] + slope * (x0 + 410 - pa[0]))],
+           C["sig"], 3)
+    for (px, py), lab in ((pa, "MARK 2 0"), (pb, "MARK 2 90")):
+        s.parts.append(f'<circle cx="{px}" cy="{py}" r="8" fill="{C["v12"]}"/>')
+        s.text(px + 14, py + 18, lab, 13, weight="700", color=C["v12"])
+    s.text(x0 + 110, y0 + h + 18, "0°", 11.5, "middle")
+    s.text(x0 + 330, y0 + h + 18, "90°", 11.5, "middle")
+    s.text(x0 + 200, y0 + 70, "斜率 = usdeg（正负 = 方向）", 12.5, color=C["sig"], weight="700")
+    # poses for J2
+    bx = 620
+    s.text(bx, 125, "例：J2 大臂", 15, weight="700")
+    for i, (ang, title) in enumerate(((0, "① 大臂水平 → MARK 2 0"), (90, "② 大臂竖直 → MARK 2 90"))):
+        yy = 250 + i * 190
+        s.wire([(bx, yy + 40), (bx + 180, yy + 40)], C["mute"], 2)
+        s.parts.append(f'<circle cx="{bx + 40}" cy="{yy}" r="10" fill="#FFFFFF" stroke="{C["boxline"]}" stroke-width="2.5"/>')
+        end = (bx + 150, yy) if ang == 0 else (bx + 40, yy - 105)
+        s.wire([(bx + 40, yy), end], "#8FA3AA", 12)
+        s.text(bx + 200, yy - 30 if ang else yy + 5, title, 13, weight="700")
+        s.text(bx + 200, (yy - 10) if ang else yy + 25, "用手机水平仪 App 贴在大臂上对准", 11.5, color=C["mute"])
+    s.note(40, 540, 1, "PULSE 2 1500 让舵机先回中；再用 PULSE 2 <µs> 一点点调，调到姿态①")
+    s.note(40, 570, 2, "每个关节都做一遍（夹爪：全开 MARK 6 0，夹紧 MARK 6 100），最后 PULSE OFF、SAVE PARAMS")
+    s.save("fig7-calibration.svg")
 
 
-def fig_wing_structure():
-    s = Svg(1200, 720, "图 8  翅膀结构（左侧一片，俯视）",
-            "前翅和后翅在翼根连在一起，由同一个舵机带动；尺寸按 Mech-Butterfly 的 A3 模板，下面数字仅供参考")
-    film = "#FFF3D6"
-    edge = "#C9A55A"
-    # membrane (forewing + hindwing)
-    s.parts.append(f'<path d="M820,228 C640,120 380,110 240,150 C190,190 200,250 260,285 C420,320 640,315 820,300 Z" '
-                   f'fill="{film}" stroke="{edge}" stroke-width="2"/>')
-    s.parts.append(f'<path d="M820,318 C700,330 560,400 520,500 C500,560 560,590 620,570 C720,520 780,430 820,360 Z" '
-                   f'fill="{film}" stroke="{edge}" stroke-width="2"/>')
-    # rods
-    s.wire([(822, 230), (242, 152)], "#2F3437", 6)                      # leading edge Ø2
-    for tx, ty in ((262, 282), (430, 312), (620, 312)):                 # forewing veins Ø1.5
-        s.wire([(815, 250), (tx, ty)], "#4A5054", 3.5)
-    for tx, ty in ((540, 520), (660, 520)):                             # hindwing veins Ø1.5
-        s.wire([(815, 335), (tx, ty)], "#4A5054", 3.5)
-    s.wire([(815, 320), (522, 498)], "#2F3437", 4.5)                    # hindwing leading rod
-    for a, b in (((330, 205), (360, 293)), ((470, 190), (520, 303)), ((640, 210), (690, 300)),
-                 ((600, 430), (680, 450)), ((580, 470), (640, 510))):   # cross veins Ø1.0
-        s.wire([a, b], "#7A8084", 2)
-    # root joint
-    s.parts.append(f'<rect x="812" y="215" width="46" height="160" rx="8" fill="#9EC5E8" stroke="{C["boxline"]}" '
-                   f'stroke-width="1.5"/>')
-    s.text(835, 395, "翼根座", 12, "middle", "700")
-    s.text(835, 411, "→ 舵机臂", 11, "middle", color=C["mute"])
-    # dimensions
-    s.wire([(242, 110), (822, 110)], C["mute"], 1.2)
-    s.wire([(242, 102), (242, 118)], C["mute"], 1.2)
-    s.wire([(822, 102), (822, 118)], C["mute"], 1.2)
-    s.text(532, 102, "半翼展约 380–420 mm（两侧加机身约 85 cm）", 12.5, "middle", "600")
-    s.wire([(210, 150), (210, 285)], C["mute"], 1.2)
-    s.text(200, 222, "前翅宽", 12, "end", "600")
-    s.text(200, 238, "约 150–180 mm", 11.5, "end", color=C["mute"])
-    # numbered markers on the drawing
-    for n, (mx, my) in enumerate(((420, 176), (560, 290), (655, 250), (680, 408), (330, 240), (835, 300)), 1):
-        s.marker(mx, my, n)
-    # legend column
-    items = [
-        ("前缘：Ø2.0 mm 碳纤维实心杆", "最粗、受力最大，从翼根一直通到翼尖"),
-        ("翅脉：Ø1.5 mm 碳杆", "从翼根呈扇形散开，撑住翼面"),
-        ("横脉：Ø1.0 mm 碳杆", "把相邻的翅脉连起来，防止翼面扭曲"),
-        ("后翅杆：Ø1.5 mm 碳杆", "后翅的主杆，和前翅插在同一个翼根座上"),
-        ("翼膜：聚酯薄膜 12–15 µm", "绷平贴在碳杆上，越薄越轻"),
-        ("翼根座：3D 打印 PETG（cad/wing_root.scad）", "所有碳杆都插进它的孔里，再装到舵机臂上，约 2 g"),
+def fig_assembly():
+    s = Svg(1100, 520, "图 8  机械结构装配顺序（从底座往上）",
+            "黄金规则：每装一个舵盘前，舵机先通电回中（1500 µs），舵盘按下图的“中位姿态”对准再拧螺丝")
+    steps = [
+        ("① 底座", "底板打孔装轴承转盘\nJ1 舵机竖直装在底座里\n金属舵盘连转盘上层"),
+        ("② 肩部 J2", "J1 转盘上装 J2 舵机支架\nJ2 用扭力最大的 DS3225\n中位时大臂竖直"),
+        ("③ 大臂", "两块 U 型支架 + 杯士轴承\n做大臂（长 L2）\n另一侧装轴承，不要悬臂"),
+        ("④ 肘部 J3", "J3 舵机装在大臂顶端\n中位时小臂水平朝前"),
+        ("⑤ 手腕 J4 / J5", "J4 俯仰：中位时手腕伸直\nJ5 旋转：中位时夹爪\n两指左右张开"),
+        ("⑥ 夹爪 J6", "夹爪舵机中位 = 半开\n装好后标定全开 / 夹紧"),
     ]
-    for i, (t1, t2) in enumerate(items):
-        yy = 150 + i * 52
-        s.marker(915, yy - 4, i + 1)
-        s.text(935, yy, t1, 13, weight="700")
-        s.text(935, yy + 18, t2, 11.5, color=C["mute"])
-    # inset A: cross-section
-    s.box(40, 480, 330, 200, "剖面 A：膜和碳杆怎么贴", "")
-    s.parts.append(f'<circle cx="205" cy="590" r="16" fill="#2F3437"/>')
-    s.wire([(70, 572), (340, 572)], edge, 3)
-    for gx in (192, 205, 218):
-        s.parts.append(f'<circle cx="{gx}" cy="575" r="3" fill="{C["v5"]}"/>')
-    s.text(205, 630, "膜在碳杆上面，胶只涂在碳杆上", 12, "middle", "600")
-    s.text(205, 648, "（整张膜都涂胶会变重、起皱）", 11.5, "middle", color=C["mute"])
-    s.text(344, 568, "膜", 11.5, "end", color=C["mute"])
-    s.text(230, 596, "碳杆", 11.5, color="#FFFFFF")
-    # inset B: root joint
-    s.box(420, 590, 740, 110, "", "")
-    s.text(440, 616, "剖面 B：翼根连接", 14, weight="700")
-    s.parts.append(f'<rect x="700" y="620" width="120" height="40" rx="6" fill="#9EC5E8" stroke="{C["boxline"]}"/>')
-    s.wire([(560, 640), (760, 640)], "#2F3437", 6)
-    for i in range(8):
-        x = 690 + i * 5
-        s.wire([(x, 628), (x + 6, 652)], "#C0392B", 1.4)
-    s.text(620, 675, "碳杆插进孔里 15 mm", 11.5, "middle", color=C["mute"])
-    s.text(840, 636, "① 孔径比杆大 0.1–0.2 mm", 12)
-    s.text(840, 656, "② 插入前杆头用砂纸打毛", 12)
-    s.text(840, 676, "③ 孔口细线缠 6–8 圈 + 502 渗透", 12)
-    s.save("fig8-wing-structure.svg")
-
-
-def fig_wing_steps():
-    s = Svg(1200, 760, "图 9  翅膀制作 6 步", "每一只翅膀都按这 6 步做；左右两只最后要称重配对")
-    film, edge, rod = "#FFF3D6", "#C9A55A", "#2F3437"
-    panels = [
-        ("打印模板", ["A3 纸 1:1 打印模板（不要缩放）", "下面垫切割垫，上面盖一层保鲜膜防粘"]),
-        ("摆放碳杆", ["沿轮廓摆：前缘 Ø2，翅脉 Ø1.5 / Ø1.0", "交叉处各点一小滴 502，用胶带临时压住"]),
-        ("喷胶贴膜", ["只在碳杆上喷 3M 77（先用纸遮住别处）", "膜从中间向四周抹平、轻轻绷紧"]),
-        ("修边", ["沿碳杆外侧留 2 mm 剪下多余的膜", "边缘可以向下包住碳杆再点胶，更结实"]),
-        ("称重配对", ["两只翅膀重量差 ≤ 0.5 g", "重的那只修掉一点边缘薄膜"]),
-        ("装到舵机", ["先 servo 0 0 让舵机回中位，再装", "扑动全程不能碰到机身和电线"]),
-    ]
-    pw, ph = 370, 330
-    for i, (title, lines) in enumerate(panels):
+    for i, (title, body) in enumerate(steps):
         col, row = i % 3, i // 3
-        x, y = 30 + col * (pw + 25), 80 + row * (ph + 20)
-        s.parts.append(f'<rect x="{x}" y="{y}" width="{pw}" height="{ph}" rx="10" fill="{C["box"]}" '
-                       f'stroke="{C["boxline"]}" stroke-width="1.4"/>')
-        s.note(x + 12, y + 30, i + 1, "")
-        s.text(x + 44, y + 31, title, 15, weight="700")
-        for j, line in enumerate(lines):
-            s.text(x + 16, y + ph - 40 + j * 20, line, 12.5, color=C["ink"] if j == 0 else C["mute"])
-        ox, oy = x + 45, y + 60          # drawing area ~280 x 190
-        outline = (f'M{ox + 250},{oy + 50} C{ox + 170},{oy} {ox + 60},{oy} {ox + 20},{oy + 25} '
-                   f'C{ox},{oy + 60} {ox + 10},{oy + 100} {ox + 50},{oy + 115} '
-                   f'C{ox + 120},{oy + 135} {ox + 200},{oy + 120} {ox + 250},{oy + 105} Z')
-        rods = [((ox + 250, oy + 52), (ox + 22, oy + 26), 5), ((ox + 245, oy + 70), (ox + 55, oy + 112), 3),
-                ((ox + 245, oy + 70), (ox + 150, oy + 125), 3), ((ox + 100, oy + 22), (ox + 110, oy + 122), 2)]
-        if i == 0:   # template on paper
-            s.parts.append(f'<rect x="{ox - 15}" y="{oy - 10}" width="300" height="180" fill="#FFFFFF" '
-                           f'stroke="#B9C4C1"/>')
-            s.text(ox + 270, oy + 160, "A3", 12, "end", "700", C["mute"])
-            s.parts.append(f'<path d="{outline}" fill="none" stroke="{C["mute"]}" stroke-width="2" '
-                           f'stroke-dasharray="6 4"/>')
-        elif i == 1:  # rods on template
-            s.parts.append(f'<path d="{outline}" fill="none" stroke="{C["mute"]}" stroke-width="1.5" '
-                           f'stroke-dasharray="6 4"/>')
-            for a, b, w in rods:
-                s.wire([a, b], rod, w)
-            for dx, dy in ((100, 22), (104, 72), (245, 70)):
-                s.parts.append(f'<circle cx="{ox + dx}" cy="{oy + dy}" r="5" fill="{C["v5"]}"/>')
-            s.text(ox + 120, oy + 160, "● = 一小滴 502", 12, "middle", color=C["v5"])
-        elif i == 2:  # film over rods with arrows
-            s.parts.append(f'<rect x="{ox - 15}" y="{oy - 15}" width="295" height="160" fill="{film}" '
-                           f'fill-opacity="0.8" stroke="{edge}" stroke-dasharray="4 3"/>')
-            for a, b, w in rods:
-                s.wire([a, b], rod, w)
-            for dx, dy in ((-70, -40), (70, -40), (-70, 40), (70, 40), (-95, 0), (95, 0)):
-                s.arrow(ox + 135 + dx * 0.25, oy + 65 + dy * 0.25, ox + 135 + dx, oy + 65 + dy, C["sig"], 2.5)
-            s.text(ox + 135, oy + 168, "从中间向外抹平", 12, "middle", color=C["sig"])
-        elif i == 3:  # trim
-            s.parts.append(f'<path d="{outline}" fill="{film}" stroke="{edge}" stroke-width="2"/>')
-            for a, b, w in rods:
-                s.wire([a, b], rod, w)
-            s.parts.append(f'<path d="{outline}" fill="none" stroke="{C["bat"]}" stroke-width="1.5" '
-                           f'stroke-dasharray="5 4" transform="translate({ox + 135},{oy + 65}) scale(1.08) '
-                           f'translate({-(ox + 135)},{-(oy + 65)})"/>')
-            s.text(ox + 20, oy + 160, "✂ 红虚线 = 剪切线（留 2 mm）", 12, color=C["bat"])
-        elif i == 4:  # scale with two wings
-            s.parts.append(f'<rect x="{ox + 20}" y="{oy + 120}" width="240" height="40" rx="6" fill="#DDE3E1" '
-                           f'stroke="{C["boxline"]}"/>')
-            s.parts.append(f'<rect x="{ox + 95}" y="{oy + 128}" width="90" height="24" rx="3" fill="#1B2A2F"/>')
-            s.text(ox + 140, oy + 145, "7.84 g", 13, "middle", "700", "#7CF2A0")
-            for dx in (40, 150):
-                s.parts.append(f'<path d="M{ox + dx + 90},{oy + 60} C{ox + dx + 60},{oy + 20} {ox + dx + 20},{oy + 20} '
-                               f'{ox + dx},{oy + 40} C{ox + dx + 10},{oy + 90} {ox + dx + 60},{oy + 100} '
-                               f'{ox + dx + 90},{oy + 90} Z" fill="{film}" stroke="{edge}" stroke-width="2"/>')
-            s.text(ox + 85, oy + 18, "左 7.84 g", 12, "middle", "600")
-            s.text(ox + 195, oy + 18, "右 7.61 g", 12, "middle", "600")
-            s.text(ox + 140, oy + 180, "差 0.23 g ✓", 12, "middle", "700", "#2E7D52")
-        else:  # attach to servo
-            s.parts.append(f'<rect x="{ox + 190}" y="{oy + 60}" width="70" height="60" rx="6" fill="#9EC5E8" '
-                           f'stroke="{C["boxline"]}"/>')
-            s.text(ox + 225, oy + 95, "舵机", 12, "middle", "700")
-            s.parts.append(f'<rect x="{ox + 180}" y="{oy + 40}" width="46" height="18" rx="4" fill="#FFFFFF" '
-                           f'stroke="{C["boxline"]}"/>')
-            s.text(ox + 203, oy + 35, "舵机臂", 11, "middle", color=C["mute"])
-            s.wire([(ox + 200, oy + 48), (ox + 10, oy + 8)], rod, 5)
-            s.parts.append(f'<path d="M{ox + 190},{oy + 46} C{ox + 120},{oy - 5} {ox + 40},{oy} {ox + 10},{oy + 10} '
-                           f'C{ox + 40},{oy + 60} {ox + 120},{oy + 70} {ox + 190},{oy + 56} Z" fill="{film}" '
-                           f'fill-opacity="0.7" stroke="{edge}" stroke-width="1.5"/>')
-            s.wire([(ox + 60, oy + 150), (ox + 60, oy + 110)], C["sig"], 2)
-            s.wire([(ox + 60, oy + 110), (ox + 52, oy + 122)], C["sig"], 2)
-            s.wire([(ox + 60, oy + 110), (ox + 68, oy + 122)], C["sig"], 2)
-            s.text(ox + 76, oy + 150, "中位时翅膀略向上（center 10°）", 11.5, color=C["sig"])
-    s.save("fig9-wing-steps.svg")
-
-
-def fig_measure():
-    s = Svg(1200, 600, "图 10  3D 模型参数：舵机和舵机臂怎么量",
-            "用游标卡尺量这几个尺寸，填到 cad/servo_mount.scad 和 cad/wing_root.scad 开头的参数里")
-    # servo front view
-    x, y = 140, 170
-    s.parts.append(f'<rect x="{x}" y="{y}" width="130" height="250" rx="6" fill="#9EC5E8" stroke="{C["boxline"]}" stroke-width="1.6"/>')
-    s.parts.append(f'<rect x="{x - 45}" y="{y + 60}" width="220" height="14" rx="3" fill="#7DB0DE" stroke="{C["boxline"]}"/>')
-    for hx in (x - 30, x + 160):
-        s.parts.append(f'<circle cx="{hx}" cy="{y + 67}" r="4" fill="#FFFFFF" stroke="{C["boxline"]}"/>')
-    s.parts.append(f'<circle cx="{x + 65}" cy="{y + 30}" r="12" fill="#FFFFFF" stroke="{C["boxline"]}" stroke-width="1.5"/>')
-    s.text(x + 65, y + 215, "舵机", 14, "middle", "700")
-    s.text(x + 65, y + 235, "（侧面，安装耳横放）", 11, "middle", color=C["mute"])
-    # dimensions (servo drawn with ear direction horizontal)
-    def dim(x1, y1, x2, y2, label, off=0, vertical=False):
-        s.wire([(x1, y1), (x2, y2)], C["bat"], 1.6)
-        if vertical:
-            s.wire([(x1 - 6, y1), (x1 + 6, y1)], C["bat"], 1.6)
-            s.wire([(x2 - 6, y2), (x2 + 6, y2)], C["bat"], 1.6)
-            s.text(x1 + 10 + off, (y1 + y2) / 2 + 4, label, 12.5, "start", "700", C["bat"])
-        else:
-            s.wire([(x1, y1 - 6), (x1, y1 + 6)], C["bat"], 1.6)
-            s.wire([(x2, y2 - 6), (x2, y2 + 6)], C["bat"], 1.6)
-            s.text((x1 + x2) / 2, y1 - 10 + off, label, 12.5, "middle", "700", C["bat"])
-    dim(x, y - 20, x + 130, y - 20, "servo_l 机身长（默认 23.0）")
-    dim(x - 45, y + 100, x + 175, y + 100, "")
-    s.text(x + 190, y + 104, "servo_ear_span 两耳外端总长（默认 32.5）", 12.5, "start", "700", C["bat"])
-    dim(x - 30, y + 150, x + 160, y + 150, "")
-    s.text(x + 190, y + 154, "servo_hole_spacing 孔距（默认 28.0）", 12.5, "start", "700", C["bat"])
-    for hx2 in (x - 30, x + 160):
-        s.wire([(hx2, y + 72), (hx2, y + 150)], C["bat"], 1, True)
-    s.text(x + 65, y + 290, "servo_w 机身宽 = 垂直于纸面的厚度", 12.5, "middle", "700", C["bat"])
-    s.text(x + 65, y + 308, "（默认 12.0）", 11.5, "middle", color=C["mute"])
-    # horn
-    hx, hy = 620, 190
-    s.parts.append(f'<path d="M{hx},{hy} h260 a16,16 0 0 1 0,32 h-260 a16,16 0 0 1 0,-32 Z" fill="#FFFFFF" '
-                   f'stroke="{C["boxline"]}" stroke-width="1.6"/>')
-    s.parts.append(f'<circle cx="{hx}" cy="{hy + 16}" r="10" fill="#E3E8E6" stroke="{C["boxline"]}"/>')
-    for i in range(5):
-        s.parts.append(f'<circle cx="{hx + 90 + i * 40}" cy="{hy + 16}" r="3.5" fill="#FFFFFF" stroke="{C["boxline"]}"/>')
-    s.text(hx + 130, hy - 30, "单臂舵机臂（俯视）", 14, "middle", "700")
-    dim(hx + 300, hy, hx + 300, hy + 32, "horn_w 臂宽（默认 5.0）", 8, True)
-    s.text(hx, hy + 80, "horn_t 臂厚（默认 1.6）：用卡尺夹住臂的上下两面量", 12.5, "start", "700", C["bat"])
-    s.text(hx, hy + 104, "horn_screw_from_end：插槽口到螺丝孔的距离（默认 4）", 12.5, "start", "700", C["bat"])
-    s.text(hx, hy + 124, "→ 让螺丝正好穿过舵机臂最外面那个孔", 12, color=C["mute"])
-    # keel + rods
-    s.text(hx, hy + 180, "keel 主梁方管边长（默认 4.0）", 12.5, "start", "700", C["bat"])
-    s.text(hx, hy + 204, "rods：每根碳杆的 [入口位置, 角度, 直径]，默认 Ø2 前缘 + 3 根 Ø1.5", 12.5, "start", "700", C["bat"])
-    s.text(hx, hy + 228, "clearance / rod_clearance：打印余量，太紧就加 0.1", 12.5, "start", "700", C["bat"])
-    s.note(620, 520, 1, "改完参数：OpenSCAD 里按 F6 渲染，再 F7 导出 STL")
-    s.note(620, 550, 2, "先打印一个试装，松紧合适再打印正式件")
-    s.save("fig10-cad-params.svg")
+        x, y = 40 + col * 350, 100 + row * 190
+        s.box(x, y, 300, 130, title, body, fill=C["hi"] if i in (1, 4) else None)
+        if col < 2:
+            s.arrow(x + 300, y + 65, x + 348, y + 65, C["ink"], 2)
+    s.wire([(890, 230), (890, 260), (190, 260), (190, 280)], C["ink"], 2)
+    s.arrow(190, 276, 190, 289, C["ink"], 2)
+    s.note(40, 460, 1, "所有舵盘螺丝点一滴蓝色螺丝胶；支架螺丝用 M3，带弹垫或防松螺母")
+    s.note(40, 490, 2, "每装完一节，用手转一转：只能在舵机转动方向上动，其他方向不能晃")
+    s.save("fig8-assembly.svg")
 
 
 if __name__ == "__main__":
     fig_overview()
-    fig_power_in()
-    fig_power_dist()
+    fig_power()
     fig_signals()
-    fig_ground()
-    fig_camera()
+    fig_servos()
+    fig_kinematics()
+    fig_gamepad()
     fig_layout()
-    fig_body()
-    fig_wing_structure()
-    fig_wing_steps()
-    fig_measure()
-    print("diagrams written to", OUT)
+    fig_calibration()
+    fig_assembly()

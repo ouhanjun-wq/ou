@@ -35,7 +35,7 @@ color:var(--muted);max-height:160px;overflow:auto}small{color:var(--muted)}
 <button data-c="OPEN">张开夹爪</button><button data-c="CLOSE">闭合夹爪</button><button data-c="REC">记录路点</button>
 <button data-c="PLAY">播放</button><button data-c="PLAY LOOP">循环播放</button><button data-c="SAVE">保存路点</button>
 </div></div>
-<div class="card"><div class="row"><input id="cmd" placeholder="例：MOVE 180 0 60 -90" autocapitalize="characters">
+<div class="card"><div class="row"><input id="cmd" placeholder="例：MOVE 160 0 40 -90" autocapitalize="characters">
 <button class="p" id="send">发送</button></div><div id="log"></div></div>
 <small>单位 mm / 度；夹爪 0 = 张开，100 = 闭合。手柄一动，文字指令立即让出控制权。</small>
 </main><script>
