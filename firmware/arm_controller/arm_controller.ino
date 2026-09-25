@@ -12,7 +12,7 @@
 //   D-pad left / right                 J5 wrist roll           J5 wrist roll
 //   RT / LT                            close / open the gripper (stops by itself on an object)
 //   Menu (≡)  servo power on / park + power off      View (⧉)  switch JOINT / XYZ
-//   Y  home pose      B  stop (also resumes after OVERLOAD)     LB / RB  speed - / +
+//   Y  home pose      B  stop (also resumes after ST_OVERLOAD)     LB / RB  speed - / +
 //   A  record waypoint (hold 2 s: clear all)        X  play once (hold 1 s: loop)
 //   D-pad down  delete last waypoint                D-pad up (hold 1 s)  save waypoints to flash
 //
@@ -66,8 +66,8 @@ static void onPadDisconnected(ControllerPtr c) {
 
 static bool padConnected() { return pad != nullptr && pad->isConnected() && pad->isGamepad(); }
 
-static arm::Input readPad() {
-  arm::Input in;
+static arm::PadInput readPad() {
+  arm::PadInput in;
   if (!padConnected()) return in;
   auto axis = [](int32_t v) { return constrain(v / 512.0f, -1.0f, 1.0f); };   // -511 .. 512
   const uint8_t d = pad->dpad();
@@ -248,7 +248,7 @@ void loop() {
   beepService(millis());
   // LED: steady = gamepad connected, slow blink = waiting for the gamepad, fast blink = fault / e-stop
   const uint32_t ms = millis();
-  const bool bad = core.state == arm::ESTOP || core.state == arm::FAULT || core.state == arm::OVERLOAD;
+  const bool bad = core.state == arm::ST_ESTOP || core.state == arm::ST_FAULT || core.state == arm::ST_OVERLOAD;
   digitalWrite(PIN_LED, bad ? (ms / 100) % 2 : padConnected() ? HIGH : (ms / 500) % 2);
   delay(1);
 }

@@ -35,14 +35,14 @@ static Params defaults() {
 struct Rig {
   Params P = defaults();
   ArmCore c;
-  Input in;
+  PadInput in;
   Sensors s;
   Rig() : c(P) { s.ok = true; s.volts = 6.0f; s.amps = 0.4f; }
   void run(float seconds) {
     const int n = (int)lroundf(seconds / DT);
     for (int i = 0; i < n; ++i) c.update(in, s, DT);
   }
-  void tap(bool Input::*btn, float hold = 0.1f) {
+  void tap(bool PadInput::*btn, float hold = 0.1f) {
     in.valid = true;
     in.*btn = true;
     run(hold);
@@ -129,7 +129,7 @@ static void testTrackerLimits() {
   float goal[NJ];
   memcpy(goal, r.c.qt, sizeof(goal));
   goal[1] = 150;                       // shoulder +50 deg
-  r.c.startMove(goal, MOVE);
+  r.c.startMove(goal, ACT_MOVE);
   float prevQ = r.c.q[1], prevV = 0, vPeak = 0, aPeak = 0;
   for (int i = 0; i < 400; ++i) {
     r.c.update(r.in, r.s, DT);
@@ -141,7 +141,7 @@ static void testTrackerLimits() {
   }
   const float sp = SPEED_SCALE[r.c.speedLvl - 1];
   CHECK(fabsf(r.c.q[1] - 150) < 0.01f, "move reached 150 (got %.2f)", r.c.q[1]);
-  CHECK(r.c.activity == IDLE, "move finished");
+  CHECK(r.c.activity == ACT_IDLE, "move finished");
   CHECK(vPeak <= r.P.vmax[1] * sp * 1.05f, "peak speed %.1f > %.1f", vPeak, r.P.vmax[1] * sp);
   CHECK(aPeak <= r.P.amax[1] * sp * 1.15f, "peak accel %.1f > %.1f", aPeak, r.P.amax[1] * sp);
 }
@@ -163,17 +163,17 @@ static void testTrackerNoOvershoot() {
 static void testEnableAndPark() {
   Rig r;
   r.in.valid = true;
-  CHECK(!r.c.power && r.c.state == DISABLED, "starts with servo power off");
-  r.tap(&Input::menu);
-  CHECK(r.c.power && r.c.state == ENABLED, "Menu turns servo power on");
+  CHECK(!r.c.power && r.c.state == ST_OFF, "starts with servo power off");
+  r.tap(&PadInput::menu);
+  CHECK(r.c.power && r.c.state == ST_ON, "Menu turns servo power on");
   CHECK(maxAbsDiff(r.c.q, r.P.park, NJ) < 1e-3f, "enable starts at the park pose");
-  r.tap(&Input::y);
+  r.tap(&PadInput::y);
   r.run(4);
   CHECK(maxAbsDiff(r.c.q, r.P.home, NJ) < 0.01f, "Y goes home");
-  r.tap(&Input::menu);
-  CHECK(r.c.activity == PARKING && r.c.power, "Menu parks first");
+  r.tap(&PadInput::menu);
+  CHECK(r.c.activity == ACT_PARKING && r.c.power, "Menu parks first");
   r.run(6);
-  CHECK(!r.c.power && r.c.state == DISABLED, "power off after parking");
+  CHECK(!r.c.power && r.c.state == ST_OFF, "power off after parking");
   CHECK(maxAbsDiff(r.c.q, r.P.park, NJ) < 0.6f, "arm is at the park pose when power goes off");
 }
 
@@ -202,9 +202,9 @@ static void testJointJog() {
 static void testCartesianJog() {
   Rig r;
   r.on();
-  r.tap(&Input::y);
+  r.tap(&PadInput::y);
   r.run(4);
-  r.tap(&Input::view);
+  r.tap(&PadInput::view);
   CHECK(r.c.mode == CART_MODE, "View switches to Cartesian mode");
   const kin::Pose a = r.c.pose();
   r.in.ly = 1.0f;                       // forward
@@ -226,9 +226,9 @@ static void testCartesianJog() {
 static void testCartesianBoundary() {
   Rig r;
   r.on();
-  r.tap(&Input::y);
+  r.tap(&PadInput::y);
   r.run(4);
-  r.tap(&Input::view);
+  r.tap(&PadInput::view);
   r.in.ly = 1.0f;
   r.run(15);                            // push forward far past the reach
   r.in.ly = 0;
@@ -256,32 +256,32 @@ static void testTeachPlayback() {
     CHECK(!strncmp(r.text(pts[i]), "ok", 2), "%s", pts[i]);
     r.run(5);
     memcpy(want[i], r.c.q, sizeof(want[i]));
-    r.tap(&Input::a);                   // A (short) records
+    r.tap(&PadInput::a);                   // A (short) records
   }
   CHECK(r.c.seqLen == 3, "3 waypoints recorded (%d)", r.c.seqLen);
-  r.tap(&Input::x);                     // X (short) plays once
-  CHECK(r.c.activity == PLAY, "X starts playback");
+  r.tap(&PadInput::x);                     // X (short) plays once
+  CHECK(r.c.activity == ACT_PLAY, "X starts playback");
   bool visited[3] = {false, false, false};
-  for (int i = 0; i < 1500 && r.c.activity == PLAY; ++i) {
+  for (int i = 0; i < 1500 && r.c.activity == ACT_PLAY; ++i) {
     r.c.update(r.in, r.s, DT);
     for (int k = 0; k < 3; ++k)
       if (maxAbsDiff(r.c.q, want[k], NJ) < 0.05f) visited[k] = true;
   }
   CHECK(visited[0] && visited[1] && visited[2], "playback visits every waypoint (%d %d %d)", visited[0], visited[1],
         visited[2]);
-  CHECK(r.c.activity == IDLE, "single playback ends");
+  CHECK(r.c.activity == ACT_IDLE, "single playback ends");
   // loop + manual override
   r.in.x = true;
   r.run(1.2f);
   r.in.x = false;
   r.run(0.5f);
-  CHECK(r.c.activity == PLAY && r.c.loop, "hold X = loop playback");
+  CHECK(r.c.activity == ACT_PLAY && r.c.loop, "hold X = loop playback");
   r.run(20);
-  CHECK(r.c.activity == PLAY, "loop keeps playing");
+  CHECK(r.c.activity == ACT_PLAY, "loop keeps playing");
   r.in.rx = 0.8f;
   r.run(0.1f);
   r.in.rx = 0;
-  CHECK(r.c.activity == IDLE, "a stick takes over from playback");
+  CHECK(r.c.activity == ACT_IDLE, "a stick takes over from playback");
   // hold A = clear
   r.in.a = true;
   r.run(2.2f);
@@ -296,16 +296,16 @@ static void testOverload() {
   r.on();
   r.s.amps = 8.0f;                      // stalled joint
   r.run(0.3f);
-  CHECK(r.c.state == ENABLED, "short current peak tolerated");
+  CHECK(r.c.state == ST_ON, "short current peak tolerated");
   r.run(0.5f);
-  CHECK(r.c.state == OVERLOAD && r.c.power, "sustained over-current -> OVERLOAD");
+  CHECK(r.c.state == ST_OVERLOAD && r.c.power, "sustained over-current -> OVERLOAD");
   r.s.amps = 0.5f;
   r.run(0.2f);
-  r.tap(&Input::b);
-  CHECK(r.c.state == ENABLED, "B resumes after OVERLOAD");
+  r.tap(&PadInput::b);
+  CHECK(r.c.state == ST_ON, "B resumes after OVERLOAD");
   r.s.amps = 8.0f;
   r.run(0.7f + r.P.fault_s + 0.3f);
-  CHECK(r.c.state == FAULT && !r.c.power, "still over-current -> FAULT, power off");
+  CHECK(r.c.state == ST_FAULT && !r.c.power, "still over-current -> FAULT, power off");
 }
 
 static void testEmergencyStop() {
@@ -313,16 +313,16 @@ static void testEmergencyStop() {
   r.on();
   r.s.volts = 0.2f;                     // mushroom switch pressed
   r.run(0.3f);
-  CHECK(r.c.state == ESTOP && !r.c.power, "servo supply lost -> E-STOP, relay off");
+  CHECK(r.c.state == ST_ESTOP && !r.c.power, "servo supply lost -> E-STOP, relay off");
   r.s.volts = 6.0f;
   r.run(0.5f);
   CHECK(!r.c.power, "releasing the E-stop does not re-power by itself");
-  r.tap(&Input::menu);
-  CHECK(r.c.power && r.c.state == ENABLED, "Menu re-enables after E-STOP");
+  r.tap(&PadInput::menu);
+  CHECK(r.c.power && r.c.state == ST_ON, "Menu re-enables after E-STOP");
   r.s.ok = false;                       // no INA226: no false E-stop
   r.s.volts = 0;
   r.run(1);
-  CHECK(r.c.state == ENABLED, "without the sensor nothing trips");
+  CHECK(r.c.state == ST_ON, "without the sensor nothing trips");
 }
 
 static void testGripDetect() {
@@ -381,7 +381,7 @@ static void testTextCommands() {
   CHECK(!strncmp(r.text("SAVE"), "ok", 2) && r.c.saveRequest, "SAVE = waypoints");
   CHECK(strstr(r.text("STATUS"), "ON") != nullptr, "STATUS");
   CHECK(!strncmp(r.text("SPEED 1"), "ok", 2) && r.c.speedLvl == 1, "SPEED");
-  CHECK(!strncmp(r.text("OFF"), "ok", 2) && r.c.activity == PARKING, "OFF parks");
+  CHECK(!strncmp(r.text("OFF"), "ok", 2) && r.c.activity == ACT_PARKING, "OFF parks");
 }
 
 // ---------------- parameters ----------------

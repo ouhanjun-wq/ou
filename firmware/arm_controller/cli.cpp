@@ -79,7 +79,7 @@ bool cliCommand(char* line, char* reply, size_t n) {
     const float us = strtof(argv[2], nullptr);
     if (j < 0 || j >= NJ || us < 400 || us > 2700) {
       snprintf(reply, n, "error: PULSE 1..6 400..2700");
-    } else if (core.state != arm::ENABLED || core.activity != arm::IDLE) {
+    } else if (core.state != arm::ST_ON || core.activity != arm::ACT_IDLE) {
       snprintf(reply, n, "error: servo power must be ON and the arm idle");
     } else {
       rawUs[j] = us;

@@ -4,11 +4,11 @@
 //
 //   ON | OFF (= PARK) | HOME | STOP | MODE JOINT|CART | SPEED 1..3
 //   J <1..6> <deg>            JOINTS <j1> <j2> <j3> <j4> <j5> [grip]
-//   MOVE <x> <y> <z> [pitch [roll]]      MOVEBY <dx> <dy> <dz>
+//   ACT_MOVE <x> <y> <z> [pitch [roll]]      MOVEBY <dx> <dy> <dz>
 //   UP | DOWN | LEFT | RIGHT | FORWARD | BACK [mm, default 20]
 //   TURN <deg> (base, relative) | PITCH <deg> | ROLL <deg> (tool, absolute)
 //   GRIP <0..100> | OPEN | CLOSE
-//   REC | DELETE | CLEAR | PLAY [LOOP] | SAVE | WHERE | STATUS
+//   REC | DELETE | CLEAR | ACT_PLAY [LOOP] | SAVE | WHERE | STATUS
 #pragma once
 #include <ctype.h>
 #include <stdio.h>
@@ -61,7 +61,7 @@ inline bool textCommand(ArmCore& c, const Sensors& sens, char* line, char* reply
   }
   auto is = [&](const char* w) { return strcmp(cmd, w) == 0; };
   auto done = [&](const char* msg) { snprintf(reply, n, "%s", msg); return true; };
-  auto needOn = [&]() { return c.state == ENABLED; };
+  auto needOn = [&]() { return c.state == ST_ON; };
   if (!numsOk) return done("error: bad number");
   const kin::Pose now = kin::forward(c.geo(), c.qt);
 
@@ -75,7 +75,7 @@ inline bool textCommand(ArmCore& c, const Sensors& sens, char* line, char* reply
 
   if (is("ON") || is("ENABLE")) { c.enable(); return done("ok servo power on"); }
   if (is("OFF") || is("PARK") || is("DISABLE")) {
-    if (c.state == DISABLED) return done("ok already off");
+    if (c.state == ST_OFF) return done("ok already off");
     c.park();
     return done("ok parking, then power off");
   }
@@ -170,7 +170,7 @@ inline bool textCommand(ArmCore& c, const Sensors& sens, char* line, char* reply
     return true;
   }
   if (is("REC")) {
-    if (!c.record()) return done(c.state != ENABLED ? "error: servo power is off (ON)" : "error: list full");
+    if (!c.record()) return done(c.state != ST_ON ? "error: servo power is off (ON)" : "error: list full");
     snprintf(reply, n, "ok waypoint %d", c.seqLen);
     return true;
   }

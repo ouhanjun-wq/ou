@@ -12,9 +12,9 @@
 
 namespace arm {
 
-enum State : uint8_t { DISABLED, ENABLED, OVERLOAD, ESTOP, FAULT };
-enum Activity : uint8_t { IDLE, MOVE, PLAY, PARKING };
-enum Mode : uint8_t { JOINT_MODE, CART_MODE };
+enum ArmState : uint8_t { ST_OFF, ST_ON, ST_OVERLOAD, ST_ESTOP, ST_FAULT };
+enum ArmActivity : uint8_t { ACT_IDLE, ACT_MOVE, ACT_PLAY, ACT_PARKING };
+enum ArmMode : uint8_t { JOINT_MODE, CART_MODE };
 
 constexpr int MAX_WP = 64;
 constexpr float OVERRIDE = 0.25f;     // stick deflection that cancels a move / playback
@@ -23,7 +23,7 @@ constexpr float LONG_S = 1.0f;        // hold X: loop playback, hold D-pad up: s
 constexpr float SPEED_SCALE[3] = {0.25f, 0.5f, 1.0f};
 
 // Gamepad, already scaled: sticks -1..1 (ly / ry + = pushed up), triggers 0..1.
-struct Input {
+struct PadInput {
   bool valid = false;
   float lx = 0, ly = 0, rx = 0, ry = 0, lt = 0, rt = 0;
   bool a = false, b = false, x = false, y = false, lb = false, rb = false;
@@ -70,7 +70,7 @@ inline float moveTime(const Params& P, const float* from, const float* to, float
   return T;
 }
 
-struct Button {
+struct BtnState {
   bool prev = false, longFired = false;
   float held = 0;
   bool pressed = false, shortRelease = false, longHit = false;
@@ -102,9 +102,9 @@ struct ArmCore {
   bool saveRequest = false;    // .ino writes the waypoints to flash and clears this
 
   // ---- state ----
-  State state = DISABLED;
-  Activity activity = IDLE;
-  Mode mode = JOINT_MODE;
+  ArmState state = ST_OFF;
+  ArmActivity activity = ACT_IDLE;
+  ArmMode mode = JOINT_MODE;
   int speedLvl = 2;            // 1..3
   float qt[NJ], v[NJ];         // target and tracker speed
   kin::Pose pt;                // Cartesian target (CART mode)
@@ -117,7 +117,7 @@ struct ArmCore {
   float iLp = 0, iBase = 0, stallT = 0, overT = 0, faultT = 0, powerT = 0, lowT = 0, lowWarnT = 0;
   bool gripTracking = false;
   float t = 0, lastLimitT = -10;
-  Button bA, bB, bX, bY, bLB, bRB, bUp, bDown, bView, bMenu;
+  BtnState bA, bB, bX, bY, bLB, bRB, bUp, bDown, bView, bMenu;
 
   kin::Geometry geo() const { return {P.d1, P.l2, P.l3, P.l4}; }
   float speed() const { return SPEED_SCALE[speedLvl - 1]; }
@@ -125,8 +125,8 @@ struct ArmCore {
 
   void reset() {
     for (int j = 0; j < NJ; ++j) { q[j] = qt[j] = P.park[j]; v[j] = 0; }
-    state = DISABLED;
-    activity = IDLE;
+    state = ST_OFF;
+    activity = ACT_IDLE;
     power = false;
     speedLvl = (int)clampf(P.speed_lvl, 1, 3);
     gripLimit = P.qmax[GRIP];
@@ -161,16 +161,16 @@ struct ArmCore {
   void holdHere() {
     for (int j = 0; j < NJ; ++j) qt[j] = q[j];
     pt = kin::forward(geo(), qt);
-    activity = IDLE;
+    activity = ACT_IDLE;
     dwelling = false;
   }
 
   // ---------------- commands (gamepad buttons and text) ----------------
   bool enable() {
-    if (state == ENABLED || state == OVERLOAD) return true;
+    if (state == ST_ON || state == ST_OVERLOAD) return true;
     for (int j = 0; j < NJ; ++j) { q[j] = qt[j] = P.park[j]; v[j] = 0; }
-    state = ENABLED;
-    activity = IDLE;
+    state = ST_ON;
+    activity = ACT_IDLE;
     power = true;
     powerT = lowT = overT = faultT = stallT = 0;
     gripLimit = P.qmax[GRIP];
@@ -179,16 +179,16 @@ struct ArmCore {
     return true;
   }
 
-  void powerOff(State s, const char* why) {
+  void powerOff(ArmState s, const char* why) {
     power = false;
     state = s;
-    activity = IDLE;
+    activity = ACT_IDLE;
     for (int j = 0; j < NJ; ++j) { q[j] = qt[j] = P.park[j]; v[j] = 0; }
     pt = kin::forward(geo(), qt);
-    note(why, s == DISABLED ? 300 : 800, s == DISABLED ? 2 : 5);
+    note(why, s == ST_OFF ? 300 : 800, s == ST_OFF ? 2 : 5);
   }
 
-  void startMove(const float* goal, Activity act) {
+  void startMove(const float* goal, ArmActivity act) {
     for (int j = 0; j < NJ; ++j) {
       segFrom[j] = q[j];
       segTo[j] = clampf(goal[j], P.qmin[j], P.qmax[j]);
@@ -200,54 +200,54 @@ struct ArmCore {
   }
 
   void park() {
-    if (state == OVERLOAD) { powerOff(DISABLED, "servo power OFF"); return; }
-    if (state != ENABLED) return;
-    startMove(P.park, PARKING);
+    if (state == ST_OVERLOAD) { powerOff(ST_OFF, "servo power OFF"); return; }
+    if (state != ST_ON) return;
+    startMove(P.park, ACT_PARKING);
     note("parking, then servo power off", 150);
   }
 
   void stop() {
-    if (state == OVERLOAD) { state = ENABLED; overT = faultT = 0; }
-    if (state != ENABLED) return;
+    if (state == ST_OVERLOAD) { state = ST_ON; overT = faultT = 0; }
+    if (state != ST_ON) return;
     for (int j = 0; j < NJ; ++j) v[j] = 0;
     holdHere();
     note("stop", 120);
   }
 
   bool moveJoints(const float* goal) {
-    if (state != ENABLED || !inLimits(goal)) return false;
-    startMove(goal, MOVE);
+    if (state != ST_ON || !inLimits(goal)) return false;
+    startMove(goal, ACT_MOVE);
     return true;
   }
 
   const char* movePose(const kin::Pose& p) {
-    if (state != ENABLED) return "not enabled";
+    if (state != ST_ON) return "not enabled";
     float goal[NJ];
     const char* err = solve(p, goal);
     if (err) return err;
     goal[GRIP] = qt[GRIP];
-    startMove(goal, MOVE);
+    startMove(goal, ACT_MOVE);
     return nullptr;
   }
 
-  void home() { if (state == ENABLED) startMove(P.home, MOVE); }
+  void home() { if (state == ST_ON) startMove(P.home, ACT_MOVE); }
 
   bool record() {
-    if (state != ENABLED || seqLen >= MAX_WP) return false;
+    if (state != ST_ON || seqLen >= MAX_WP) return false;
     memcpy(seq[seqLen].q, qt, sizeof(qt));
     ++seqLen;
     return true;
   }
 
   bool play(bool loopIt) {
-    if (state != ENABLED || seqLen == 0) return false;
+    if (state != ST_ON || seqLen == 0) return false;
     loop = loopIt;
     playIdx = 0;
-    startMove(seq[0].q, PLAY);
+    startMove(seq[0].q, ACT_PLAY);
     return true;
   }
 
-  void setMode(Mode m) {
+  void setMode(ArmMode m) {
     mode = m;
     pt = kin::forward(geo(), qt);
   }
@@ -260,7 +260,7 @@ struct ArmCore {
   }
 
   // ---------------- main loop ----------------
-  void update(const Input& in, const Sensors& s, float dt) {
+  void update(const PadInput& in, const Sensors& s, float dt) {
     t += dt;
     rumbleMs = 0;
     beeps = 0;
@@ -268,31 +268,31 @@ struct ArmCore {
     sense(s, dt);
     buttons(in, dt);
 
-    if (state == ENABLED) {
+    if (state == ST_ON) {
       const float sp = speed();
-      Input sh = in;
+      PadInput sh = in;
       sh.lx = shape(in.lx, P.deadband, P.expo);
       sh.ly = shape(in.ly, P.deadband, P.expo);
       sh.rx = shape(in.rx, P.deadband, P.expo);
       sh.ry = shape(in.ry, P.deadband, P.expo);
       sh.lt = in.lt < 0.05f ? 0 : in.lt;
       sh.rt = in.rt < 0.05f ? 0 : in.rt;
-      if (!in.valid) sh = Input();
-      if (activity != IDLE && touched(sh)) {
+      if (!in.valid) sh = PadInput();
+      if (activity != ACT_IDLE && touched(sh)) {
         holdHere();
         note("manual override", 100);
       }
-      if (activity == IDLE) jog(sh, sp, dt);
+      if (activity == ACT_IDLE) jog(sh, sp, dt);
       else runActivity(dt);
     }
 
     gripGuard(s, dt);
     if (power) track(dt);
-    if (activity == PARKING && !dwelling && segT >= segDur && settled())
-      powerOff(DISABLED, "parked, servo power OFF");
+    if (activity == ACT_PARKING && !dwelling && segT >= segDur && settled())
+      powerOff(ST_OFF, "parked, servo power OFF");
   }
 
-  bool touched(const Input& sh) const {
+  bool touched(const PadInput& sh) const {
     return fabsf(sh.lx) > OVERRIDE || fabsf(sh.ly) > OVERRIDE || fabsf(sh.rx) > OVERRIDE ||
            fabsf(sh.ry) > OVERRIDE || sh.lt > 0.1f || sh.rt > 0.1f || sh.left || sh.right;
   }
@@ -314,7 +314,7 @@ struct ArmCore {
     // Emergency stop: the mushroom switch cut the servo supply while the relay is on.
     if (powerT > 0.3f && s.volts < P.estop_v) {
       lowT += dt;
-      if (lowT >= 0.1f) { powerOff(ESTOP, "EMERGENCY STOP: servo supply lost, relay off"); return; }
+      if (lowT >= 0.1f) { powerOff(ST_ESTOP, "EMERGENCY STOP: servo supply lost, relay off"); return; }
     } else {
       lowT = 0;
     }
@@ -324,18 +324,18 @@ struct ArmCore {
     }
     // Over-current: freeze, then cut the power if it does not recover.
     if (iLp > P.over_amps) {
-      if (state == ENABLED) {
+      if (state == ST_ON) {
         overT += dt;
         if (overT >= P.over_s) {
-          state = OVERLOAD;
+          state = ST_OVERLOAD;
           for (int j = 0; j < NJ; ++j) v[j] = 0;
           holdHere();
           faultT = 0;
           note("OVERLOAD: motion frozen (B = resume, move away from the obstacle)", 600, 3);
         }
-      } else if (state == OVERLOAD) {
+      } else if (state == ST_OVERLOAD) {
         faultT += dt;
-        if (faultT >= P.fault_s) powerOff(FAULT, "FAULT: over-current did not stop, servo power OFF");
+        if (faultT >= P.fault_s) powerOff(ST_FAULT, "FAULT: over-current did not stop, servo power OFF");
       }
     } else {
       overT = 0;
@@ -343,8 +343,8 @@ struct ArmCore {
     }
   }
 
-  void buttons(const Input& in, float dt) {
-    Input b = in.valid ? in : Input();
+  void buttons(const PadInput& in, float dt) {
+    PadInput b = in.valid ? in : PadInput();
     bA.update(b.a, dt, LONG_A_S);
     bB.update(b.b, dt, 1e9f);
     bX.update(b.x, dt, LONG_S);
@@ -358,21 +358,21 @@ struct ArmCore {
     if (!in.valid) return;
 
     if (bMenu.pressed) {
-      if (state == ENABLED) park();
-      else if (state == OVERLOAD) powerOff(DISABLED, "servo power OFF");
+      if (state == ST_ON) park();
+      else if (state == ST_OVERLOAD) powerOff(ST_OFF, "servo power OFF");
       else enable();
     }
     if (bB.pressed) stop();
     if (bLB.pressed && speedLvl > 1) { --speedLvl; note("speed -", 80); }
     if (bRB.pressed && speedLvl < 3) { ++speedLvl; note("speed +", 80); }
-    if (state != ENABLED) return;
+    if (state != ST_ON) return;
 
     if (bView.pressed) {
       setMode(mode == JOINT_MODE ? CART_MODE : JOINT_MODE);
       note(mode == CART_MODE ? "mode: CARTESIAN (XYZ)" : "mode: JOINT", 200);
     }
     if (bY.pressed) { home(); note("home", 100); }
-    if (activity == IDLE && bA.shortRelease) {
+    if (activity == ACT_IDLE && bA.shortRelease) {
       if (record()) note("waypoint recorded", 100, 1);
       else note("waypoint list full", 500);
     }
@@ -383,7 +383,7 @@ struct ArmCore {
     if (bUp.longHit) { saveRequest = true; note("waypoints saved", 300, 1); }
   }
 
-  void jog(const Input& in, float sp, float dt) {
+  void jog(const PadInput& in, float sp, float dt) {
     // gripper: RT closes, LT opens (never slower than half speed)
     const float g = (in.rt - in.lt) * P.vmax[GRIP] * fmaxf(sp, 0.5f);
     qt[GRIP] = clampf(qt[GRIP] + g * dt, P.qmin[GRIP], fminf(P.qmax[GRIP], gripLimit));
@@ -449,16 +449,16 @@ struct ArmCore {
         if (!loop) { holdHere(); note("playback done", 200, 1); return; }
         playIdx = 0;
       }
-      startMove(seq[playIdx].q, PLAY);
+      startMove(seq[playIdx].q, ACT_PLAY);
       return;
     }
     segT += dt;
     const float s = quintic(segDur > 0 ? segT / segDur : 1);
     for (int j = 0; j < NJ; ++j) qt[j] = segFrom[j] + (segTo[j] - segFrom[j]) * s;
     if (segT < segDur) return;
-    if (activity == MOVE) { holdHere(); return; }
-    if (activity == PLAY) { dwelling = true; dwellT = 0; }
-    // PARKING finishes in update() once the tracker has arrived
+    if (activity == ACT_MOVE) { holdHere(); return; }
+    if (activity == ACT_PLAY) { dwelling = true; dwellT = 0; }
+    // ACT_PARKING finishes in update() once the tracker has arrived
   }
 
   // Per-joint speed / acceleration limiter (time-optimal, no overshoot).
@@ -482,7 +482,7 @@ struct ArmCore {
   void gripGuard(const Sensors& s, float dt) {
     if (qt[GRIP] > gripLimit) qt[GRIP] = gripLimit;
     if (qt[GRIP] < gripLimit - 5.0f) gripLimit = P.qmax[GRIP];   // opening again: forget the grip
-    if (!s.ok || !power || state != ENABLED) { gripTracking = false; return; }
+    if (!s.ok || !power || state != ST_ON) { gripTracking = false; return; }
     bool armStill = true;
     for (int j = 0; j < NARM; ++j)
       if (fabsf(v[j]) > 10.0f) armStill = false;
@@ -508,21 +508,21 @@ struct ArmCore {
   }
 };
 
-inline const char* stateName(State s) {
+inline const char* stateName(ArmState s) {
   switch (s) {
-    case DISABLED: return "OFF";
-    case ENABLED: return "ON";
-    case OVERLOAD: return "OVERLOAD";
-    case ESTOP: return "E-STOP";
+    case ST_OFF: return "OFF";
+    case ST_ON: return "ON";
+    case ST_OVERLOAD: return "OVERLOAD";
+    case ST_ESTOP: return "E-STOP";
     default: return "FAULT";
   }
 }
 
-inline const char* activityName(Activity a) {
+inline const char* activityName(ArmActivity a) {
   switch (a) {
-    case MOVE: return "MOVE";
-    case PLAY: return "PLAY";
-    case PARKING: return "PARKING";
+    case ACT_MOVE: return "MOVE";
+    case ACT_PLAY: return "PLAY";
+    case ACT_PARKING: return "PARKING";
     default: return "IDLE";
   }
 }
