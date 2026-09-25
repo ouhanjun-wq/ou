@@ -60,8 +60,8 @@
 <text x="935" y="376" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">绷平贴在碳杆上，越薄越轻</text>
 <circle cx="915" cy="406" r="11" fill="#D23B2F" stroke="#FFFFFF" stroke-width="2"/>
 <text x="915" y="410.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">6</text>
-<text x="935" y="410" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">翼根座：3D 打印 PETG</text>
-<text x="935" y="428" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">所有碳杆都插进它的孔里，再装到舵机臂上</text>
+<text x="935" y="410" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">翼根座：3D 打印 PETG（cad/wing_root.scad）</text>
+<text x="935" y="428" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">所有碳杆都插进它的孔里，再装到舵机臂上，约 2 g</text>
 <rect x="40" y="480" width="330" height="200" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="205.0" y="502" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">剖面 A：膜和碳杆怎么贴</text>
 <circle cx="205" cy="590" r="16" fill="#2F3437"/>

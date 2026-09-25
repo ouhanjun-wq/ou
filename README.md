@@ -11,4 +11,5 @@
 | 🔎 [`docs/bionic-butterfly-research.md`](docs/bionic-butterfly-research.md) | GitHub 开源项目调研与选型 |
 | 🧭 [`docs/gyro-stabilization-and-noise-reduction.md`](docs/gyro-stabilization-and-noise-reduction.md) | 增稳与降噪设计原理 |
 | 🔧 [`firmware/README.md`](firmware/README.md) | 固件：接线、烧录、命令行、参数 |
+| 🧩 [`cad/README.md`](cad/README.md) | 3D 打印件：舵机座、左右翼根座（OpenSCAD 参数化模型 + STL） |
 | 📈 [`tools/gyro_fft.py`](tools/gyro_fft.py) | 陀螺仪频谱采集与绘图 |

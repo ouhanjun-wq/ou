@@ -6,10 +6,10 @@
 <text x="200" y="364" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">① 主梁：碳纤维方管 4×4 mm（或圆管 Ø4/Ø3 mm），长 130–150 mm，约 1.5 g</text>
 <rect x="190" y="260" width="150" height="64" rx="8" fill="#9EC5E8" stroke="#2B3A3F" stroke-width="1.5"/>
 <text x="265" y="286" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">舵机 ×2</text>
-<text x="265" y="304" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">（左右各一，背靠背）</text>
+<text x="265" y="304" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">（左右并排，输出轴朝前）</text>
 <path d="M180,250 h170 v94 h-170 z" fill="none" stroke="#C97A1E" stroke-width="3" stroke-dasharray="8 4"/>
 <path d="M265,250 L265,150" fill="none" stroke="#C97A1E" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="40" y="142" font-size="13" text-anchor="start" font-weight="700" fill="#A5620F">② 舵机座：3D 打印 PETG，夹紧主梁，约 3–4 g</text>
+<text x="40" y="142" font-size="13" text-anchor="start" font-weight="700" fill="#A5620F">② 舵机座：3D 打印 PETG（cad/servo_mount.scad），套在主梁上，约 2.6 g</text>
 <path d="M300,260 L420,120" fill="none" stroke="#555555" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <text x="430" y="118" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">翅膀前缘 Ø2 mm 碳杆 → 舵机臂</text>
 <rect x="400" y="308" width="330" height="10" rx="3" fill="#6B6F72"/>

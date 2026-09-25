@@ -485,11 +485,11 @@ def fig_body():
     s.parts.append(f'<rect x="190" y="{y0 - 70}" width="150" height="64" rx="8" fill="#9EC5E8" '
                    f'stroke="{C["boxline"]}" stroke-width="1.5"/>')
     s.text(265, y0 - 44, "舵机 ×2", 13, "middle", "700")
-    s.text(265, y0 - 26, "（左右各一，背靠背）", 11, "middle", color=C["mute"])
+    s.text(265, y0 - 26, "（左右并排，输出轴朝前）", 11, "middle", color=C["mute"])
     s.parts.append(f'<path d="M180,{y0 - 80} h170 v94 h-170 z" fill="none" stroke="#C97A1E" '
                    f'stroke-width="3" stroke-dasharray="8 4"/>')
     s.wire([(265, y0 - 80), (265, 150)], "#C97A1E", 1.5)
-    s.text(40, 142, "② 舵机座：3D 打印 PETG，夹紧主梁，约 3–4 g", 13, "start", "700", "#A5620F")
+    s.text(40, 142, "② 舵机座：3D 打印 PETG（cad/servo_mount.scad），套在主梁上，约 2.6 g", 13, "start", "700", "#A5620F")
     # wing root rods from servo horns
     s.wire([(300, y0 - 70), (420, 120)], "#555555", 4)
     s.text(430, 118, "翅膀前缘 Ø2 mm 碳杆 → 舵机臂", 12, color=C["mute"])
@@ -573,7 +573,7 @@ def fig_wing_structure():
         ("横脉：Ø1.0 mm 碳杆", "把相邻的翅脉连起来，防止翼面扭曲"),
         ("后翅杆：Ø1.5 mm 碳杆", "后翅的主杆，和前翅插在同一个翼根座上"),
         ("翼膜：聚酯薄膜 12–15 µm", "绷平贴在碳杆上，越薄越轻"),
-        ("翼根座：3D 打印 PETG", "所有碳杆都插进它的孔里，再装到舵机臂上"),
+        ("翼根座：3D 打印 PETG（cad/wing_root.scad）", "所有碳杆都插进它的孔里，再装到舵机臂上，约 2 g"),
     ]
     for i, (t1, t2) in enumerate(items):
         yy = 150 + i * 52
@@ -692,6 +692,59 @@ def fig_wing_steps():
     s.save("fig9-wing-steps.svg")
 
 
+def fig_measure():
+    s = Svg(1200, 600, "图 10  3D 模型参数：舵机和舵机臂怎么量",
+            "用游标卡尺量这几个尺寸，填到 cad/servo_mount.scad 和 cad/wing_root.scad 开头的参数里")
+    # servo front view
+    x, y = 140, 170
+    s.parts.append(f'<rect x="{x}" y="{y}" width="130" height="250" rx="6" fill="#9EC5E8" stroke="{C["boxline"]}" stroke-width="1.6"/>')
+    s.parts.append(f'<rect x="{x - 45}" y="{y + 60}" width="220" height="14" rx="3" fill="#7DB0DE" stroke="{C["boxline"]}"/>')
+    for hx in (x - 30, x + 160):
+        s.parts.append(f'<circle cx="{hx}" cy="{y + 67}" r="4" fill="#FFFFFF" stroke="{C["boxline"]}"/>')
+    s.parts.append(f'<circle cx="{x + 65}" cy="{y + 30}" r="12" fill="#FFFFFF" stroke="{C["boxline"]}" stroke-width="1.5"/>')
+    s.text(x + 65, y + 215, "舵机", 14, "middle", "700")
+    s.text(x + 65, y + 235, "（侧面，安装耳横放）", 11, "middle", color=C["mute"])
+    # dimensions (servo drawn with ear direction horizontal)
+    def dim(x1, y1, x2, y2, label, off=0, vertical=False):
+        s.wire([(x1, y1), (x2, y2)], C["bat"], 1.6)
+        if vertical:
+            s.wire([(x1 - 6, y1), (x1 + 6, y1)], C["bat"], 1.6)
+            s.wire([(x2 - 6, y2), (x2 + 6, y2)], C["bat"], 1.6)
+            s.text(x1 + 10 + off, (y1 + y2) / 2 + 4, label, 12.5, "start", "700", C["bat"])
+        else:
+            s.wire([(x1, y1 - 6), (x1, y1 + 6)], C["bat"], 1.6)
+            s.wire([(x2, y2 - 6), (x2, y2 + 6)], C["bat"], 1.6)
+            s.text((x1 + x2) / 2, y1 - 10 + off, label, 12.5, "middle", "700", C["bat"])
+    dim(x, y - 20, x + 130, y - 20, "servo_l 机身长（默认 23.0）")
+    dim(x - 45, y + 100, x + 175, y + 100, "")
+    s.text(x + 190, y + 104, "servo_ear_span 两耳外端总长（默认 32.5）", 12.5, "start", "700", C["bat"])
+    dim(x - 30, y + 150, x + 160, y + 150, "")
+    s.text(x + 190, y + 154, "servo_hole_spacing 孔距（默认 28.0）", 12.5, "start", "700", C["bat"])
+    for hx2 in (x - 30, x + 160):
+        s.wire([(hx2, y + 72), (hx2, y + 150)], C["bat"], 1, True)
+    s.text(x + 65, y + 290, "servo_w 机身宽 = 垂直于纸面的厚度", 12.5, "middle", "700", C["bat"])
+    s.text(x + 65, y + 308, "（默认 12.0）", 11.5, "middle", color=C["mute"])
+    # horn
+    hx, hy = 620, 190
+    s.parts.append(f'<path d="M{hx},{hy} h260 a16,16 0 0 1 0,32 h-260 a16,16 0 0 1 0,-32 Z" fill="#FFFFFF" '
+                   f'stroke="{C["boxline"]}" stroke-width="1.6"/>')
+    s.parts.append(f'<circle cx="{hx}" cy="{hy + 16}" r="10" fill="#E3E8E6" stroke="{C["boxline"]}"/>')
+    for i in range(5):
+        s.parts.append(f'<circle cx="{hx + 90 + i * 40}" cy="{hy + 16}" r="3.5" fill="#FFFFFF" stroke="{C["boxline"]}"/>')
+    s.text(hx + 130, hy - 30, "单臂舵机臂（俯视）", 14, "middle", "700")
+    dim(hx + 300, hy, hx + 300, hy + 32, "horn_w 臂宽（默认 5.0）", 8, True)
+    s.text(hx, hy + 80, "horn_t 臂厚（默认 1.6）：用卡尺夹住臂的上下两面量", 12.5, "start", "700", C["bat"])
+    s.text(hx, hy + 104, "horn_screw_from_end：插槽口到螺丝孔的距离（默认 4）", 12.5, "start", "700", C["bat"])
+    s.text(hx, hy + 124, "→ 让螺丝正好穿过舵机臂最外面那个孔", 12, color=C["mute"])
+    # keel + rods
+    s.text(hx, hy + 180, "keel 主梁方管边长（默认 4.0）", 12.5, "start", "700", C["bat"])
+    s.text(hx, hy + 204, "rods：每根碳杆的 [入口位置, 角度, 直径]，默认 Ø2 前缘 + 3 根 Ø1.5", 12.5, "start", "700", C["bat"])
+    s.text(hx, hy + 228, "clearance / rod_clearance：打印余量，太紧就加 0.1", 12.5, "start", "700", C["bat"])
+    s.note(620, 520, 1, "改完参数：OpenSCAD 里按 F6 渲染，再 F7 导出 STL")
+    s.note(620, 550, 2, "先打印一个试装，松紧合适再打印正式件")
+    s.save("fig10-cad-params.svg")
+
+
 if __name__ == "__main__":
     fig_overview()
     fig_power_in()
@@ -703,4 +756,5 @@ if __name__ == "__main__":
     fig_body()
     fig_wing_structure()
     fig_wing_steps()
+    fig_measure()
     print("diagrams written to", OUT)
