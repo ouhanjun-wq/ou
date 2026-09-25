@@ -1,5 +1,5 @@
 // Host-side unit tests for the hardware-independent arm code.
-//   g++ -std=c++17 -O1 -Wall -Wextra -Werror -I firmware/arm_controller firmware/tests/test_core.cpp -o test_core
+//   g++ -std=gnu++11 -O1 -Wall -Wextra -Werror -I firmware/arm_uno firmware/tests/test_core.cpp -o test_core
 //   ./test_core
 #include <math.h>
 #include <stdio.h>
@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "commands.h"
+#include "pgm.h"
 #include "kinematics.h"
 #include "motion.h"
 #include "params.h"
@@ -32,30 +33,77 @@ static Params defaults() {
   return p;
 }
 
+// RAM waypoint store (the Uno uses EEPROM).
+class RamStore : public WaypointStore {
+ public:
+  float q[60][NJ];
+  int n = 0;
+  int count() const override { return n; }
+  int capacity() const override { return 60; }
+  void get(int i, float* out) const override { memcpy(out, q[i], sizeof(q[i])); }
+  bool append(const float* in) override {
+    if (n >= 60) return false;
+    memcpy(q[n++], in, sizeof(q[0]));
+    return true;
+  }
+  void removeLast() override { if (n) --n; }
+  void clear() override { n = 0; }
+};
+
+// Collects the reply lines; lastReply = the last complete line.
+static char lastReply[200];
+static char allReplies[600];
+class BufOut : public Out {
+ public:
+  char cur[200] = "";
+  void add(const char* s) { strncat(cur, s, sizeof(cur) - strlen(cur) - 1); }
+  void text(const char* s) override { add(s); }
+  void num(long v) override { char b[24]; snprintf(b, sizeof(b), "%ld", v); add(b); }
+  void dec(float v, uint8_t d) override { char b[32]; snprintf(b, sizeof(b), "%.*f", d, v); add(b); }
+  void end() override {
+    snprintf(lastReply, sizeof(lastReply), "%s", cur);
+    strncat(allReplies, cur, sizeof(allReplies) - strlen(allReplies) - 2);
+    strcat(allReplies, "\n");
+    cur[0] = 0;
+  }
+};
+static BufOut bufOut;
+static int saves = 0;
+static bool fakeSave(const Params&) { ++saves; return true; }
+
 struct Rig {
   Params P = defaults();
+  RamStore store;
   ArmCore c;
   PadInput in;
   Sensors s;
-  Rig() : c(P) { s.ok = true; s.volts = 6.0f; s.amps = 0.4f; }
+  Rig() : c(P, store) { c.reset(); s.ok = true; s.volts = 6.0f; }
   void run(float seconds) {
     const int n = (int)lroundf(seconds / DT);
     for (int i = 0; i < n; ++i) c.update(in, s, DT);
   }
-  void tap(bool PadInput::*btn, float hold = 0.1f) {
+  void tap(PadButton b, float hold = 0.1f) {
     in.valid = true;
-    in.*btn = true;
+    in.btn[b] = true;
     run(hold);
-    in.*btn = false;
+    in.btn[b] = false;
     run(0.1f);
   }
   const char* text(const char* line) {
-    static char buf[128], reply[200];
+    char buf[128];
     snprintf(buf, sizeof(buf), "%s", line);
-    if (!textCommand(c, s, buf, reply, sizeof(reply))) return "(unknown)";
-    return reply;
+    lastReply[0] = 0;
+    allReplies[0] = 0;
+    runCommand(c, s, buf, bufOut, fakeSave);
+    return lastReply;
   }
   void on() { in.valid = true; c.enable(); run(0.5f); }
+};
+
+static kin::Geometry geoOf(const Params& P) { return {(float)P.d1, (float)P.l2, (float)P.l3, (float)P.l4}; }
+struct F6 {
+  float v[NJ];
+  explicit F6(const int16_t* a) { for (int j = 0; j < NJ; ++j) v[j] = a[j]; }
 };
 
 static float maxAbsDiff(const float* a, const float* b, int n) {
@@ -68,8 +116,8 @@ static float maxAbsDiff(const float* a, const float* b, int n) {
 static void testForwardHome() {
   Params P;
   paramsDefaults(P);
-  const kin::Geometry g{P.d1, P.l2, P.l3, P.l4};
-  const kin::Pose p = kin::forward(g, P.home);
+  const kin::Geometry g = geoOf(P);
+  const kin::Pose p = kin::forward(g, F6(P.home).v);
   CHECK(fabsf(p.x - 220) < 0.01f && fabsf(p.y) < 0.01f && fabsf(p.z - 180) < 0.01f && fabsf(p.pitch) < 0.01f,
         "home pose %.2f %.2f %.2f pitch %.2f (want 220 0 180 0)", p.x, p.y, p.z, p.pitch);
   const float left[5] = {90, 90, -90, 0, 0};
@@ -80,7 +128,7 @@ static void testForwardHome() {
 static void testIkRoundTrip() {
   Params P;
   paramsDefaults(P);
-  const kin::Geometry g{P.d1, P.l2, P.l3, P.l4};
+  const kin::Geometry g = geoOf(P);
   srand(7);
   int tested = 0;
   float worst = 0;
@@ -107,7 +155,7 @@ static void testIkRoundTrip() {
 static void testIkRejects() {
   Params P;
   paramsDefaults(P);
-  const kin::Geometry g{P.d1, P.l2, P.l3, P.l4};
+  const kin::Geometry g = geoOf(P);
   float s[5];
   CHECK(kin::inverse(g, {600, 0, 100, 0, 0}, P.r_min, s) == kin::UNREACHABLE, "far pose must be unreachable");
   CHECK(kin::inverse(g, {20, 10, 100, -90, 0}, P.r_min, s) == kin::TOO_CLOSE, "pose at the base axis rejected");
@@ -116,10 +164,10 @@ static void testIkRejects() {
 
 // ---------------- motion primitives ----------------
 static void testShapeAndQuintic() {
-  CHECK(shape(0.05f, 0.08f, 0.3f) == 0, "inside dead zone");
-  CHECK(fabsf(shape(1.0f, 0.08f, 0.3f) - 1.0f) < 1e-5f && fabsf(shape(-1.0f, 0.08f, 0.3f) + 1.0f) < 1e-5f,
+  CHECK(shape(0.05f, 8, 30) == 0, "inside dead zone");
+  CHECK(fabsf(shape(1.0f, 8, 30) - 1.0f) < 1e-5f && fabsf(shape(-1.0f, 8, 30) + 1.0f) < 1e-5f,
         "full deflection = +-1");
-  CHECK(shape(0.5f, 0.08f, 0.3f) < 0.5f && shape(0.5f, 0.08f, 0.3f) > 0.3f, "expo softens the middle");
+  CHECK(shape(0.5f, 8, 30) < 0.5f && shape(0.5f, 8, 30) > 0.3f, "expo softens the middle");
   CHECK(quintic(0) == 0 && fabsf(quintic(1) - 1) < 1e-6f && fabsf(quintic(0.5f) - 0.5f) < 1e-6f, "quintic ends");
 }
 
@@ -139,7 +187,7 @@ static void testTrackerLimits() {
     prevQ = r.c.q[1];
     prevV = vv;
   }
-  const float sp = SPEED_SCALE[r.c.speedLvl - 1];
+  const float sp = speedScale(r.c.speedLvl);
   CHECK(fabsf(r.c.q[1] - 150) < 0.01f, "move reached 150 (got %.2f)", r.c.q[1]);
   CHECK(r.c.activity == ACT_IDLE, "move finished");
   CHECK(vPeak <= r.P.vmax[1] * sp * 1.05f, "peak speed %.1f > %.1f", vPeak, r.P.vmax[1] * sp);
@@ -164,17 +212,17 @@ static void testEnableAndPark() {
   Rig r;
   r.in.valid = true;
   CHECK(!r.c.power && r.c.state == ST_OFF, "starts with servo power off");
-  r.tap(&PadInput::menu);
+  r.tap(PB_MENU);
   CHECK(r.c.power && r.c.state == ST_ON, "Menu turns servo power on");
-  CHECK(maxAbsDiff(r.c.q, r.P.park, NJ) < 1e-3f, "enable starts at the park pose");
-  r.tap(&PadInput::y);
+  CHECK(maxAbsDiff(r.c.q, F6(r.P.park).v, NJ) < 1e-3f, "enable starts at the park pose");
+  r.tap(PB_Y);
   r.run(4);
-  CHECK(maxAbsDiff(r.c.q, r.P.home, NJ) < 0.01f, "Y goes home");
-  r.tap(&PadInput::menu);
+  CHECK(maxAbsDiff(r.c.q, F6(r.P.home).v, NJ) < 0.01f, "Y goes home");
+  r.tap(PB_MENU);
   CHECK(r.c.activity == ACT_PARKING && r.c.power, "Menu parks first");
   r.run(6);
   CHECK(!r.c.power && r.c.state == ST_OFF, "power off after parking");
-  CHECK(maxAbsDiff(r.c.q, r.P.park, NJ) < 0.6f, "arm is at the park pose when power goes off");
+  CHECK(maxAbsDiff(r.c.q, F6(r.P.park).v, NJ) < 0.6f, "arm is at the park pose when power goes off");
 }
 
 // ---------------- jogging ----------------
@@ -202,9 +250,9 @@ static void testJointJog() {
 static void testCartesianJog() {
   Rig r;
   r.on();
-  r.tap(&PadInput::y);
+  r.tap(PB_Y);
   r.run(4);
-  r.tap(&PadInput::view);
+  r.tap(PB_VIEW);
   CHECK(r.c.mode == CART_MODE, "View switches to Cartesian mode");
   const kin::Pose a = r.c.pose();
   r.in.ly = 1.0f;                       // forward
@@ -226,9 +274,9 @@ static void testCartesianJog() {
 static void testCartesianBoundary() {
   Rig r;
   r.on();
-  r.tap(&PadInput::y);
+  r.tap(PB_Y);
   r.run(4);
-  r.tap(&PadInput::view);
+  r.tap(PB_VIEW);
   r.in.ly = 1.0f;
   r.run(15);                            // push forward far past the reach
   r.in.ly = 0;
@@ -250,16 +298,16 @@ static void testCartesianBoundary() {
 static void testTeachPlayback() {
   Rig r;
   r.on();
-  const char* pts[3] = {"JOINTS 0 90 -90 0 0 0", "JOINTS 40 70 -60 -30 20 80", "JOINTS -30 100 -120 10 -20 10"};
+  const float pts[3][NJ] = {{0, 90, -90, 0, 0, 0}, {40, 70, -60, -30, 20, 80}, {-30, 100, -120, 10, -20, 10}};
   float want[3][NJ];
   for (int i = 0; i < 3; ++i) {
-    CHECK(!strncmp(r.text(pts[i]), "ok", 2), "%s", pts[i]);
+    CHECK(r.c.moveJoints(pts[i]), "move to waypoint %d", i);
     r.run(5);
     memcpy(want[i], r.c.q, sizeof(want[i]));
-    r.tap(&PadInput::a);                   // A (short) records
+    r.tap(PB_A);                   // A (short) records
   }
-  CHECK(r.c.seqLen == 3, "3 waypoints recorded (%d)", r.c.seqLen);
-  r.tap(&PadInput::x);                     // X (short) plays once
+  CHECK(r.store.n == 3, "3 waypoints recorded (%d)", r.store.n);
+  r.tap(PB_X);                     // X (short) plays once
   CHECK(r.c.activity == ACT_PLAY, "X starts playback");
   bool visited[3] = {false, false, false};
   for (int i = 0; i < 1500 && r.c.activity == ACT_PLAY; ++i) {
@@ -271,9 +319,9 @@ static void testTeachPlayback() {
         visited[2]);
   CHECK(r.c.activity == ACT_IDLE, "single playback ends");
   // loop + manual override
-  r.in.x = true;
+  r.in.btn[PB_X] = true;
   r.run(1.2f);
-  r.in.x = false;
+  r.in.btn[PB_X] = false;
   r.run(0.5f);
   CHECK(r.c.activity == ACT_PLAY && r.c.loop, "hold X = loop playback");
   r.run(20);
@@ -283,74 +331,73 @@ static void testTeachPlayback() {
   r.in.rx = 0;
   CHECK(r.c.activity == ACT_IDLE, "a stick takes over from playback");
   // hold A = clear
-  r.in.a = true;
+  r.in.btn[PB_A] = true;
   r.run(2.2f);
-  r.in.a = false;
+  r.in.btn[PB_A] = false;
   r.run(0.1f);
-  CHECK(r.c.seqLen == 0, "hold A clears the waypoints (%d)", r.c.seqLen);
+  CHECK(r.store.n == 0, "hold A clears the waypoints (%d)", r.store.n);
 }
 
 // ---------------- protection ----------------
-static void testOverload() {
-  Rig r;
-  r.on();
-  r.s.amps = 8.0f;                      // stalled joint
-  r.run(0.3f);
-  CHECK(r.c.state == ST_ON, "short current peak tolerated");
-  r.run(0.5f);
-  CHECK(r.c.state == ST_OVERLOAD && r.c.power, "sustained over-current -> OVERLOAD");
-  r.s.amps = 0.5f;
-  r.run(0.2f);
-  r.tap(&PadInput::b);
-  CHECK(r.c.state == ST_ON, "B resumes after OVERLOAD");
-  r.s.amps = 8.0f;
-  r.run(0.7f + r.P.fault_s + 0.3f);
-  CHECK(r.c.state == ST_FAULT && !r.c.power, "still over-current -> FAULT, power off");
-}
-
 static void testEmergencyStop() {
   Rig r;
   r.on();
   r.s.volts = 0.2f;                     // mushroom switch pressed
   r.run(0.3f);
-  CHECK(r.c.state == ST_ESTOP && !r.c.power, "servo supply lost -> E-STOP, relay off");
+  CHECK(r.c.state == ST_ESTOP && !r.c.power, "servo supply lost -> E-STOP, pulses off");
   r.s.volts = 6.0f;
   r.run(0.5f);
-  CHECK(!r.c.power, "releasing the E-stop does not re-power by itself");
-  r.tap(&PadInput::menu);
+  CHECK(!r.c.power, "releasing the E-stop does not restart the servos by itself");
+  r.tap(PB_MENU);
   CHECK(r.c.power && r.c.state == ST_ON, "Menu re-enables after E-STOP");
-  r.s.ok = false;                       // no INA226: no false E-stop
+  r.P.estop_mv = 0;                     // detection switched off (USB-only bench test)
   r.s.volts = 0;
   r.run(1);
-  CHECK(r.c.state == ST_ON, "without the sensor nothing trips");
+  CHECK(r.c.state == ST_ON, "estop_mv = 0 disables the detection");
 }
 
-static void testGripDetect() {
+static void testGripBackoff() {
   Rig r;
   r.on();
-  r.run(0.5f);
   r.in.rt = 1.0f;                       // close
-  float gAtContact = -1;
-  for (int i = 0; i < 300; ++i) {
-    if (r.c.q[GRIP] > 55 && gAtContact < 0) gAtContact = r.c.q[GRIP];
-    r.s.amps = gAtContact >= 0 ? 1.6f : 0.5f;   // fingers touch the object at ~55 %
-    r.c.update(r.in, r.s, DT);
-  }
-  r.in.rt = 0;
-  r.run(0.5f);
-  CHECK(r.c.gripLimit < 70 && r.c.gripLimit > 45, "grip detected near contact (limit %.1f)", r.c.gripLimit);
-  CHECK(r.c.q[GRIP] <= r.c.gripLimit + 0.01f, "gripper stopped closing (%.1f)", r.c.q[GRIP]);
-  r.s.amps = 0.5f;
-  r.in.lt = 1.0f;                       // open again: limit forgotten
-  r.run(1.0f);
-  r.in.lt = 0;
-  r.run(0.2f);
-  CHECK(r.c.gripLimit == r.P.qmax[GRIP], "opening resets the grip limit");
-  // without contact the gripper closes fully
+  r.run(0.4f);
+  const float closing = r.c.qt[GRIP];
+  CHECK(closing > 20, "RT closes the gripper (%.1f)", closing);
+  r.in.rt = 0;                          // release: back off a little
+  r.run(0.1f);
+  CHECK(fabsf(r.c.qt[GRIP] - (closing - r.P.grip_backoff)) < 0.01f, "release backs off %d %% (%.1f -> %.1f)",
+        r.P.grip_backoff, closing, r.c.qt[GRIP]);
+  r.run(1);
+  CHECK(fabsf(r.c.qt[GRIP] - (closing - r.P.grip_backoff)) < 0.01f, "backoff happens only once");
   r.in.rt = 1.0f;
   r.run(3);
   r.in.rt = 0;
-  CHECK(r.c.q[GRIP] > 99, "free close reaches 100 (%.1f)", r.c.q[GRIP]);
+  r.run(0.5f);
+  CHECK(r.c.q[GRIP] > 100 - r.P.grip_backoff - 0.1f && r.c.q[GRIP] < 100, "full close then backoff (%.1f)",
+        r.c.q[GRIP]);
+}
+
+static void testCalibration() {
+  Rig r;
+  r.on();
+  CHECK(!strncmp(r.text("PULSE 2 1520"), "ok", 2), "PULSE");
+  CHECK(fabsf(r.c.pulseUs(1) - 1520) < 0.01f, "raw pulse goes out as-is");
+  CHECK(!strncmp(r.text("MARK 2 90"), "ok", 2), "first MARK");
+  r.text("PULSE 2 1020");
+  CHECK(strstr(r.text("MARK 2 45"), "calibrated") != nullptr, "second MARK calibrates: %s", lastReply);
+  CHECK(fabsf(r.P.usdeg[1] - 500.0f / 45.0f) < 1e-3f, "usdeg %.4f", r.P.usdeg[1]);
+  CHECK(fabsf(r.P.us0[1] - (1520 - 90 * 500.0f / 45.0f)) < 0.01f, "us0 %.2f", r.P.us0[1]);
+  CHECK(fabsf(r.c.q[1] - 45) < 0.01f, "joint synced to 45 deg");
+  r.text("PULSE OFF");
+  CHECK(fabsf(r.c.pulseUs(1) - 1020) < 0.05f, "same pulse after PULSE OFF (%.2f)", r.c.pulseUs(1));
+  r.text("PULSE 3 1500");
+  CHECK(strstr(r.text("MARK 3 -90"), "ok") != nullptr, "mark J3");
+  CHECK(strstr(r.text("MARK 3 -85"), "calibrated") == nullptr, "marks < 20 deg apart are not used");
+  r.text("PULSE 3 1510");
+  CHECK(strstr(r.text("MARK 3 -45"), "not plausible") != nullptr, "implausible slope rejected");
+  r.text("PULSE OFF");
+  CHECK(!strncmp(r.text("SAVE"), "ok", 2) && saves == 1, "SAVE calls the save hook");
+  CHECK(!strncmp(r.text("DEFAULTS"), "error", 5), "DEFAULTS refused while on");
 }
 
 // ---------------- text commands ----------------
@@ -376,10 +423,14 @@ static void testTextCommands() {
   r.run(3);
   CHECK(r.c.q[GRIP] > 99, "gripper closed");
   CHECK(!strncmp(r.text("OPEN"), "ok", 2), "OPEN");
-  CHECK(!strcmp(r.text("set j1_us0 1500"), "(unknown)"), "CLI commands are passed through");
-  CHECK(!strcmp(r.text("SAVE PARAMS"), "(unknown)"), "SAVE PARAMS goes to the CLI");
-  CHECK(!strncmp(r.text("SAVE"), "ok", 2) && r.c.saveRequest, "SAVE = waypoints");
-  CHECK(strstr(r.text("STATUS"), "ON") != nullptr, "STATUS");
+  CHECK(strstr(r.text("frobnicate"), "unknown") != nullptr, "unknown command");
+  CHECK(!strncmp(r.text("LIM 3 -150 0"), "ok", 2) && r.P.qmin[2] == -150 && r.P.qmax[2] == 0, "LIM");
+  CHECK(!strncmp(r.text("GEO 78 104 98 125"), "ok", 2) && r.P.l4 == 125, "GEO");
+  r.text("GEO 75 105 100 120");
+  CHECK(!strncmp(r.text("POSE PARK HERE"), "ok", 2) && r.P.park[5] == (int)lroundf(r.c.q[5]), "POSE PARK HERE");
+  CHECK(!strncmp(r.text("mode xyz"), "ok", 2) && r.c.mode == CART_MODE, "MODE XYZ");
+  r.text("STATUS");
+  CHECK(strstr(allReplies, "XYZ") != nullptr && strstr(allReplies, "6.00 V") != nullptr, "STATUS: %s", allReplies);
   CHECK(!strncmp(r.text("SPEED 1"), "ok", 2) && r.c.speedLvl == 1, "SPEED");
   CHECK(!strncmp(r.text("OFF"), "ok", 2) && r.c.activity == ACT_PARKING, "OFF parks");
 }
@@ -388,25 +439,21 @@ static void testTextCommands() {
 static void testParams() {
   Params P;
   paramsDefaults(P);
-  const ParamInfo* pi = paramFind("j3_usdeg");
-  CHECK(pi && paramPtr(P, *pi) == &P.usdeg[2], "j3_usdeg maps to usdeg[2]");
-  CHECK(paramFind("j6_park") && paramPtr(P, *paramFind("j6_park")) == &P.park[5], "j6_park");
-  CHECK(paramSet(P, "l2", 110) && P.l2 == 110, "set l2");
-  CHECK(!paramSet(P, "l2", -5) && P.l2 == 110, "out-of-range value refused");
-  CHECK(!paramSet(P, "nope", 1), "unknown name refused");
-  size_t n;
-  const ParamInfo* t = paramTable(n);
-  bool unique = true;
-  for (size_t i = 0; i < n; ++i)
-    for (size_t k = i + 1; k < n; ++k)
-      if (!strcmp(t[i].name, t[k].name)) unique = false;
-  CHECK(unique && n == 6 * 8 + 23, "table: %zu unique names", n);
-  CHECK(P.qmin[1] <= P.home[1] && P.home[2] <= P.qmax[2], "home inside limits");
-  bool parkOk = true;
-  for (int j = 0; j < NJ; ++j) parkOk = parkOk && P.park[j] >= P.qmin[j] && P.park[j] <= P.qmax[j];
-  CHECK(parkOk, "park inside limits");
-  const kin::Pose pk = kin::forward({P.d1, P.l2, P.l3, P.l4}, P.park);
-  CHECK(pk.z > P.z_min, "park pose above the table (z %.1f)", pk.z);
+  CHECK(sizeof(Params) <= 250, "Params fits the EEPROM slot (%u bytes)", (unsigned)sizeof(Params));
+  bool homeOk = true, parkOk = true;
+  for (int j = 0; j < NJ; ++j) {
+    homeOk = homeOk && P.home[j] >= P.qmin[j] && P.home[j] <= P.qmax[j];
+    parkOk = parkOk && P.park[j] >= P.qmin[j] && P.park[j] <= P.qmax[j];
+  }
+  CHECK(homeOk && parkOk, "home and park inside limits");
+  float pk[NJ];
+  for (int j = 0; j < NJ; ++j) pk[j] = P.park[j];
+  const kin::Pose p = kin::forward({(float)P.d1, (float)P.l2, (float)P.l3, (float)P.l4}, pk);
+  CHECK(p.z > P.z_min, "park pose above the table (z %.1f)", p.z);
+  float v = 0;
+  CHECK(parseNum("-12.5", v) && v == -12.5f && parseNum("300", v) && v == 300 && parseNum("+7", v) && v == 7,
+        "parseNum numbers");
+  CHECK(!parseNum("abc", v) && !parseNum("1.2.3", v) && !parseNum("-", v) && !parseNum("", v), "parseNum rejects");
 }
 
 int main() {
@@ -421,9 +468,9 @@ int main() {
   testCartesianJog();
   testCartesianBoundary();
   testTeachPlayback();
-  testOverload();
   testEmergencyStop();
-  testGripDetect();
+  testGripBackoff();
+  testCalibration();
   testTextCommands();
   testParams();
   printf("%d checks, %d failures\n", checks, failures);

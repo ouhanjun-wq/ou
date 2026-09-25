@@ -1,0 +1,30 @@
+// Pins and fixed settings for the Arduino Uno R3 + USB Host Shield 2.0.
+// Wiring: docs/assembly-guide.md, figures 1-3.
+#pragma once
+#include <Arduino.h>
+
+// The USB Host Shield uses D9 (INT), D10 (SS) and D11-D13 (SPI). Keep D7 free as well:
+// some shield versions use it as the MAX3421E reset.
+const uint8_t SERVO_PIN[6] = {2, 3, 4, 5, 6, 8};   // J1 .. J6
+const uint8_t PIN_VSENSE = A3;          // servo supply after the E-stop, through 10k / 10k
+// Optional offline voice module: its TX goes to D0 (RX), sharing the USB serial port.
+// Set the module to the same baud rate. Unplug it while uploading a sketch.
+const uint32_t SERIAL_BAUD = 9600;
+const uint32_t LOOP_US = 20000;         // control loop 50 Hz
+
+// 0 = normal use (G7 Pro gamepad + motion commands)
+// 1 = calibration build: no gamepad, all setup commands (PULSE, MARK, LIM, GEO, POSE, SAVE ...)
+//     The Uno's 32 KB of flash cannot hold the gamepad library and the setup commands together.
+#ifndef SETUP_MODE
+#define SETUP_MODE 0
+#endif
+
+#ifndef PAD_XBOXONE
+#define PAD_XBOXONE 0   // 0: G7 Pro in XInput mode (Xbox 360 protocol) - default
+                        // 1: G7 Pro in GIP mode (Xbox One protocol), see firmware/README.md
+#endif
+
+// EEPROM (1 KB): parameters at 0, waypoints from 256 (count byte, then 6 x int16 each).
+const int EE_PARAMS = 0;
+const int EE_WAYPOINTS = 256;
+const int WAYPOINT_CAPACITY = 60;

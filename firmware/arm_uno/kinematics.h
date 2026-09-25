@@ -5,6 +5,8 @@
 #pragma once
 #include <math.h>
 
+#include "pgm.h"
+
 namespace kin {
 
 constexpr float DEG = 3.14159265f / 180.0f;
@@ -28,7 +30,7 @@ inline float wrap180(float a) {
 }
 
 // q[0..4] = J1..J5 in degrees.
-inline Pose forward(const Geometry& g, const float* q) {
+ARM_NOINLINE inline Pose forward(const Geometry& g, const float* q) {
   const float a2 = q[1] * DEG;
   const float a23 = (q[1] + q[2]) * DEG;
   const float phi = (q[1] + q[2] + q[3]) * DEG;
@@ -45,7 +47,7 @@ inline Pose forward(const Geometry& g, const float* q) {
 
 // Elbow-up solution. rMin keeps the tool away from the base axis, where the base angle
 // is undefined. Joint limits are checked by the caller.
-inline Result inverse(const Geometry& g, const Pose& p, float rMin, float* q) {
+ARM_NOINLINE inline Result inverse(const Geometry& g, const Pose& p, float rMin, float* q) {
   const float r = sqrtf(p.x * p.x + p.y * p.y);
   if (r < rMin) return TOO_CLOSE;
   const float phi = p.pitch * DEG;
