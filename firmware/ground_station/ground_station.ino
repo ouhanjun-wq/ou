@@ -158,9 +158,10 @@ static void printStatus(Stream& out) {
   if (lastTelMs == 0 || age > 1000) {
     out.println("butterfly: NO TELEMETRY");
   } else {
-    out.printf("butterfly: state %u mode %s roll %.1f pitch %.1f yaw %.1f | vbat %.2f V | flap %.1f Hz | link %u pkt/s | flags 0x%02X\n",
+    out.printf("butterfly: state %u mode %s roll %.1f pitch %.1f yaw %.1f | vbat %.2f V | flap %.1f Hz | link %u pkt/s | flags 0x%02X%s\n",
                t.state, modeName(t.mode), t.roll_cd / 100.0f, t.pitch_cd / 100.0f, t.yaw_cd / 100.0f,
-               t.vbat_mv / 1000.0f, t.flap_dhz / 10.0f, t.link_pps, t.flags);
+               t.vbat_mv / 1000.0f, t.flap_dhz / 10.0f, t.link_pps, t.flags,
+               (t.flags & proto::FLAG_CHARGING) ? " CHARGING (arming locked)" : "");
   }
 }
 

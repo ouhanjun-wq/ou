@@ -38,6 +38,7 @@ enum StatusFlag : uint8_t {
   FLAG_LOW_BATT    = 1 << 1,
   FLAG_ARM_BLOCKED = 1 << 2,  // arm switch on while throttle not low
   FLAG_BENCH       = 1 << 3,  // USB bench mode active
+  FLAG_CHARGING    = 1 << 4,  // Type-C charger connected (arming locked)
 };
 
 struct __attribute__((packed)) Header {

@@ -45,10 +45,10 @@ static void printHelp() {
 
 static void printStatus() {
   Snapshot s = snap();
-  Serial.printf("%s | state %s | mode %s | imu %s (err %lu) | vbat %.2f V\n", FW_VERSION,
+  Serial.printf("%s | state %s | mode %s | imu %s (err %lu) | vbat %.2f V%s\n", FW_VERSION,
                 stateName(s.out.state), modeName(s.out.mode),
                 s.imuPresent ? (s.imuOk ? "OK" : "FAULT") : "MISSING",
-                (unsigned long)s.imuErrors, gVbat);
+                (unsigned long)s.imuErrors, gVbat, s.in.charging ? " | CHARGING (arming locked)" : "");
   Serial.printf("link %s | thr %.2f roll %.2f pitch %.2f yaw %.2f | armReq %d%s | flap %.2f Hz\n",
                 s.in.linkOk ? "OK" : "LOST", s.in.thr, s.in.roll, s.in.pitch, s.in.yaw,
                 s.in.armReq, s.out.armBlocked ? " (BLOCKED: flip arm switch off, throttle low)" : "",

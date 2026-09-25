@@ -235,6 +235,25 @@ static void testArming() {
   o = fc.step(bench, s, p, dt);
   CHECK(o.state == proto::ST_DISARMED, "bench off -> state %d", o.state);
 
+  // Charge lock: plugging the charger disarms, blocks bench mode, and needs a fresh
+  // arm-switch flip after unplugging.
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+  o = fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_ARMED, "re-arm before charge test");
+  FlightInputs chg = sticks(0.5f, 0, 0, 0, 0, true);
+  chg.charging = true;
+  o = fc.step(chg, s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED && o.flapHz == 0 && o.armBlocked, "charging did not disarm");
+  chg.bench = true;
+  o = fc.step(chg, s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED, "bench armed while charging");
+  o = fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);   // unplugged, switch still on
+  CHECK(o.state == proto::ST_DISARMED && o.armBlocked, "armed right after unplugging");
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+  o = fc.step(sticks(0, 0, 0, 0, 0, true), s, p, dt);
+  CHECK(o.state == proto::ST_ARMED, "cannot arm after charge + switch flip");
+  fc.step(sticks(0, 0, 0, 0, 0, false), s, p, dt);
+
   // IMU fault forces MANUAL.
   FlightSensors bad;
   bad.imuOk = false;

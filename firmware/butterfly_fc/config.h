@@ -11,6 +11,7 @@ constexpr int PIN_IMU_CS   = D3;   // GPIO4  ICM-42688-P chip select
 constexpr int PIN_IMU_SCK  = D8;   // GPIO7
 constexpr int PIN_IMU_MISO = D9;   // GPIO8
 constexpr int PIN_IMU_MOSI = D10;  // GPIO9
+constexpr int PIN_CHG_DETECT = D6; // GPIO43 Type-C charger VBUS via 100k/200k divider (HIGH = charging)
 constexpr int PIN_LED      = LED_BUILTIN;  // GPIO21, active LOW
 
 // ---------------- Timing ----------------

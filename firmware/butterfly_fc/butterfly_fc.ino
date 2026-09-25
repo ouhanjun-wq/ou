@@ -106,6 +106,8 @@ static void controlTask(void*) {
   FlightOutput lastOut;
   float lastNotchF = -1;
   int badReads = 0, attDiv = 0;
+  bool charging = digitalRead(PIN_CHG_DETECT) == HIGH;
+  int chgCount = 0;
   float acc[3] = {0, 0, -1}, gyroRaw[3] = {0, 0, 0}, gF[3] = {0, 0, 0}, aF[3] = {0, 0, -1};
   uint32_t lastUs = micros(), loopMaxUs = 0;
   TickType_t lastWake = xTaskGetTickCount();
@@ -202,6 +204,14 @@ static void controlTask(void*) {
     bench = gBench;
     portEXIT_CRITICAL(&gMux);
     in.linkOk = lastRx != 0 && (millis() - lastRx) < (uint32_t)P.fs_timeout_ms;
+    // Charge lock: debounced (100 ms) VBUS detect of the Type-C charging port.
+    const bool chgPin = digitalRead(PIN_CHG_DETECT) == HIGH;
+    if (chgPin != charging) {
+      if (++chgCount >= 20) { charging = chgPin; chgCount = 0; }
+    } else {
+      chgCount = 0;
+    }
+    in.charging = charging;
     if (bench.active) {
       in.bench = true;
       in.thr = bench.thr;
@@ -249,6 +259,7 @@ static void controlTask(void*) {
 // ---------------- setup / loop ----------------
 void setup() {
   pinMode(PIN_LED, OUTPUT);
+  pinMode(PIN_CHG_DETECT, INPUT);   // the divider's 200k acts as pull-down; see firmware/README.md
   digitalWrite(PIN_LED, HIGH);   // off (active low)
   Serial.begin(115200);
 #if ARDUINO_USB_CDC_ON_BOOT
@@ -321,15 +332,18 @@ void loop() {
     t.mode = s.out.mode;
     t.state = s.out.state;
     t.flags = (s.imuOk ? proto::FLAG_IMU_OK : 0) | (lowBatt ? proto::FLAG_LOW_BATT : 0) |
-              (s.out.armBlocked ? proto::FLAG_ARM_BLOCKED : 0) | (s.in.bench ? proto::FLAG_BENCH : 0);
+              (s.out.armBlocked ? proto::FLAG_ARM_BLOCKED : 0) | (s.in.bench ? proto::FLAG_BENCH : 0) |
+              (s.in.charging ? proto::FLAG_CHARGING : 0);
     t.flap_dhz = (uint8_t)constrain(s.out.flapHz * 10, 0, 255);
     t.link_pps = pps;
     linkSendTelemetry(t);
   }
 
-  // LED: armed = on, failsafe / IMU fault = fast blink, low battery = double blink, idle = slow blink
+  // LED: charging = 1 s on / 1 s off, armed = on, failsafe / IMU fault = fast blink,
+  //      low battery = double blink, idle = short blink every second
   bool led;
-  if (!s.imuOk || s.out.state == proto::ST_FAILSAFE) led = (now / 100) % 2;
+  if (s.in.charging) led = (now / 1000) % 2;
+  else if (!s.imuOk || s.out.state == proto::ST_FAILSAFE) led = (now / 100) % 2;
   else if (lowBatt) led = (now % 1000) < 100 || ((now % 1000) > 200 && (now % 1000) < 300);
   else if (s.out.state == proto::ST_ARMED) led = true;
   else led = (now % 1000) < 100;

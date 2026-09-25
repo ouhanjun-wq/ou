@@ -46,6 +46,7 @@ struct FlightInputs {
   bool armReq = false;
   bool linkOk = false;
   bool bench = false;             // USB bench test: armed without radio
+  bool charging = false;          // Type-C charger plugged in: never arm
   float turnDeg = 0;              // pending CMD_TURN (consumed by step)
 };
 
@@ -143,6 +144,13 @@ class FlightCore {
  private:
   void updateState(const FlightInputs& in, const Params& p) {
     armBlocked_ = false;
+    if (in.charging) {           // charge lock beats everything, including bench mode
+      state_ = proto::ST_DISARMED;
+      armBlocked_ = in.armReq || in.bench;
+      prevBench_ = false;
+      linkWasLost_ = true;       // after unplugging, the arm switch must be flipped again
+      return;
+    }
     if (in.bench) { state_ = proto::ST_ARMED; prevBench_ = true; return; }
     if (prevBench_) {            // leaving bench mode always disarms
       prevBench_ = false;
