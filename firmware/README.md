@@ -3,7 +3,7 @@
 | 目录 | 作用 |
 |---|---|
 | `butterfly_fc/` | **机上飞控**：ICM-42688-P 陀螺仪增稳、扑翼同步滤波、双舵机混控、ESP-NOW 通信、USB 命令行 |
-| `ground_station/` | **地面站**：Xbox 手柄（BLE）⇢ ESP-NOW 桥接；也支持自制摇杆（`USE_XBOX=0`）；提供文本指令接口（语音 / AI / 电脑） |
+| `ground_station/` | **地面站**：蓝牙手柄（**盖世小鸡 G7 Pro** 等，Bluepad32）⇢ ESP-NOW 桥接；也支持 Xbox BLE 和自制摇杆；提供手机网页和文本指令接口 |
 | `camera_node/` | **可选摄像头节点**（XIAO ESP32S3 Sense）：MJPEG 视频流，画面显示在手机网页里 |
 | `tests/` | 主机端单元测试（滤波器、姿态解算、飞行逻辑、通信协议），不需要硬件 |
 | `../tools/gyro_fft.py` | 采集陀螺仪数据并画频谱，调滤波器用 |
@@ -20,7 +20,17 @@
 3. 打开 **开发板管理器**，搜索 `esp32`，安装 **esp32 by Espressif Systems 3.x**。
 4. 开发板选 **XIAO_ESP32S3**，并确认 **USB CDC On Boot = Enabled**。
 5. 飞控 `butterfly_fc` **不需要第三方库**。
-6. 地面站 `ground_station` 使用 Xbox 手柄时，需要在库管理器中安装 **`XboxSeriesXControllerESP32_asukiaaa`**，它会自动安装依赖 `NimBLE-Arduino` 和 `XboxControllerNotificationParser`。如果用自制摇杆，把文件顶部改成 `#define USE_XBOX 0`，就不需要装这个库。
+6. 地面站 `ground_station` 有三种手柄后端，在文件顶部用 `PAD_BACKEND` 选择：
+
+| `PAD_BACKEND` | 手柄 | 地面站开发板 | 开发板包 / 库 |
+|---|---|---|---|
+| **`PAD_BP32`（默认）** | **盖世小鸡 G7 Pro**（蓝牙模式）、Xbox、PS4/PS5、Switch Pro、8BitDo 等 | **原版 ESP32**，推荐 **FireBeetle 2 ESP32-E** | 开发板包 **esp32_bluepad32**，地址见下方 |
+| `PAD_XBOX` | Xbox Series X\|S | XIAO ESP32S3 | 标准 esp32 包 + 库 `XboxSeriesXControllerESP32_asukiaaa` |
+| `PAD_DIY` | 自制摇杆和开关 | XIAO ESP32S3 | 标准 esp32 包 |
+
+Bluepad32 开发板包的地址（加到“附加开发板管理器网址”里）：
+`https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json`
+安装 **esp32_bluepad32** 后，开发板选 **FireBeetle 2 ESP32-E**。其他原版 ESP32 板子（ESP32 Dev Module 等）也可以。
 
 > 两个工程各有一份 `protocol.h`，内容**必须完全一致**。CI 会自动检查这一点。
 
@@ -78,13 +88,16 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 - 气压计要用一小块**开孔海绵**盖住，挡住扑翼气流，否则高度读数会随扑翼节奏乱跳。
 - 如果用的是 6 V 舵机（非高压），舵机要改由 **6 V BEC** 供电，不能直接接 2S 电池。
 
-### 地面站：Xbox 手柄（默认）
+### 地面站：盖世小鸡 G7 Pro（默认，Bluepad32）
 
-地面站就是一块 XIAO ESP32S3，除了供电不需要接任何线。
+地面站是一块 FireBeetle 2 ESP32-E，插上 1S 锂电池就行，不需要接其他线（可选：语音模块 TX 接 GPIO16）。
 
-1. 手柄固件升级到支持 BLE 的版本（在 Windows 的 “Xbox 配件” 应用里升级）。
-2. 地面站上电后，长按手柄顶部的**配对键**，直到 Xbox 标志快速闪烁；地面站会自动连接第一个找到的 Xbox 手柄。
-3. 按键功能见 [`docs/build-plan.md`](../docs/build-plan.md) 的 “飞行能力与 Xbox 手柄操控”。
+1. G7 Pro 背面中间的模式开关拨到**蓝牙**，短按 Xbox 键开机，长按底部配对键，直到指示灯循环闪烁。
+2. 地面站会自动连接第一个找到的手柄；解锁、上锁和返航时，手柄会振动提示。
+3. 想换手柄时，串口输入 `PAIR`，清除旧的配对记录。
+4. 按键功能见 [`docs/build-plan.md`](../docs/build-plan.md) 的“飞行能力与手柄操控”。
+
+> 使用 Xbox Series 手柄 + XIAO ESP32S3 的旧方案时，设置 `PAD_BACKEND PAD_XBOX`；手柄固件需要升级到支持 BLE 的版本。
 
 | 手柄 | 功能 |
 |---|---|
@@ -99,7 +112,7 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 | X | 自动返航（需要 GPS），动一下摇杆取消 |
 | View | 陀螺仪校准（上锁时）|
 
-### 地面站：自制摇杆（`USE_XBOX 0` 时）
+### 地面站：自制摇杆（`PAD_BACKEND PAD_DIY` 时，XIAO ESP32S3）
 
 | 引脚 | 接什么 |
 |---|---|
@@ -146,7 +159,8 @@ TEL ON | TEL OFF | STATUS
 - `TAKEOFF`：在 AUTO 模式下，会自动做起飞手势并爬升 1.5 秒，然后定高；在 HOLD 模式下，油门缓慢升到 0.75。
 - `UP` / `DOWN`：在 AUTO 模式下把目标高度改变 ±1 m；在其他模式下把油门改变 ±0.1。
 - **只要动一下摇杆，控制权立刻交回人手。**
-- 使用 Xbox 手柄时，按 B 随时可以上锁；使用自制摇杆时，实体 ARM 开关是总开关。
+- 使用手柄时，按 B 随时可以上锁；使用自制摇杆时，实体 ARM 开关是总开关。
+- `PAIR`（仅限 Bluepad32 后端）：清除已配对的手柄，然后接受新手柄配对。
 
 ## 5. 关键参数
 
