@@ -69,6 +69,18 @@ class Svg:
             f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{width}" stroke-linejoin="round" '
             f'stroke-linecap="round"{dash}/>')
 
+    def arrow(self, x1, y1, x2, y2, color, width=2.5):
+        import math
+        self.wire([(x1, y1), (x2, y2)], color, width)
+        a = math.atan2(y2 - y1, x2 - x1)
+        p1 = (x2 - 10 * math.cos(a - 0.45), y2 - 10 * math.sin(a - 0.45))
+        p2 = (x2 - 10 * math.cos(a + 0.45), y2 - 10 * math.sin(a + 0.45))
+        self.parts.append(f'<path d="M{x2},{y2} L{p1[0]:.1f},{p1[1]:.1f} L{p2[0]:.1f},{p2[1]:.1f} Z" fill="{color}"/>')
+
+    def marker(self, x, y, n):
+        self.parts.append(f'<circle cx="{x}" cy="{y}" r="11" fill="{C["bat"]}" stroke="#FFFFFF" stroke-width="2"/>')
+        self.text(x, y + 4.5, str(n), 12, "middle", "700", "#FFFFFF")
+
     def dot(self, x, y, color):
         self.parts.append(f'<circle cx="{x}" cy="{y}" r="5" fill="{color}"/>')
 
@@ -518,6 +530,168 @@ def fig_body():
     s.save("fig7-body-structure.svg")
 
 
+def fig_wing_structure():
+    s = Svg(1200, 720, "图 8  翅膀结构（左侧一片，俯视）",
+            "前翅和后翅在翼根连在一起，由同一个舵机带动；尺寸按 Mech-Butterfly 的 A3 模板，下面数字仅供参考")
+    film = "#FFF3D6"
+    edge = "#C9A55A"
+    # membrane (forewing + hindwing)
+    s.parts.append(f'<path d="M820,228 C640,120 380,110 240,150 C190,190 200,250 260,285 C420,320 640,315 820,300 Z" '
+                   f'fill="{film}" stroke="{edge}" stroke-width="2"/>')
+    s.parts.append(f'<path d="M820,318 C700,330 560,400 520,500 C500,560 560,590 620,570 C720,520 780,430 820,360 Z" '
+                   f'fill="{film}" stroke="{edge}" stroke-width="2"/>')
+    # rods
+    s.wire([(822, 230), (242, 152)], "#2F3437", 6)                      # leading edge Ø2
+    for tx, ty in ((262, 282), (430, 312), (620, 312)):                 # forewing veins Ø1.5
+        s.wire([(815, 250), (tx, ty)], "#4A5054", 3.5)
+    for tx, ty in ((540, 520), (660, 520)):                             # hindwing veins Ø1.5
+        s.wire([(815, 335), (tx, ty)], "#4A5054", 3.5)
+    s.wire([(815, 320), (522, 498)], "#2F3437", 4.5)                    # hindwing leading rod
+    for a, b in (((330, 205), (360, 293)), ((470, 190), (520, 303)), ((640, 210), (690, 300)),
+                 ((600, 430), (680, 450)), ((580, 470), (640, 510))):   # cross veins Ø1.0
+        s.wire([a, b], "#7A8084", 2)
+    # root joint
+    s.parts.append(f'<rect x="812" y="215" width="46" height="160" rx="8" fill="#9EC5E8" stroke="{C["boxline"]}" '
+                   f'stroke-width="1.5"/>')
+    s.text(835, 395, "翼根座", 12, "middle", "700")
+    s.text(835, 411, "→ 舵机臂", 11, "middle", color=C["mute"])
+    # dimensions
+    s.wire([(242, 110), (822, 110)], C["mute"], 1.2)
+    s.wire([(242, 102), (242, 118)], C["mute"], 1.2)
+    s.wire([(822, 102), (822, 118)], C["mute"], 1.2)
+    s.text(532, 102, "半翼展约 380–420 mm（两侧加机身约 85 cm）", 12.5, "middle", "600")
+    s.wire([(210, 150), (210, 285)], C["mute"], 1.2)
+    s.text(200, 222, "前翅宽", 12, "end", "600")
+    s.text(200, 238, "约 150–180 mm", 11.5, "end", color=C["mute"])
+    # numbered markers on the drawing
+    for n, (mx, my) in enumerate(((420, 176), (560, 290), (655, 250), (680, 408), (330, 240), (835, 300)), 1):
+        s.marker(mx, my, n)
+    # legend column
+    items = [
+        ("前缘：Ø2.0 mm 碳纤维实心杆", "最粗、受力最大，从翼根一直通到翼尖"),
+        ("翅脉：Ø1.5 mm 碳杆", "从翼根呈扇形散开，撑住翼面"),
+        ("横脉：Ø1.0 mm 碳杆", "把相邻的翅脉连起来，防止翼面扭曲"),
+        ("后翅杆：Ø1.5 mm 碳杆", "后翅的主杆，和前翅插在同一个翼根座上"),
+        ("翼膜：聚酯薄膜 12–15 µm", "绷平贴在碳杆上，越薄越轻"),
+        ("翼根座：3D 打印 PETG", "所有碳杆都插进它的孔里，再装到舵机臂上"),
+    ]
+    for i, (t1, t2) in enumerate(items):
+        yy = 150 + i * 52
+        s.marker(915, yy - 4, i + 1)
+        s.text(935, yy, t1, 13, weight="700")
+        s.text(935, yy + 18, t2, 11.5, color=C["mute"])
+    # inset A: cross-section
+    s.box(40, 480, 330, 200, "剖面 A：膜和碳杆怎么贴", "")
+    s.parts.append(f'<circle cx="205" cy="590" r="16" fill="#2F3437"/>')
+    s.wire([(70, 572), (340, 572)], edge, 3)
+    for gx in (192, 205, 218):
+        s.parts.append(f'<circle cx="{gx}" cy="575" r="3" fill="{C["v5"]}"/>')
+    s.text(205, 630, "膜在碳杆上面，胶只涂在碳杆上", 12, "middle", "600")
+    s.text(205, 648, "（整张膜都涂胶会变重、起皱）", 11.5, "middle", color=C["mute"])
+    s.text(344, 568, "膜", 11.5, "end", color=C["mute"])
+    s.text(230, 596, "碳杆", 11.5, color="#FFFFFF")
+    # inset B: root joint
+    s.box(420, 590, 740, 110, "", "")
+    s.text(440, 616, "剖面 B：翼根连接", 14, weight="700")
+    s.parts.append(f'<rect x="700" y="620" width="120" height="40" rx="6" fill="#9EC5E8" stroke="{C["boxline"]}"/>')
+    s.wire([(560, 640), (760, 640)], "#2F3437", 6)
+    for i in range(8):
+        x = 690 + i * 5
+        s.wire([(x, 628), (x + 6, 652)], "#C0392B", 1.4)
+    s.text(620, 675, "碳杆插进孔里 15 mm", 11.5, "middle", color=C["mute"])
+    s.text(840, 636, "① 孔径比杆大 0.1–0.2 mm", 12)
+    s.text(840, 656, "② 插入前杆头用砂纸打毛", 12)
+    s.text(840, 676, "③ 孔口细线缠 6–8 圈 + 502 渗透", 12)
+    s.save("fig8-wing-structure.svg")
+
+
+def fig_wing_steps():
+    s = Svg(1200, 760, "图 9  翅膀制作 6 步", "每一只翅膀都按这 6 步做；左右两只最后要称重配对")
+    film, edge, rod = "#FFF3D6", "#C9A55A", "#2F3437"
+    panels = [
+        ("打印模板", ["A3 纸 1:1 打印模板（不要缩放）", "下面垫切割垫，上面盖一层保鲜膜防粘"]),
+        ("摆放碳杆", ["沿轮廓摆：前缘 Ø2，翅脉 Ø1.5 / Ø1.0", "交叉处各点一小滴 502，用胶带临时压住"]),
+        ("喷胶贴膜", ["只在碳杆上喷 3M 77（先用纸遮住别处）", "膜从中间向四周抹平、轻轻绷紧"]),
+        ("修边", ["沿碳杆外侧留 2 mm 剪下多余的膜", "边缘可以向下包住碳杆再点胶，更结实"]),
+        ("称重配对", ["两只翅膀重量差 ≤ 0.5 g", "重的那只修掉一点边缘薄膜"]),
+        ("装到舵机", ["先 servo 0 0 让舵机回中位，再装", "扑动全程不能碰到机身和电线"]),
+    ]
+    pw, ph = 370, 330
+    for i, (title, lines) in enumerate(panels):
+        col, row = i % 3, i // 3
+        x, y = 30 + col * (pw + 25), 80 + row * (ph + 20)
+        s.parts.append(f'<rect x="{x}" y="{y}" width="{pw}" height="{ph}" rx="10" fill="{C["box"]}" '
+                       f'stroke="{C["boxline"]}" stroke-width="1.4"/>')
+        s.note(x + 12, y + 30, i + 1, "")
+        s.text(x + 44, y + 31, title, 15, weight="700")
+        for j, line in enumerate(lines):
+            s.text(x + 16, y + ph - 40 + j * 20, line, 12.5, color=C["ink"] if j == 0 else C["mute"])
+        ox, oy = x + 45, y + 60          # drawing area ~280 x 190
+        outline = (f'M{ox + 250},{oy + 50} C{ox + 170},{oy} {ox + 60},{oy} {ox + 20},{oy + 25} '
+                   f'C{ox},{oy + 60} {ox + 10},{oy + 100} {ox + 50},{oy + 115} '
+                   f'C{ox + 120},{oy + 135} {ox + 200},{oy + 120} {ox + 250},{oy + 105} Z')
+        rods = [((ox + 250, oy + 52), (ox + 22, oy + 26), 5), ((ox + 245, oy + 70), (ox + 55, oy + 112), 3),
+                ((ox + 245, oy + 70), (ox + 150, oy + 125), 3), ((ox + 100, oy + 22), (ox + 110, oy + 122), 2)]
+        if i == 0:   # template on paper
+            s.parts.append(f'<rect x="{ox - 15}" y="{oy - 10}" width="300" height="180" fill="#FFFFFF" '
+                           f'stroke="#B9C4C1"/>')
+            s.text(ox + 270, oy + 160, "A3", 12, "end", "700", C["mute"])
+            s.parts.append(f'<path d="{outline}" fill="none" stroke="{C["mute"]}" stroke-width="2" '
+                           f'stroke-dasharray="6 4"/>')
+        elif i == 1:  # rods on template
+            s.parts.append(f'<path d="{outline}" fill="none" stroke="{C["mute"]}" stroke-width="1.5" '
+                           f'stroke-dasharray="6 4"/>')
+            for a, b, w in rods:
+                s.wire([a, b], rod, w)
+            for dx, dy in ((100, 22), (104, 72), (245, 70)):
+                s.parts.append(f'<circle cx="{ox + dx}" cy="{oy + dy}" r="5" fill="{C["v5"]}"/>')
+            s.text(ox + 120, oy + 160, "● = 一小滴 502", 12, "middle", color=C["v5"])
+        elif i == 2:  # film over rods with arrows
+            s.parts.append(f'<rect x="{ox - 15}" y="{oy - 15}" width="295" height="160" fill="{film}" '
+                           f'fill-opacity="0.8" stroke="{edge}" stroke-dasharray="4 3"/>')
+            for a, b, w in rods:
+                s.wire([a, b], rod, w)
+            for dx, dy in ((-70, -40), (70, -40), (-70, 40), (70, 40), (-95, 0), (95, 0)):
+                s.arrow(ox + 135 + dx * 0.25, oy + 65 + dy * 0.25, ox + 135 + dx, oy + 65 + dy, C["sig"], 2.5)
+            s.text(ox + 135, oy + 168, "从中间向外抹平", 12, "middle", color=C["sig"])
+        elif i == 3:  # trim
+            s.parts.append(f'<path d="{outline}" fill="{film}" stroke="{edge}" stroke-width="2"/>')
+            for a, b, w in rods:
+                s.wire([a, b], rod, w)
+            s.parts.append(f'<path d="{outline}" fill="none" stroke="{C["bat"]}" stroke-width="1.5" '
+                           f'stroke-dasharray="5 4" transform="translate({ox + 135},{oy + 65}) scale(1.08) '
+                           f'translate({-(ox + 135)},{-(oy + 65)})"/>')
+            s.text(ox + 20, oy + 160, "✂ 红虚线 = 剪切线（留 2 mm）", 12, color=C["bat"])
+        elif i == 4:  # scale with two wings
+            s.parts.append(f'<rect x="{ox + 20}" y="{oy + 120}" width="240" height="40" rx="6" fill="#DDE3E1" '
+                           f'stroke="{C["boxline"]}"/>')
+            s.parts.append(f'<rect x="{ox + 95}" y="{oy + 128}" width="90" height="24" rx="3" fill="#1B2A2F"/>')
+            s.text(ox + 140, oy + 145, "7.84 g", 13, "middle", "700", "#7CF2A0")
+            for dx in (40, 150):
+                s.parts.append(f'<path d="M{ox + dx + 90},{oy + 60} C{ox + dx + 60},{oy + 20} {ox + dx + 20},{oy + 20} '
+                               f'{ox + dx},{oy + 40} C{ox + dx + 10},{oy + 90} {ox + dx + 60},{oy + 100} '
+                               f'{ox + dx + 90},{oy + 90} Z" fill="{film}" stroke="{edge}" stroke-width="2"/>')
+            s.text(ox + 85, oy + 18, "左 7.84 g", 12, "middle", "600")
+            s.text(ox + 195, oy + 18, "右 7.61 g", 12, "middle", "600")
+            s.text(ox + 140, oy + 180, "差 0.23 g ✓", 12, "middle", "700", "#2E7D52")
+        else:  # attach to servo
+            s.parts.append(f'<rect x="{ox + 190}" y="{oy + 60}" width="70" height="60" rx="6" fill="#9EC5E8" '
+                           f'stroke="{C["boxline"]}"/>')
+            s.text(ox + 225, oy + 95, "舵机", 12, "middle", "700")
+            s.parts.append(f'<rect x="{ox + 180}" y="{oy + 40}" width="46" height="18" rx="4" fill="#FFFFFF" '
+                           f'stroke="{C["boxline"]}"/>')
+            s.text(ox + 203, oy + 35, "舵机臂", 11, "middle", color=C["mute"])
+            s.wire([(ox + 200, oy + 48), (ox + 10, oy + 8)], rod, 5)
+            s.parts.append(f'<path d="M{ox + 190},{oy + 46} C{ox + 120},{oy - 5} {ox + 40},{oy} {ox + 10},{oy + 10} '
+                           f'C{ox + 40},{oy + 60} {ox + 120},{oy + 70} {ox + 190},{oy + 56} Z" fill="{film}" '
+                           f'fill-opacity="0.7" stroke="{edge}" stroke-width="1.5"/>')
+            s.wire([(ox + 60, oy + 150), (ox + 60, oy + 110)], C["sig"], 2)
+            s.wire([(ox + 60, oy + 110), (ox + 52, oy + 122)], C["sig"], 2)
+            s.wire([(ox + 60, oy + 110), (ox + 68, oy + 122)], C["sig"], 2)
+            s.text(ox + 76, oy + 150, "中位时翅膀略向上（center 10°）", 11.5, color=C["sig"])
+    s.save("fig9-wing-steps.svg")
+
+
 if __name__ == "__main__":
     fig_overview()
     fig_power_in()
@@ -527,4 +701,6 @@ if __name__ == "__main__":
     fig_camera()
     fig_layout()
     fig_body()
+    fig_wing_structure()
+    fig_wing_steps()
     print("diagrams written to", OUT)

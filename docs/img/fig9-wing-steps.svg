@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1200" height="760" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 9  翅膀制作 6 步</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">每一只翅膀都按这 6 步做；左右两只最后要称重配对</text>
+<rect x="30" y="80" width="370" height="330" rx="10" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.4"/>
+<circle cx="52" cy="106" r="10" fill="#1B2A2F"/>
+<text x="52" y="110.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="70" y="110" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F"></text>
+<text x="74" y="111" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">打印模板</text>
+<text x="46" y="370" font-size="12.5" text-anchor="start" font-weight="400" fill="#1B2A2F">A3 纸 1:1 打印模板（不要缩放）</text>
+<text x="46" y="390" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">下面垫切割垫，上面盖一层保鲜膜防粘</text>
+<rect x="60" y="130" width="300" height="180" fill="#FFFFFF" stroke="#B9C4C1"/>
+<text x="345" y="300" font-size="12" text-anchor="end" font-weight="700" fill="#5E6E72">A3</text>
+<path d="M325,190 C245,140 135,140 95,165 C75,200 85,240 125,255 C195,275 275,260 325,245 Z" fill="none" stroke="#5E6E72" stroke-width="2" stroke-dasharray="6 4"/>
+<rect x="425" y="80" width="370" height="330" rx="10" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.4"/>
+<circle cx="447" cy="106" r="10" fill="#1B2A2F"/>
+<text x="447" y="110.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="465" y="110" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F"></text>
+<text x="469" y="111" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">摆放碳杆</text>
+<text x="441" y="370" font-size="12.5" text-anchor="start" font-weight="400" fill="#1B2A2F">沿轮廓摆：前缘 Ø2，翅脉 Ø1.5 / Ø1.0</text>
+<text x="441" y="390" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">交叉处各点一小滴 502，用胶带临时压住</text>
+<path d="M720,190 C640,140 530,140 490,165 C470,200 480,240 520,255 C590,275 670,260 720,245 Z" fill="none" stroke="#5E6E72" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M720,192 L492,166" fill="none" stroke="#2F3437" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M715,210 L525,252" fill="none" stroke="#2F3437" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M715,210 L620,265" fill="none" stroke="#2F3437" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M570,162 L580,262" fill="none" stroke="#2F3437" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="570" cy="162" r="5" fill="#E07B00"/>
+<circle cx="574" cy="212" r="5" fill="#E07B00"/>
+<circle cx="715" cy="210" r="5" fill="#E07B00"/>
+<text x="590" y="300" font-size="12" text-anchor="middle" font-weight="400" fill="#E07B00">● = 一小滴 502</text>
+<rect x="820" y="80" width="370" height="330" rx="10" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.4"/>
+<circle cx="842" cy="106" r="10" fill="#1B2A2F"/>
+<text x="842" y="110.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="860" y="110" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F"></text>
+<text x="864" y="111" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">喷胶贴膜</text>
+<text x="836" y="370" font-size="12.5" text-anchor="start" font-weight="400" fill="#1B2A2F">只在碳杆上喷 3M 77（先用纸遮住别处）</text>
+<text x="836" y="390" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">膜从中间向四周抹平、轻轻绷紧</text>
+<rect x="850" y="125" width="295" height="160" fill="#FFF3D6" fill-opacity="0.8" stroke="#C9A55A" stroke-dasharray="4 3"/>
+<path d="M1115,192 L887,166" fill="none" stroke="#2F3437" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1110,210 L920,252" fill="none" stroke="#2F3437" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1110,210 L1015,265" fill="none" stroke="#2F3437" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M965,162 L975,262" fill="none" stroke="#2F3437" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M982.5,195.0 L930,165" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M930,165 L940.0,165.7 L935.7,173.2 Z" fill="#1F6FB5"/>
+<path d="M1017.5,195.0 L1070,165" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1070,165 L1064.3,173.2 L1060.0,165.7 Z" fill="#1F6FB5"/>
+<path d="M982.5,215.0 L930,245" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M930,245 L935.7,236.8 L940.0,244.3 Z" fill="#1F6FB5"/>
+<path d="M1017.5,215.0 L1070,245" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1070,245 L1060.0,244.3 L1064.3,236.8 Z" fill="#1F6FB5"/>
+<path d="M976.25,205.0 L905,205" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M905,205 L914.0,200.7 L914.0,209.3 Z" fill="#1F6FB5"/>
+<path d="M1023.75,205.0 L1095,205" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1095,205 L1086.0,209.3 L1086.0,200.7 Z" fill="#1F6FB5"/>
+<text x="1000" y="308" font-size="12" text-anchor="middle" font-weight="400" fill="#1F6FB5">从中间向外抹平</text>
+<rect x="30" y="430" width="370" height="330" rx="10" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.4"/>
+<circle cx="52" cy="456" r="10" fill="#1B2A2F"/>
+<text x="52" y="460.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">4</text>
+<text x="70" y="460" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F"></text>
+<text x="74" y="461" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">修边</text>
+<text x="46" y="720" font-size="12.5" text-anchor="start" font-weight="400" fill="#1B2A2F">沿碳杆外侧留 2 mm 剪下多余的膜</text>
+<text x="46" y="740" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">边缘可以向下包住碳杆再点胶，更结实</text>
+<path d="M325,540 C245,490 135,490 95,515 C75,550 85,590 125,605 C195,625 275,610 325,595 Z" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>
+<path d="M325,542 L97,516" fill="none" stroke="#2F3437" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M320,560 L130,602" fill="none" stroke="#2F3437" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M320,560 L225,615" fill="none" stroke="#2F3437" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M175,512 L185,612" fill="none" stroke="#2F3437" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M325,540 C245,490 135,490 95,515 C75,550 85,590 125,605 C195,625 275,610 325,595 Z" fill="none" stroke="#D23B2F" stroke-width="1.5" stroke-dasharray="5 4" transform="translate(210,555) scale(1.08) translate(-210,-555)"/>
+<text x="95" y="650" font-size="12" text-anchor="start" font-weight="400" fill="#D23B2F">✂ 红虚线 = 剪切线（留 2 mm）</text>
+<rect x="425" y="430" width="370" height="330" rx="10" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.4"/>
+<circle cx="447" cy="456" r="10" fill="#1B2A2F"/>
+<text x="447" y="460.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">5</text>
+<text x="465" y="460" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F"></text>
+<text x="469" y="461" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">称重配对</text>
+<text x="441" y="720" font-size="12.5" text-anchor="start" font-weight="400" fill="#1B2A2F">两只翅膀重量差 ≤ 0.5 g</text>
+<text x="441" y="740" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">重的那只修掉一点边缘薄膜</text>
+<rect x="490" y="610" width="240" height="40" rx="6" fill="#DDE3E1" stroke="#2B3A3F"/>
+<rect x="565" y="618" width="90" height="24" rx="3" fill="#1B2A2F"/>
+<text x="610" y="635" font-size="13" text-anchor="middle" font-weight="700" fill="#7CF2A0">7.84 g</text>
+<path d="M600,550 C570,510 530,510 510,530 C520,580 570,590 600,580 Z" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>
+<path d="M710,550 C680,510 640,510 620,530 C630,580 680,590 710,580 Z" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>
+<text x="555" y="508" font-size="12" text-anchor="middle" font-weight="600" fill="#1B2A2F">左 7.84 g</text>
+<text x="665" y="508" font-size="12" text-anchor="middle" font-weight="600" fill="#1B2A2F">右 7.61 g</text>
+<text x="610" y="670" font-size="12" text-anchor="middle" font-weight="700" fill="#2E7D52">差 0.23 g ✓</text>
+<rect x="820" y="430" width="370" height="330" rx="10" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.4"/>
+<circle cx="842" cy="456" r="10" fill="#1B2A2F"/>
+<text x="842" y="460.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">6</text>
+<text x="860" y="460" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F"></text>
+<text x="864" y="461" font-size="15" text-anchor="start" font-weight="700" fill="#1B2A2F">装到舵机</text>
+<text x="836" y="720" font-size="12.5" text-anchor="start" font-weight="400" fill="#1B2A2F">先 servo 0 0 让舵机回中位，再装</text>
+<text x="836" y="740" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">扑动全程不能碰到机身和电线</text>
+<rect x="1055" y="550" width="70" height="60" rx="6" fill="#9EC5E8" stroke="#2B3A3F"/>
+<text x="1090" y="585" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">舵机</text>
+<rect x="1045" y="530" width="46" height="18" rx="4" fill="#FFFFFF" stroke="#2B3A3F"/>
+<text x="1068" y="525" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">舵机臂</text>
+<path d="M1065,538 L875,498" fill="none" stroke="#2F3437" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1055,536 C985,485 905,490 875,500 C905,550 985,560 1055,546 Z" fill="#FFF3D6" fill-opacity="0.7" stroke="#C9A55A" stroke-width="1.5"/>
+<path d="M925,640 L925,600" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M925,600 L917,612" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M925,600 L933,612" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="941" y="640" font-size="11.5" text-anchor="start" font-weight="400" fill="#1F6FB5">中位时翅膀略向上（center 10°）</text>
+</svg>
