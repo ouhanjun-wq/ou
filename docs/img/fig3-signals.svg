@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="700" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 3  飞控信号接线：陀螺仪 · 气压计 · GPS</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">陀螺仪和气压计共用 3.3 V、GND 和一组 SPI 线（绿色）；片选 CS 各自单独接（看同名标签）</text>
+<rect x="300" y="170" width="170" height="330" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="385.0" y="192" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">XIAO ESP32S3</text>
+<text x="385.0" y="210" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">飞控（俯视，USB-C 朝上）</text>
+<rect x="363.0" y="160" width="44" height="14" rx="4" fill="#B9C4C1"/>
+<text x="385.0" y="171" font-size="9.5" text-anchor="middle" font-weight="700" fill="#1B2A2F">USB-C</text>
+<circle cx="300" cy="250" r="4" fill="#2B3A3F"/>
+<text x="308" y="254" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D0</text>
+<circle cx="300" cy="288" r="4" fill="#2B3A3F"/>
+<text x="308" y="292" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D1</text>
+<circle cx="300" cy="326" r="4" fill="#2B3A3F"/>
+<text x="308" y="330" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D2</text>
+<circle cx="300" cy="364" r="4" fill="#2B3A3F"/>
+<text x="308" y="368" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D3</text>
+<circle cx="300" cy="402" r="4" fill="#2B3A3F"/>
+<text x="308" y="406" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D4</text>
+<circle cx="300" cy="440" r="4" fill="#2B3A3F"/>
+<text x="308" y="444" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D5</text>
+<circle cx="300" cy="478" r="4" fill="#2B3A3F"/>
+<text x="308" y="482" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D6</text>
+<circle cx="470" cy="250" r="4" fill="#2B3A3F"/>
+<text x="462" y="254" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">5V</text>
+<circle cx="470" cy="288" r="4" fill="#2B3A3F"/>
+<text x="462" y="292" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">GND</text>
+<circle cx="470" cy="326" r="4" fill="#2B3A3F"/>
+<text x="462" y="330" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">3V3</text>
+<circle cx="470" cy="364" r="4" fill="#2B3A3F"/>
+<text x="462" y="368" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D10</text>
+<circle cx="470" cy="402" r="4" fill="#2B3A3F"/>
+<text x="462" y="406" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D9</text>
+<circle cx="470" cy="440" r="4" fill="#2B3A3F"/>
+<text x="462" y="444" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D8</text>
+<circle cx="470" cy="478" r="4" fill="#2B3A3F"/>
+<text x="462" y="482" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D7</text>
+<text x="385" y="530" font-size="12" text-anchor="middle" font-weight="400" fill="#5E6E72">5V、GND 的供电见图 2</text>
+<path d="M300,250 L270,250" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="264" y="254" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">电池电压（图 2）</text>
+<path d="M300,288 L270,288" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="264" y="292" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">左舵机信号（图 2）</text>
+<path d="M300,326 L270,326" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="264" y="330" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">右舵机信号（图 2）</text>
+<path d="M300,478 L270,478" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="264" y="482" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">充电检测（图 2）</text>
+<path d="M300,364 L270,364" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="197.2" y="353" width="72.8" height="22" rx="11" fill="#1F6FB5"/>
+<text x="233.6" y="368.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">陀螺仪 CS</text>
+<path d="M300,402 L270,402" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="190.0" y="391" width="80.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="230.0" y="406.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">气压计 CSB</text>
+<path d="M300,440 L270,440" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="146.8" y="429" width="123.2" height="22" rx="11" fill="#1F6FB5"/>
+<text x="208.4" y="444.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GPS RX（可不接）</text>
+<path d="M470,326 L560,326" fill="none" stroke="#7A4CC2" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560" cy="326" r="5" fill="#7A4CC2"/>
+<path d="M470,288 L580,288" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="580" cy="288" r="5" fill="#222222"/>
+<path d="M470,364 L600,364" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="600" cy="364" r="5" fill="#1E8A5A"/>
+<path d="M470,402 L620,402" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="620" cy="402" r="5" fill="#1E8A5A"/>
+<path d="M470,440 L640,440" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="640" cy="440" r="5" fill="#1E8A5A"/>
+<text x="620" y="548" font-size="12" text-anchor="middle" font-weight="700" fill="#1E8A5A">SPI 总线</text>
+<rect x="760" y="90" width="280" height="220" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="900.0" y="112" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">ICM-42688-P 陀螺仪</text>
+<text x="900.0" y="130" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">SPI · 3.3 V · X 箭头朝机头</text>
+<rect x="760" y="340" width="280" height="210" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="900.0" y="362" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">BMP280 气压计</text>
+<text x="900.0" y="380" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">GY-BMP280-3.3 · SPI · 盖开孔海绵</text>
+<rect x="760" y="580" width="280" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="900.0" y="602" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">GPS（可选）</text>
+<text x="900.0" y="620" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">M10 迷你 · 天线朝上</text>
+<circle cx="760" cy="150" r="4" fill="#7A4CC2"/>
+<text x="768" y="154" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">VCC</text>
+<path d="M560,150 L760,150" fill="none" stroke="#7A4CC2" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560" cy="150" r="5" fill="#7A4CC2"/>
+<circle cx="760" cy="180" r="4" fill="#222222"/>
+<text x="768" y="184" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">GND</text>
+<path d="M580,180 L760,180" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="580" cy="180" r="5" fill="#222222"/>
+<circle cx="760" cy="210" r="4" fill="#1E8A5A"/>
+<text x="768" y="214" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">SCLK</text>
+<path d="M640,210 L760,210" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="640" cy="210" r="5" fill="#1E8A5A"/>
+<circle cx="760" cy="240" r="4" fill="#1E8A5A"/>
+<text x="768" y="244" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">SDO</text>
+<path d="M620,240 L760,240" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="620" cy="240" r="5" fill="#1E8A5A"/>
+<circle cx="760" cy="270" r="4" fill="#1E8A5A"/>
+<text x="768" y="274" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">SDI</text>
+<path d="M600,270 L760,270" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="600" cy="270" r="5" fill="#1E8A5A"/>
+<circle cx="760" cy="400" r="4" fill="#7A4CC2"/>
+<text x="768" y="404" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">VCC</text>
+<path d="M560,400 L760,400" fill="none" stroke="#7A4CC2" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560" cy="400" r="5" fill="#7A4CC2"/>
+<circle cx="760" cy="430" r="4" fill="#222222"/>
+<text x="768" y="434" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">GND</text>
+<path d="M580,430 L760,430" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="580" cy="430" r="5" fill="#222222"/>
+<circle cx="760" cy="460" r="4" fill="#1E8A5A"/>
+<text x="768" y="464" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">SCL</text>
+<path d="M640,460 L760,460" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="640" cy="460" r="5" fill="#1E8A5A"/>
+<circle cx="760" cy="490" r="4" fill="#1E8A5A"/>
+<text x="768" y="494" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">SDO</text>
+<path d="M620,490 L760,490" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="620" cy="490" r="5" fill="#1E8A5A"/>
+<circle cx="760" cy="520" r="4" fill="#1E8A5A"/>
+<text x="768" y="524" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">SDA</text>
+<path d="M600,520 L760,520" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="600" cy="520" r="5" fill="#1E8A5A"/>
+<circle cx="760" cy="620" r="4" fill="#7A4CC2"/>
+<text x="768" y="624" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">VCC</text>
+<path d="M560,620 L760,620" fill="none" stroke="#7A4CC2" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560" cy="620" r="5" fill="#7A4CC2"/>
+<circle cx="760" cy="650" r="4" fill="#222222"/>
+<text x="768" y="654" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">GND</text>
+<path d="M580,650 L760,650" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="580" cy="650" r="5" fill="#222222"/>
+<path d="M560,150 L560,620" fill="none" stroke="#7A4CC2" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M580,180 L580,650" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M600,270 L600,520" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M620,240 L620,490" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M640,210 L640,460" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1040" cy="120" r="4" fill="#1F6FB5"/>
+<text x="1032" y="124" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">CS</text>
+<path d="M1040,120 L1060,120" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1060" y="109" width="22.4" height="22" rx="11" fill="#1F6FB5"/>
+<text x="1071.2" y="124.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">D3</text>
+<circle cx="1040" cy="370" r="4" fill="#1F6FB5"/>
+<text x="1032" y="374" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">CSB</text>
+<path d="M1040,370 L1060,370" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1060" y="359" width="22.4" height="22" rx="11" fill="#1F6FB5"/>
+<text x="1071.2" y="374.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">D4</text>
+<circle cx="1040" cy="620" r="4" fill="#1F6FB5"/>
+<text x="1032" y="624" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">TX</text>
+<circle cx="1040" cy="650" r="4" fill="#1F6FB5"/>
+<text x="1032" y="654" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">RX</text>
+<path d="M1040,650 L1060,650" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1060" y="639" width="22.4" height="22" rx="11" fill="#1F6FB5"/>
+<text x="1071.2" y="654.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">D5</text>
+<path d="M1040,620 L1075,620 L1075,565 L680,565 L680,478 L470,478" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="870" y="560" font-size="12" text-anchor="middle" font-weight="700" fill="#1F6FB5">GPS TX → D7</text>
+<circle cx="40" cy="596" r="10" fill="#1B2A2F"/>
+<text x="40" y="600.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="58" y="600" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">SPI 线尽量短（≤ 10 cm），信号线不要和舵机电源线捆在一起</text>
+<circle cx="40" cy="626" r="10" fill="#1B2A2F"/>
+<text x="40" y="630.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="58" y="630" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">三个模块都用 3.3 V；GPS 如果标注 5 V 供电，就改接 5 V</text>
+<circle cx="40" cy="656" r="10" fill="#1B2A2F"/>
+<text x="40" y="660.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="58" y="660" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">同名标签相连：CS → D3，CSB → D4，GPS RX → D5</text>
+<path d="M30,110 L58,110" fill="none" stroke="#7A4CC2" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="64" y="114" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">3.3 V</text>
+<path d="M139,110 L167,110" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="173" y="114" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">GND</text>
+<path d="M222,110 L250,110" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="256" y="114" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">SPI</text>
+<path d="M305,110 L333,110" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="339" y="114" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">信号</text>
+</svg>

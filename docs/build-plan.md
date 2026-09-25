@@ -5,7 +5,8 @@
 > 这份计划是总入口，其他文档分工如下：
 > - 项目调研：[`bionic-butterfly-research.md`](bionic-butterfly-research.md)
 > - 增稳与降噪原理：[`gyro-stabilization-and-noise-reduction.md`](gyro-stabilization-and-noise-reduction.md)
-> - 固件接线、命令和参数：[`../firmware/README.md`](../firmware/README.md)
+> - **组装步骤和接线图**：[`assembly-guide.md`](assembly-guide.md)
+> - 固件命令和参数：[`../firmware/README.md`](../firmware/README.md)
 > - GPS 与摄像头扩展（可选）：[`gps-and-camera.md`](gps-and-camera.md)
 
 ---
@@ -96,7 +97,7 @@ $$
 
 **连接方式**：G7 Pro（**蓝牙模式**）⇢ 蓝牙 ⇢ 地面站 **ESP32（FireBeetle 2 ESP32-E）+ Bluepad32** ⇢ ESP-NOW ⇢ 蝴蝶。
 
-> 为什么地面站要换成**原版 ESP32**：G7 Pro 的三种模式里，只有“蓝牙模式”（给安卓手机用的）能直接连单片机。大多数手柄的蓝牙用的是“经典蓝牙”，而 ESP32-S3 只支持低功耗蓝牙（BLE）。原版 ESP32 两种蓝牙都支持，配合开源的 **Bluepad32** 库，G7 Pro、Xbox、PS4/PS5、Switch Pro、8BitDo 等手柄都能连，以后换手柄也不用改代码。
+> 为什么地面站要换成**原版 ESP32**：G7 Pro 的三种模式里，只有“蓝牙模式”（给安卓手机用的）能直接连单片机。大多数手柄的蓝牙用的是“经典蓝牙”，而 ESP32-S3 只支持低功耗蓝牙（BLE）。原版 ESP32 两种蓝牙都支持，配合开源的 **Bluepad32** 库，就能稳定地连接 G7 Pro。
 > G7 Pro 的 **2.4G 接收器模式和有线模式**是给电脑、Xbox 主机用的，单片机用不了。
 地面站同时保留了**文本指令接口**（语音 / AI / 电脑都可以用）。**手柄断开连接时，地面站立刻停止发送控制指令**，蝴蝶会自动进入失控保护：保持水平，滑翔降落。
 
@@ -136,11 +137,8 @@ $$
 | R2 | ★ 地面站主控 | **DFRobot FireBeetle 2 ESP32-E**（原版 ESP32-WROOM-32E） | **必须是原版 ESP32**（同时支持经典蓝牙和 BLE；S2/S3/C3/C6 都不行）；USB-C；**自带锂电池充电**（PH2.0 电池座） | 1 | 手柄蓝牙 ⇢ ESP-NOW 桥接、手机网页、文本指令 | `FireBeetle 2 ESP32-E` | 50–80 |
 | R3 | 地面站电池 | 1S 3.7 V 500–1000 mAh 锂聚合物，PH2.0 插头（例） | 插到 FireBeetle 的电池座，**直接用它的 Type-C 充电** | 1 | 地面站供电 | `3.7V 1000mAh 锂电池 PH2.0` | 15–25 |
 | R4 | 外壳 | 3D 打印小盒，或者直接绑在手柄背面 | — | 1 | 保护电路 | — | — |
-| R5 | 可选：自制摇杆方案 | KY-023 摇杆 ×2 + 10 kΩ 线性电位器 + SK12D07 ×2 | 编译时设置 `PAD_BACKEND=PAD_DIY`（配 XIAO ESP32S3） | — | 没有游戏手柄时用 | `KY-023 摇杆模块` | 15 |
 | R6 | 可选：语音 | 天问 **ASRPRO** 核心板 或 **CI1302** 模块 | UART 115200 输出文本指令 | 1 | 阶段 8 | `ASRPRO 语音识别` | 15–40 |
 
-> **换别的手柄**：地面站用的 Bluepad32 支持大多数蓝牙手柄（Xbox、PS4/PS5、Switch Pro、8BitDo 等），直接配对就能用。
-> **备选方案**：如果只有 Xbox Series 手柄，也可以继续用 XIAO ESP32S3 做地面站，编译时设置 `PAD_BACKEND=PAD_XBOX`。
 
 ### 1.3 机体与翅膀
 
@@ -274,7 +272,7 @@ $$
 
 ### 1.2 接 IMU 并检查方向（关键）
 
-- [ ] 按 [`firmware/README.md`](../firmware/README.md) §2 接好 SPI（CS→D3、SCLK→D8、SDO→D9、SDI→D10、3V3、GND）。
+- [ ] 按 [组装指南](assembly-guide.md) **图 3** 接好 SPI（CS→D3、SCLK→D8、SDO→D9、SDI→D10、3V3、GND）。
 - [ ] 重启，应该看到 `IMU ICM-42688-P: OK (WHO_AM_I=0x47)` 和 `gyro calibrated`。
 - [ ] 把 IMU 板平放，丝印面朝上、X 轴箭头朝前。反复输入 `imu`，逐项核对下表：
 
@@ -299,7 +297,7 @@ $$
 
 ### 1.3 电源、充电与舵机
 
-- [ ] **组装电源板**：按 [`firmware/README.md`](../firmware/README.md) §2 的“机上电源”图，焊接充电模块、保护板、MOS 开关和电池。
+- [ ] **组装电源板**：按 [组装指南](assembly-guide.md) 第 1、2 步和**图 1、图 2**，焊接充电模块、保护板、MOS 开关、电池和降压模块。
   - 焊电池时**一次只接一根线**，避免正负极短路。
   - 先接保护板的 B−，最后接 B+。
 - [ ] **开关测试**：开关断开时，SYS+ 应为 0 V；闭合后，SYS+ 等于电池电压（7.4–8.4 V）。
@@ -332,7 +330,7 @@ $$
 - [ ] Arduino IDE → 首选项 → 附加开发板管理器网址，**再加一行**：
   `https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json`
 - [ ] 开发板管理器里搜索并安装 **esp32_bluepad32**。开发板选 **ESP32 + Bluepad32 Arduino → FireBeetle 2 ESP32-E**。
-- [ ] 电池插到 FireBeetle 的电池座，上传 `firmware/ground_station`（默认 `PAD_BACKEND = PAD_BP32`）。
+- [ ] 电池插到 FireBeetle 的电池座，上传 `firmware/ground_station`。
 - [ ] **G7 Pro 配对**：
   1. 把手柄背面中间的**模式开关**拨到**蓝牙**。
   2. 短按 Xbox 键开机。

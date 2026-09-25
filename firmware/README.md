@@ -3,12 +3,12 @@
 | 目录 | 作用 |
 |---|---|
 | `butterfly_fc/` | **机上飞控**：ICM-42688-P 陀螺仪增稳、扑翼同步滤波、双舵机混控、ESP-NOW 通信、USB 命令行 |
-| `ground_station/` | **地面站**：蓝牙手柄（**盖世小鸡 G7 Pro** 等，Bluepad32）⇢ ESP-NOW 桥接；也支持 Xbox BLE 和自制摇杆；提供手机网页和文本指令接口 |
+| `ground_station/` | **地面站**（FireBeetle 2 ESP32-E）：**盖世小鸡 G7 Pro** 蓝牙手柄 ⇢ ESP-NOW 桥接；提供手机网页和文本指令接口 |
 | `camera_node/` | **可选摄像头节点**（XIAO ESP32S3 Sense）：MJPEG 视频流，画面显示在手机网页里 |
 | `tests/` | 主机端单元测试（滤波器、姿态解算、飞行逻辑、通信协议），不需要硬件 |
 | `../tools/gyro_fft.py` | 采集陀螺仪数据并画频谱，调滤波器用 |
 
-设计原理见 [`docs/gyro-stabilization-and-noise-reduction.md`](../docs/gyro-stabilization-and-noise-reduction.md)，完整制作流程见 [`docs/build-plan.md`](../docs/build-plan.md)。
+设计原理见 [`docs/gyro-stabilization-and-noise-reduction.md`](../docs/gyro-stabilization-and-noise-reduction.md)，完整制作流程见 [`docs/build-plan.md`](../docs/build-plan.md)，**接线图和组装步骤见 [`docs/assembly-guide.md`](../docs/assembly-guide.md)**。
 
 ---
 
@@ -19,87 +19,52 @@
    `https://espressif.github.io/arduino-esp32/package_esp32_index.json`
 3. 打开 **开发板管理器**，搜索 `esp32`，安装 **esp32 by Espressif Systems 3.x**。
 4. 开发板选 **XIAO_ESP32S3**，并确认 **USB CDC On Boot = Enabled**。
-5. 飞控 `butterfly_fc` **不需要第三方库**。
-6. 地面站 `ground_station` 有三种手柄后端，在文件顶部用 `PAD_BACKEND` 选择：
-
-| `PAD_BACKEND` | 手柄 | 地面站开发板 | 开发板包 / 库 |
-|---|---|---|---|
-| **`PAD_BP32`（默认）** | **盖世小鸡 G7 Pro**（蓝牙模式）、Xbox、PS4/PS5、Switch Pro、8BitDo 等 | **原版 ESP32**，推荐 **FireBeetle 2 ESP32-E** | 开发板包 **esp32_bluepad32**，地址见下方 |
-| `PAD_XBOX` | Xbox Series X\|S | XIAO ESP32S3 | 标准 esp32 包 + 库 `XboxSeriesXControllerESP32_asukiaaa` |
-| `PAD_DIY` | 自制摇杆和开关 | XIAO ESP32S3 | 标准 esp32 包 |
-
-Bluepad32 开发板包的地址（加到“附加开发板管理器网址”里）：
-`https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json`
-安装 **esp32_bluepad32** 后，开发板选 **FireBeetle 2 ESP32-E**。其他原版 ESP32 板子（ESP32 Dev Module 等）也可以。
+5. 飞控 `butterfly_fc` 和摄像头节点 `camera_node` **不需要第三方库**。
+6. **地面站 `ground_station`** 使用 Bluepad32 开发板包（它负责连接 G7 Pro 手柄）：
+   - 在“附加开发板管理器网址”里**再加一行**：
+     `https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json`
+   - 在开发板管理器里安装 **esp32_bluepad32**。
+   - 上传地面站程序时，开发板选 **ESP32 + Bluepad32 Arduino → FireBeetle 2 ESP32-E**。
+   - ⚠️ 地面站必须用**原版 ESP32**：G7 Pro 的蓝牙模式要求主机支持经典蓝牙，而 ESP32-S3 / C3 只支持 BLE。
 
 > 两个工程各有一份 `protocol.h`，内容**必须完全一致**。CI 会自动检查这一点。
 
 ## 2. 接线
 
-### 机上电源：内置电池 + Type-C 充电
+**详细的接线图、焊接方法和注意事项见 [`docs/assembly-guide.md`](../docs/assembly-guide.md)。** 这里只列引脚速查表。
 
-电池**内置在机身里，不用拆**。插上 Type-C 就能充电；充电期间飞控**自动锁定、不会解锁**。
+![图 0 系统总览](../docs/img/fig0-overview.svg)
 
-```
- Type-C 充电口
-      │ 5 V
- ┌────┴──────────────────────┐   VBUS ── 100kΩ ──┬── D6（充电检测）
- │ 2S 升压充电模块           │                   └── 200kΩ ── GND
- │ 5 V → 8.4 V 恒流/恒压     │
- └────┬──────────────────────┘
-      │ BAT+ / BAT−
- ┌────┴──────────────────────┐
- │ 2S 保护板（带均衡，过流 ≥ 5 A）│── B+ / BM / B− ── 内置 2S LiPo 150–200 mAh
- └────┬──────────────────────┘
-      │ P+ / P−
- 电源开关（P-MOS AO3401 + 小拨动开关）   ← 关机时仍然可以充电
-      │ SYS+（7.4 V）
-      ├──► 舵机 L / R 红线（高压舵机）＋ 470 µF 低 ESR 电容（贴近舵机）
-      ├──► 降压模块 5.0 V ──► SS14 ──► XIAO 5V 引脚
-      └──► 200kΩ ──┬── 100kΩ ── GND   （电池电压检测，分压比 3.0，对应参数 vbat_ratio）
-                   └── D0
-```
+### 飞控 XIAO ESP32S3 引脚速查
 
-P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动开关就够用）：
+| 引脚 | 接什么 | 接线图 |
+|---|---|---|
+| 5V | Mini-360 5.0 V 输出 → SS14 二极管（条纹端朝 XIAO） | 图 2 |
+| GND | 公共地 | 图 2 |
+| 3V3 | 陀螺仪、气压计、GPS 的 VCC | 图 3 |
+| D0 | 电池电压：SYS+ → 200 kΩ → **D0** → 100 kΩ → GND | 图 2 |
+| D1 / D2 | 左 / 右舵机信号 | 图 2 |
+| D3 | 陀螺仪 CS | 图 3 |
+| D4 | 气压计 CSB | 图 3 |
+| D5 | GPS RX（可不接） | 图 3 |
+| D6 | 充电检测：VBUS → 100 kΩ → **D6** → 200 kΩ → GND | 图 2 |
+| D7 | GPS TX | 图 3 |
+| D8 / D9 / D10 | SPI：SCK / MISO / MOSI（陀螺仪和气压计共用） | 图 3 |
 
-```
- P+ ──┬────────── AO3401 S           AO3401 D ──► SYS+
-      └─ 100kΩ ── AO3401 G ── 拨动开关 ── GND    （开关闭合 = 开机）
-```
+- 舵机红线接 **SYS+**（开关后的电池电压），所以必须用能耐 **7.4 V** 的高压舵机。
+- D6 的分压电阻**一定要焊上**：其中的 200 kΩ 同时充当下拉电阻。否则 D6 悬空，读数会乱跳，可能导致无法解锁。
+- 气压计要用一小块**开孔海绵**盖住，否则高度读数会随扑翼节奏乱跳。
 
-### 机上信号（XIAO ESP32S3）
+### 地面站：FireBeetle 2 ESP32-E + 盖世小鸡 G7 Pro
 
-```
-                ┌──────────── XIAO ESP32S3 ────────────┐
- 电池分压 ─────► D0 (GPIO1)                  5V ◄──┤◄── SS14 ◄── 降压模块 5.0 V
- 左舵机信号 ◄─── D1 (GPIO2)                  GND ─── 公共地
- 右舵机信号 ◄─── D2 (GPIO3)                  3V3 ──► IMU VCC (+10µF +100nF)
- IMU CS    ◄─── D3 (GPIO4)                  D10 ──► IMU SDI / 气压计 SDA  (MOSI)
- 气压计 CSB ◄─── D4 (GPIO5)                  D9  ◄── IMU SDO / 气压计 SDO  (MISO)
- 充电检测  ────► D6 (GPIO43)                 D8  ──► IMU SCLK / 气压计 SCL (SCK)
- GPS TX    ────► D7 (GPIO44)   （可选）      D5  ──► GPS RX（可选，只在配置模块时用）
-                └──────────────────────────────────────┘
-```
+![图 4 地面站](../docs/img/fig4-ground-station.svg)
 
-- XIAO 自己的 USB-C 口**只用来烧录和调试**。给电池充电走的是充电模块的 Type-C 口。
-- XIAO 的 5V 引脚可以作为电源输入，但**必须串一个二极管**：阳极接电源，阴极接 5V 引脚。这样插着 USB 调试时不会倒灌。
-- D6 的分压电阻**一定要焊上**：其中的 200 kΩ 同时充当下拉电阻。如果暂时不做充电检测，也要用一个 100 kΩ 电阻把 D6 接到 GND。否则 D6 悬空，读数会乱跳，可能导致无法解锁。
-- IMU 和气压计**共用一组 SPI 线**，靠各自的 CS 区分。模块上的丝印可能写成 `SCL/SCLK`、`SDA/SDI`、`SAO/SDO`、`CS/CSB`，CS 必须接上。
-- 气压计要用一小块**开孔海绵**盖住，挡住扑翼气流，否则高度读数会随扑翼节奏乱跳。
-- 如果用的是 6 V 舵机（非高压），舵机要改由 **6 V BEC** 供电，不能直接接 2S 电池。
+1. 1S 锂电池插到 FireBeetle 2 的电池座；用它的 USB-C 口烧录程序，也用它充电。
+2. **G7 Pro 配对**：背面中间的模式开关拨到**蓝牙** → 短按 Xbox 键开机 → **长按配对键**，直到指示灯循环闪烁。地面站会自动连接。
+3. 解锁、上锁、返航时手柄会振动提示。想换一个手柄时，串口输入 `PAIR`，清除旧的配对记录。
+4. 可选语音模块：TX → GPIO16，VCC → 3V3，GND → GND。
 
-### 地面站：盖世小鸡 G7 Pro（默认，Bluepad32）
-
-地面站是一块 FireBeetle 2 ESP32-E，插上 1S 锂电池就行，不需要接其他线（可选：语音模块 TX 接 GPIO16）。
-
-1. G7 Pro 背面中间的模式开关拨到**蓝牙**，短按 Xbox 键开机，长按底部配对键，直到指示灯循环闪烁。
-2. 地面站会自动连接第一个找到的手柄；解锁、上锁和返航时，手柄会振动提示。
-3. 想换手柄时，串口输入 `PAIR`，清除旧的配对记录。
-4. 按键功能见 [`docs/build-plan.md`](../docs/build-plan.md) 的“飞行能力与手柄操控”。
-
-> 使用 Xbox Series 手柄 + XIAO ESP32S3 的旧方案时，设置 `PAD_BACKEND PAD_XBOX`；手柄固件需要升级到支持 BLE 的版本。
-
-| 手柄 | 功能 |
+| G7 Pro 按键 | 功能 |
 |---|---|
 | 左摇杆 ↑↓ | AUTO：爬升 / 下降（松手 = 定高）|
 | 左摇杆 ←→ | 转航向 |
@@ -111,21 +76,6 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 | Y / LB / RB | 掉头 180° / 左转 45° / 右转 45° |
 | X | 自动返航（需要 GPS），动一下摇杆取消 |
 | View | 陀螺仪校准（上锁时）|
-
-### 地面站：自制摇杆（`PAD_BACKEND PAD_DIY` 时，XIAO ESP32S3）
-
-| 引脚 | 接什么 |
-|---|---|
-| D0 | 油门电位器中间脚（两端分别接 3V3 和 GND） |
-| D1 / D2 | 右摇杆 X（横滚）/ Y（俯仰） |
-| D3 | 左摇杆 X（偏航） |
-| D4 | ARM 开关 → GND（闭合 = 解锁） |
-| D5 | MODE 开关 → GND（闭合 = STABILIZE） |
-| D7 | 语音模块 TX（可选，115200） |
-
-上电时**两个摇杆必须回中**：程序会在开机时记录摇杆中位。
-
-**遥控器供电**：把一块 1S LiPo（300–500 mAh）焊到 XIAO 背面的 **BAT+ / BAT−** 焊盘上。XIAO ESP32S3 板上自带锂电池充电电路，所以插上它的 USB-C 就能直接充电，不需要额外的充电模块。
 
 ### 手机网页（GPS 位置 / 遥测 / 摄像头）
 
@@ -148,19 +98,19 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 
 ## 4. 遥控器文本指令（语音 / AI 接口）
 
-可以从 USB 串口或 D7（Serial1）输入，每条指令占一行，不区分大小写：
+可以从地面站的 USB 串口或 GPIO16（语音模块）输入，每条指令占一行，不区分大小写：
 
 ```
 ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO|RTH | RTH | TAKEOFF | LAND | UP | DOWN | THR 0.6
 LEFT 30 | RIGHT 45 | TURN -90 | STICKS | SET rate_p_roll 0.1 | SAVE | CALIB
-TEL ON | TEL OFF | STATUS
+TEL ON | TEL OFF | STATUS | PAIR
 ```
 
 - `TAKEOFF`：在 AUTO 模式下，会自动做起飞手势并爬升 1.5 秒，然后定高；在 HOLD 模式下，油门缓慢升到 0.75。
 - `UP` / `DOWN`：在 AUTO 模式下把目标高度改变 ±1 m；在其他模式下把油门改变 ±0.1。
 - **只要动一下摇杆，控制权立刻交回人手。**
-- 使用手柄时，按 B 随时可以上锁；使用自制摇杆时，实体 ARM 开关是总开关。
-- `PAIR`（仅限 Bluepad32 后端）：清除已配对的手柄，然后接受新手柄配对。
+- 手柄上的 B 键随时可以上锁。
+- `PAIR`：清除已配对的手柄，然后接受新手柄配对。
 
 ## 5. 关键参数
 

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="520" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 4  地面站：FireBeetle 2 ESP32-E + G7 Pro</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">地面站只需要插电池；手柄和手机都是无线连接</text>
+<rect x="420" y="120" width="250" height="250" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="545.0" y="142" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">FireBeetle 2 ESP32-E</text>
+<text x="545.0" y="160" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">原版 ESP32（经典蓝牙 + BLE）</text>
+<text x="545.0" y="176" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">地面站</text>
+<rect x="523" y="110" width="44" height="14" rx="4" fill="#B9C4C1"/>
+<text x="545" y="121" font-size="9.5" text-anchor="middle" font-weight="700" fill="#1B2A2F">USB-C</text>
+<text x="545" y="92" font-size="12" text-anchor="middle" font-weight="400" fill="#5E6E72">USB-C：烧录程序 / 给电池充电</text>
+<circle cx="545" cy="370" r="4" fill="#D23B2F"/>
+<text x="545" y="362" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">PH2.0 电池座</text>
+<rect x="460" y="420" width="170" height="70" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="545.0" y="442" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">1S 锂电池</text>
+<text x="545.0" y="460" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">3.7 V 500–1000 mAh</text>
+<path d="M545,370 L545,420" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="420" cy="250" r="4" fill="#1F6FB5"/>
+<text x="428" y="254" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">GPIO16</text>
+<circle cx="420" cy="290" r="4" fill="#7A4CC2"/>
+<text x="428" y="294" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">3V3</text>
+<circle cx="420" cy="330" r="4" fill="#222222"/>
+<text x="428" y="334" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">GND</text>
+<rect x="90" y="220" width="200" height="130" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="190.0" y="242" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">语音模块（可选）</text>
+<text x="190.0" y="260" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">ASRPRO / CI1302</text>
+<text x="190.0" y="276" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">UART 115200</text>
+<circle cx="290" cy="250" r="4" fill="#1F6FB5"/>
+<text x="282" y="254" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">TX</text>
+<circle cx="290" cy="290" r="4" fill="#7A4CC2"/>
+<text x="282" y="294" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">VCC</text>
+<circle cx="290" cy="330" r="4" fill="#222222"/>
+<text x="282" y="334" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">GND</text>
+<path d="M290,250 L420,250" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M290,290 L420,290" fill="none" stroke="#7A4CC2" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M290,330 L420,330" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="90" y="100" width="200" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="190.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">盖世小鸡 G7 Pro</text>
+<text x="190.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">背面模式开关 → 蓝牙</text>
+<path d="M290,145 L420,170" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="355" y="145" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">蓝牙</text>
+<rect x="820" y="110" width="220" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="930.0" y="132" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">手机</text>
+<text x="930.0" y="150" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">Wi-Fi：Butterfly-GS</text>
+<text x="930.0" y="166" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">浏览器 192.168.4.1</text>
+<path d="M670,170 L820,155" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="745" y="150" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">Wi-Fi</text>
+<rect x="820" y="260" width="220" height="90" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="930.0" y="282" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">蝴蝶</text>
+<text x="930.0" y="300" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">ESP-NOW 信道 1</text>
+<path d="M670,290 L820,300" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="745" y="285" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">ESP-NOW</text>
+<circle cx="710" cy="416" r="10" fill="#1B2A2F"/>
+<text x="710" y="420.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="728" y="420" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">配对：模式开关拨蓝牙 → 短按 Xbox 键 → 长按配对键</text>
+<circle cx="710" cy="446" r="10" fill="#1B2A2F"/>
+<text x="710" y="450.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="728" y="450" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">换手柄：串口输入 PAIR 后重新配对</text>
+<circle cx="710" cy="476" r="10" fill="#1B2A2F"/>
+<text x="710" y="480.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="728" y="480" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">地面站必须是原版 ESP32（S3 / C3 不行）</text>
+</svg>
