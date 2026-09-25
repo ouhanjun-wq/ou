@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1200" height="660" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 7  机身结构与材料（侧视）</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">碳纤维管做主梁（又轻又硬），3D 打印件夹持舵机，薄托板承载电子件；机身总重目标 8–12 g</text>
+<rect x="170" y="324" width="780" height="12" rx="6" fill="#3A3F42"/>
+<text x="200" y="364" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">① 主梁：碳纤维方管 4×4 mm（或圆管 Ø4/Ø3 mm），长 130–150 mm，约 1.5 g</text>
+<rect x="190" y="260" width="150" height="64" rx="8" fill="#9EC5E8" stroke="#2B3A3F" stroke-width="1.5"/>
+<text x="265" y="286" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">舵机 ×2</text>
+<text x="265" y="304" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">（左右各一，背靠背）</text>
+<path d="M180,250 h170 v94 h-170 z" fill="none" stroke="#C97A1E" stroke-width="3" stroke-dasharray="8 4"/>
+<path d="M265,250 L265,150" fill="none" stroke="#C97A1E" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="40" y="142" font-size="13" text-anchor="start" font-weight="700" fill="#A5620F">② 舵机座：3D 打印 PETG，夹紧主梁，约 3–4 g</text>
+<path d="M300,260 L420,120" fill="none" stroke="#555555" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="430" y="118" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">翅膀前缘 Ø2 mm 碳杆 → 舵机臂</text>
+<rect x="400" y="308" width="330" height="10" rx="3" fill="#6B6F72"/>
+<rect x="410" y="270" width="58" height="38" rx="5" fill="#C9E4D4" stroke="#2B3A3F"/>
+<text x="439.0" y="294" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">XIAO</text>
+<rect x="472" y="270" width="58" height="38" rx="5" fill="#F2C9C4" stroke="#2B3A3F"/>
+<text x="501.0" y="294" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">陀螺仪</text>
+<rect x="534" y="270" width="106" height="38" rx="5" fill="#F6D7A7" stroke="#2B3A3F"/>
+<text x="587.0" y="294" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">电池 2S</text>
+<rect x="644" y="270" width="82" height="38" rx="5" fill="#E3D5F2" stroke="#2B3A3F"/>
+<text x="685.0" y="294" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">降压 / 气压</text>
+<path d="M715,318 L715,440" fill="none" stroke="#6B6F72" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="715" y="458" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">③ 电子托板：0.5 mm 碳纤维板 或 1.5 mm 轻木板，约 60×18 mm，1–2 g</text>
+<text x="715" y="478" font-size="12" text-anchor="middle" font-weight="400" fill="#D23B2F">碳板导电：先贴一层 Kapton 胶带或双面胶再放电子件</text>
+<rect x="800" y="280" width="110" height="38" rx="5" fill="#F7E3B0" stroke="#2B3A3F"/>
+<text x="855" y="304" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">充电板 Type-C</text>
+<rect x="800" y="240" width="110" height="34" rx="5" fill="#D6E4F0" stroke="#2B3A3F"/>
+<text x="855" y="262" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">GPS（可选）</text>
+<ellipse cx="150" cy="330" rx="40" ry="26" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>
+<text x="150" y="334" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">头</text>
+<path d="M950,316 L1040,330 L950,344 Z" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>
+<path d="M150,356 L150,400" fill="none" stroke="#9AA7AB" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="40" y="418" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">④ 头 / 尾：3D 打印薄壳或轻木（可选）</text>
+<text x="40" y="290" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">◀ 机头</text>
+<path d="M690,336 L690,400" fill="none" stroke="#9AA7AB" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="680" y="404" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">托板与主梁：细线缠绕 + 502，或 2 mm 扎带</text>
+<circle cx="50" cy="536" r="10" fill="#1B2A2F"/>
+<text x="50" y="540.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="68" y="540" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">主梁选“碳纤维管”：同样重量下比轻木硬很多，扑翼时机身不会扭，控制更准</text>
+<circle cx="50" cy="566" r="10" fill="#1B2A2F"/>
+<text x="50" y="570.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="68" y="570" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">XIAO 的天线不要被碳板包住（碳纤维会挡无线信号），天线露在托板边缘外</text>
+<circle cx="50" cy="596" r="10" fill="#1B2A2F"/>
+<text x="50" y="600.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="68" y="600" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">切碳管 / 碳板：笔刀绕圈划断或细锯锯断；戴口罩，边缘用砂纸磨圆</text>
+<circle cx="50" cy="626" r="10" fill="#1B2A2F"/>
+<text x="50" y="630.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">4</text>
+<text x="68" y="630" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">连接处：细线缠 5–6 圈 + 502 渗透，比只用胶结实得多</text>
+</svg>

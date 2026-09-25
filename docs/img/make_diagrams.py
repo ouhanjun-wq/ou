@@ -461,6 +461,63 @@ def fig_layout():
     s.save("fig6-layout.svg")
 
 
+def fig_body():
+    s = Svg(1200, 660, "图 7  机身结构与材料（侧视）",
+            "碳纤维管做主梁（又轻又硬），3D 打印件夹持舵机，薄托板承载电子件；机身总重目标 8–12 g")
+    y0 = 330
+    # keel tube
+    s.parts.append(f'<rect x="170" y="{y0 - 6}" width="780" height="12" rx="6" fill="#3A3F42"/>')
+    s.text(200, y0 + 34, "① 主梁：碳纤维方管 4×4 mm（或圆管 Ø4/Ø3 mm），长 130–150 mm，约 1.5 g",
+           13, "start", "700")
+    # servo mount (front)
+    s.parts.append(f'<rect x="190" y="{y0 - 70}" width="150" height="64" rx="8" fill="#9EC5E8" '
+                   f'stroke="{C["boxline"]}" stroke-width="1.5"/>')
+    s.text(265, y0 - 44, "舵机 ×2", 13, "middle", "700")
+    s.text(265, y0 - 26, "（左右各一，背靠背）", 11, "middle", color=C["mute"])
+    s.parts.append(f'<path d="M180,{y0 - 80} h170 v94 h-170 z" fill="none" stroke="#C97A1E" '
+                   f'stroke-width="3" stroke-dasharray="8 4"/>')
+    s.wire([(265, y0 - 80), (265, 150)], "#C97A1E", 1.5)
+    s.text(40, 142, "② 舵机座：3D 打印 PETG，夹紧主梁，约 3–4 g", 13, "start", "700", "#A5620F")
+    # wing root rods from servo horns
+    s.wire([(300, y0 - 70), (420, 120)], "#555555", 4)
+    s.text(430, 118, "翅膀前缘 Ø2 mm 碳杆 → 舵机臂", 12, color=C["mute"])
+    # deck with electronics
+    s.parts.append(f'<rect x="400" y="{y0 - 22}" width="330" height="10" rx="3" fill="#6B6F72"/>')
+    comps = [(410, 58, "XIAO", "#C9E4D4"), (472, 58, "陀螺仪", "#F2C9C4"), (534, 106, "电池 2S", "#F6D7A7"),
+             (644, 82, "降压 / 气压", "#E3D5F2")]
+    for x, w, lab, col in comps:
+        s.parts.append(f'<rect x="{x}" y="{y0 - 60}" width="{w}" height="38" rx="5" fill="{col}" '
+                       f'stroke="{C["boxline"]}"/>')
+        s.text(x + w / 2, y0 - 36, lab, 11.5, "middle", "600")
+    s.wire([(715, y0 - 12), (715, 440)], "#6B6F72", 1.5)
+    s.text(715, 458, "③ 电子托板：0.5 mm 碳纤维板 或 1.5 mm 轻木板，约 60×18 mm，1–2 g", 13, "middle", "700")
+    s.text(715, 478, "碳板导电：先贴一层 Kapton 胶带或双面胶再放电子件", 12, "middle", color=C["bat"])
+    # tail: charger + GPS
+    s.parts.append(f'<rect x="800" y="{y0 - 50}" width="110" height="38" rx="5" fill="#F7E3B0" '
+                   f'stroke="{C["boxline"]}"/>')
+    s.text(855, y0 - 26, "充电板 Type-C", 11.5, "middle", "600")
+    s.parts.append(f'<rect x="800" y="{y0 - 90}" width="110" height="34" rx="5" fill="#D6E4F0" '
+                   f'stroke="{C["boxline"]}"/>')
+    s.text(855, y0 - 68, "GPS（可选）", 11, "middle", "600")
+    # head / tail pieces
+    s.parts.append(f'<ellipse cx="150" cy="{y0}" rx="40" ry="26" fill="#FFF3D6" stroke="#C9A55A" stroke-width="2"/>')
+    s.text(150, y0 + 4, "头", 12, "middle", "700")
+    s.parts.append(f'<path d="M950,{y0 - 14} L1040,{y0} L950,{y0 + 14} Z" fill="#FFF3D6" stroke="#C9A55A" '
+                   f'stroke-width="2"/>')
+    s.wire([(150, y0 + 26), (150, 400)], "#9AA7AB", 1.2)
+    s.text(40, 418, "④ 头 / 尾：3D 打印薄壳或轻木（可选）", 12, "start", color=C["mute"])
+    s.text(40, y0 - 40, "◀ 机头", 13, "start", "700")
+    # joints
+    s.wire([(690, y0 + 6), (690, 400)], "#9AA7AB", 1.2)
+    s.text(680, 404, "托板与主梁：细线缠绕 + 502，或 2 mm 扎带", 12, "end", color=C["mute"])
+    # notes
+    s.note(40, 540, 1, "主梁选“碳纤维管”：同样重量下比轻木硬很多，扑翼时机身不会扭，控制更准")
+    s.note(40, 570, 2, "XIAO 的天线不要被碳板包住（碳纤维会挡无线信号），天线露在托板边缘外")
+    s.note(40, 600, 3, "切碳管 / 碳板：笔刀绕圈划断或细锯锯断；戴口罩，边缘用砂纸磨圆")
+    s.note(40, 630, 4, "连接处：细线缠 5–6 圈 + 502 渗透，比只用胶结实得多")
+    s.save("fig7-body-structure.svg")
+
+
 if __name__ == "__main__":
     fig_overview()
     fig_power_in()
@@ -469,4 +526,5 @@ if __name__ == "__main__":
     fig_ground()
     fig_camera()
     fig_layout()
+    fig_body()
     print("diagrams written to", OUT)
