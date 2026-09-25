@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Host unit tests (filters, AHRS, flight logic, protocol)
+      - name: Host unit tests (filters, AHRS, flight logic, GPS, RTH, protocol)
         run: |
           g++ -std=c++17 -O1 -Wall -Wextra -Werror -I firmware/butterfly_fc \
               firmware/tests/test_core.cpp -o test_core
@@ -21,7 +21,7 @@ jobs:
       - name: Python tool syntax
         run: python3 -m py_compile tools/gyro_fft.py
 
-  compile:
+  compile-flight-controller:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -31,19 +31,11 @@ jobs:
             - name: esp32:esp32
               source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
           fqbn: esp32:esp32:XIAO_ESP32S3
-          cli-compile-flags: |
-            - --build-property
-            - compiler.cpp.extra_flags=-DPAD_BACKEND=1
-          libraries: |
-            - name: NimBLE-Arduino
-            - name: XboxControllerNotificationParser
-            - name: XboxSeriesXControllerESP32_asukiaaa
           sketch-paths: |
             - firmware/butterfly_fc
-            - firmware/ground_station
           enable-warnings-report: true
 
-  compile-diy-remote:
+  compile-ground-station:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -52,10 +44,9 @@ jobs:
           platforms: |
             - name: esp32:esp32
               source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
-          fqbn: esp32:esp32:XIAO_ESP32S3
-          cli-compile-flags: |
-            - --build-property
-            - compiler.cpp.extra_flags=-DPAD_BACKEND=0
+            - name: esp32-bluepad32:esp32
+              source-url: https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json
+          fqbn: esp32-bluepad32:esp32:dfrobot_firebeetle2_esp32e
           sketch-paths: |
             - firmware/ground_station
 
@@ -71,18 +62,3 @@ jobs:
           fqbn: esp32:esp32:XIAO_ESP32S3:PSRAM=opi
           sketch-paths: |
             - firmware/camera_node
-
-  compile-bluepad32-station:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: arduino/compile-sketches@v1
-        with:
-          platforms: |
-            - name: esp32:esp32
-              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
-            - name: esp32-bluepad32:esp32
-              source-url: https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json
-          fqbn: esp32-bluepad32:esp32:dfrobot_firebeetle2_esp32e
-          sketch-paths: |
-            - firmware/ground_station
