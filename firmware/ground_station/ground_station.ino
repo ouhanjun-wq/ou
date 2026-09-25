@@ -1,15 +1,10 @@
-// Butterfly ground station: Bluetooth gamepad -> ESP-NOW -> butterfly
+// Butterfly ground station: GameSir G7 Pro gamepad (Bluetooth) -> ESP-NOW -> butterfly
 //
-// Gamepad backends (PAD_BACKEND):
-//   PAD_BP32 (default)  any Bluetooth gamepad through Bluepad32 - GameSir G7 Pro (Bluetooth /
-//                       Android mode), Xbox, PS4/PS5, Switch Pro, 8BitDo ...
-//                       Board: an ORIGINAL ESP32 (Classic BT + BLE), e.g. DFRobot FireBeetle 2 ESP32-E,
-//                       Arduino board package "esp32_bluepad32" (see firmware/README.md).
-//   PAD_XBOX            Xbox Series X|S controller over BLE, XIAO ESP32S3, standard esp32 core
-//                       + library XboxSeriesXControllerESP32_asukiaaa.
-//   PAD_DIY             home-made sticks + switches, XIAO ESP32S3.
+// Board: DFRobot FireBeetle 2 ESP32-E (an ORIGINAL ESP32: Classic Bluetooth + BLE).
+// Arduino board package "esp32_bluepad32" (Bluepad32 gamepad host), see firmware/README.md.
+// G7 Pro: mode switch on the back to Bluetooth, press the Xbox button, hold the pairing button.
 //
-// Button map (Xbox layout; the GameSir G7 Pro uses the same layout):
+// Button map (G7 Pro, Xbox layout):
 //   Left stick  up/down    AUTO: climb / descend (release = hold altitude)
 //   Left stick  left/right yaw (turn on the spot / change heading)
 //   Right stick up/down    push = nose down = faster, pull = nose up = slower
@@ -24,7 +19,7 @@
 // Text commands (voice / AI / PC) on USB Serial and Serial1 RX (voice pin), one per line:
 //   ARM | DISARM | MODE MANUAL|STAB|HOLD|AUTO|RTH | RTH | TAKEOFF | LAND | UP | DOWN | THR <0..1>
 //   LEFT [deg] | RIGHT [deg] | TURN <deg> | STICKS | SET <param> <value> | SAVE | CALIB
-//   TEL ON|OFF | STATUS | PAIR (Bluepad32: forget paired pads and accept a new one)
+//   TEL ON|OFF | STATUS | PAIR (forget paired gamepads and accept a new one)
 // Moving a stick takes control back from text commands immediately (human override).
 //
 // Phone dashboard: join Wi-Fi "Butterfly-GS" (password butterfly123), open http://192.168.4.1
@@ -36,24 +31,10 @@
 #include "protocol.h"
 
 // ---------------- configuration ----------------
-#define PAD_DIY  0
-#define PAD_XBOX 1
-#define PAD_BP32 2
-#ifndef PAD_BACKEND
-#define PAD_BACKEND PAD_BP32
-#endif
-
 constexpr uint8_t NET_ID = 1;             // must match butterfly param net_id
 constexpr uint32_t VOICE_BAUD = 115200;
-#if defined(ARDUINO_XIAO_ESP32S3)
-constexpr int PIN_VOICE_RX = D7;          // GPIO44 Serial1 RX: voice module TX
-constexpr int PIN_LED = LED_BUILTIN;
-constexpr bool LED_ACTIVE_LOW = true;
-#else                                     // original ESP32 boards (FireBeetle 2 ESP32-E, DevKitC ...)
-constexpr int PIN_VOICE_RX = 16;          // GPIO16 Serial1 RX: voice module TX
-constexpr int PIN_LED = 2;                // on-board LED of FireBeetle 2 / most DevKits
-constexpr bool LED_ACTIVE_LOW = false;
-#endif
+constexpr int PIN_VOICE_RX = 16;          // GPIO16 Serial1 RX: optional voice module TX
+constexpr int PIN_LED = 2;                // on-board LED of the FireBeetle 2 ESP32-E (active high)
 
 constexpr float TAKEOFF_THR = 0.75f;      // text TAKEOFF throttle in non-AUTO modes
 constexpr float THR_SLEW = 0.4f;          // text-command throttle ramp (per second)
@@ -71,32 +52,16 @@ constexpr const char* CAMERA_STREAM = "http://192.168.4.50:81/stream";  // camer
 static WebServer web(80);
 #endif
 
-constexpr uint32_t ARM_HOLD_MS = 1000;   // gamepads: hold A this long to arm
-#if PAD_BACKEND == PAD_BP32
 #include <Bluepad32.h>
 static ControllerPtr pad = nullptr;       // the first gamepad that connects is used
-constexpr float DEADBAND = 0.08f;
-#elif PAD_BACKEND == PAD_XBOX
-#include <XboxSeriesXControllerESP32_asukiaaa.hpp>
-XboxSeriesXControllerESP32_asukiaaa::Core xbox;   // pairs with the first Xbox controller found
-constexpr float DEADBAND = 0.08f;
-#else
-constexpr bool HAS_STICKS = true;         // false: no sticks wired, text commands only
-constexpr int PIN_THR   = D0;             // GPIO1  throttle pot (ADC1)
-constexpr int PIN_ROLL  = D1;             // GPIO2  right stick X
-constexpr int PIN_PITCH = D2;             // GPIO3  right stick Y
-constexpr int PIN_YAW   = D3;             // GPIO4  left stick X
-constexpr int PIN_ARM   = D4;             // GPIO5  switch to GND = ARM
-constexpr int PIN_MODE  = D5;             // GPIO6  switch to GND = STABILIZE
-constexpr bool INV_THR = false, INV_ROLL = false, INV_PITCH = true, INV_YAW = false;
-constexpr float DEADBAND = 0.04f;
-#endif
+constexpr float DEADBAND = 0.08f;         // stick dead zone
+constexpr uint32_t ARM_HOLD_MS = 1000;    // hold A this long to arm
 
 // ---------------- state ----------------
 static const uint8_t kBroadcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 static uint8_t oneShotSeq = 0, ctrlSeq = 0;
 
-// Normalised pilot input from whichever device is compiled in.
+// Normalised pilot input from the gamepad.
 struct Pilot {
   bool valid = false;               // device connected and delivering data
   float thr = 0;                    // 0..1 (MANUAL / STAB / HOLD)
@@ -113,8 +78,7 @@ struct PadButtons {
 enum Source { SRC_STICKS, SRC_TEXT };
 static Source source = SRC_STICKS;
 static uint8_t mode = proto::MODE_MANUAL;
-static bool armed = false;               // gamepads: A/B buttons.  DIY: ARM switch && softArm
-static bool softArm = true;
+static bool armed = false;               // A (hold) arms, B disarms
 static float vThr = 0, vThrTarget = 0, textClimb = 0;
 static uint32_t textClimbUntil = 0;
 static Pilot handover;                   // stick positions when text control started
@@ -209,9 +173,7 @@ static float deadband(float v) {
   return constrain((v - (v > 0 ? DEADBAND : -DEADBAND)) / (1.0f - DEADBAND), -1.0f, 1.0f);
 }
 
-// ---------------- input: gamepads ----------------
-#if PAD_BACKEND != PAD_DIY
-#if PAD_BACKEND == PAD_BP32
+// ---------------- input: gamepad ----------------
 static void onPadConnected(ControllerPtr c) {
   if (pad == nullptr) {
     pad = c;
@@ -253,33 +215,6 @@ static PadButtons readButtons() {
           (d & DPAD_RIGHT) != 0, (d & DPAD_DOWN) != 0, (d & DPAD_LEFT) != 0, pad->miscSelect()};
 }
 
-#else   // PAD_XBOX
-static bool padConnected() { return xbox.isConnected() && !xbox.isWaitingForFirstNotification(); }
-static void rumble(uint16_t) {}
-
-static void readPilot(Pilot& p) {
-  p = Pilot();
-  if (!xbox.isConnected() || xbox.isWaitingForFirstNotification()) return;
-  const auto& n = xbox.xboxNotif;
-  const float jm = (float)XboxControllerNotificationParser::maxJoy / 2.0f;
-  const float tm = 1023.0f;   // triggers report 0 .. 0x3ff
-  const float lx = deadband((n.joyLHori - jm) / jm), ly = deadband((n.joyLVert - jm) / jm);  // up = -1
-  const float rx = deadband((n.joyRHori - jm) / jm), ry = deadband((n.joyRVert - jm) / jm);
-  p.valid = true;
-  p.yaw = lx;
-  p.climb = -ly;
-  p.roll = rx;
-  p.pitch = ry;             // pull back (+) = nose up
-  p.thr = constrain(n.trigRT / tm, 0.0f, 1.0f);
-  if (p.thr < 0.02f) p.thr = 0;
-}
-
-static PadButtons readButtons() {
-  const auto& n = xbox.xboxNotif;
-  return {(bool)n.btnA, (bool)n.btnB, (bool)n.btnX, (bool)n.btnY, (bool)n.btnLB, (bool)n.btnRB,
-          (bool)n.btnDirUp, (bool)n.btnDirRight, (bool)n.btnDirDown, (bool)n.btnDirLeft, (bool)n.btnSelect};
-}
-#endif
 
 static void handleButtons(const Pilot& p) {
   static bool prev[11] = {false};
@@ -327,46 +262,6 @@ static void handleButtons(const Pilot& p) {
   memcpy(prev, now, sizeof(prev));
 }
 
-// ---------------- input: DIY sticks ----------------
-#else
-static int centerRoll = 2048, centerPitch = 2048, centerYaw = 2048;
-static bool lastModeSwitch = false;
-
-static float axis(int pin, int center, bool invert) {
-  const float v = deadband(constrain((analogRead(pin) - center) / 2048.0f, -1.0f, 1.0f));
-  return invert ? -v : v;
-}
-
-static void readPilot(Pilot& p) {
-  p = Pilot();
-  if (!HAS_STICKS) return;
-  p.valid = true;
-  p.thr = constrain(analogRead(PIN_THR) / 4095.0f, 0.0f, 1.0f);
-  if (INV_THR) p.thr = 1.0f - p.thr;
-  if (p.thr < 0.02f) p.thr = 0;
-  p.climb = deadband((p.thr - 0.5f) * 2.0f);   // pot centre = hold altitude in AUTO
-  p.roll = axis(PIN_ROLL, centerRoll, INV_ROLL);
-  p.pitch = axis(PIN_PITCH, centerPitch, INV_PITCH);
-  p.yaw = axis(PIN_YAW, centerYaw, INV_YAW);
-}
-
-static void handleButtons(const Pilot& p) {
-  (void)p;
-  const bool modeSwitch = digitalRead(PIN_MODE) == LOW;
-  if (modeSwitch != lastModeSwitch) {
-    lastModeSwitch = modeSwitch;
-    mode = modeSwitch ? proto::MODE_STABILIZE : proto::MODE_MANUAL;
-    source = SRC_STICKS;
-  }
-  armed = HAS_STICKS ? (digitalRead(PIN_ARM) == LOW && softArm) : softArm;
-}
-
-static int averageRead(int pin) {
-  long sum = 0;
-  for (int i = 0; i < 32; ++i) { sum += analogRead(pin); delay(2); }
-  return (int)(sum / 32);
-}
-#endif
 
 // ---------------- phone dashboard ----------------
 static double homeLat = 0, homeLon = 0;
@@ -402,11 +297,7 @@ static void handleApi() {
   portEXIT_CRITICAL(&telMux);
   const bool ok = lastTelMs != 0 && age < 1000;
   const bool fix = ok && (t.flags & proto::FLAG_GPS_FIX);
-#if PAD_BACKEND != PAD_DIY
   const bool padOk = padConnected();
-#else
-  const bool padOk = true;
-#endif
   char home[64] = "null";
   if (homeSet) snprintf(home, sizeof(home), "[%.7f,%.7f]", homeLat, homeLon);
   char buf[640];
@@ -470,15 +361,10 @@ static void printStatus() {
   portEXIT_CRITICAL(&telMux);
   Pilot p;
   readPilot(p);
-#if PAD_BACKEND == PAD_BP32
   if (padConnected())
     Serial.printf("gamepad %s (battery %d%%) | ", pad->getModelName().c_str(), pad->battery() * 100 / 255);
   else
     Serial.print("gamepad: none - put it in Bluetooth pairing mode (type PAIR to forget old pads) | ");
-#elif PAD_BACKEND == PAD_XBOX
-  Serial.printf("Xbox %s (battery %d%%) | ", xbox.isConnected() ? "connected" : "searching...",
-                xbox.isConnected() ? (int)xbox.battery : 0);
-#endif
   Serial.printf("source %s | %s | mode %s | thr %.2f climb %+.2f roll %+.2f pitch %+.2f yaw %+.2f\n",
                 source == SRC_TEXT ? "TEXT" : "PILOT", armed ? "ARMED" : "disarmed", modeName(mode),
                 p.thr, p.climb, p.roll, p.pitch, p.yaw);
@@ -510,16 +396,10 @@ static void handleLine(char* line) {
   readPilot(p);
 
   if (!strcmp(cmd, "ARM")) {
-#if PAD_BACKEND != PAD_DIY
     armed = true;
     Serial.println("ARMED (text)");
-#else
-    softArm = true;
-    Serial.println("soft arm ON (ARM switch must also be ON)");
-#endif
   } else if (!strcmp(cmd, "DISARM")) {
     armed = false;
-    softArm = false;
     Serial.println("DISARMED");
   } else if (!strcmp(cmd, "MODE") && argc == 2) {
     for (char* c = argv[1]; *c; ++c) *c = toupper(*c);
@@ -592,12 +472,10 @@ static void handleLine(char* line) {
       Serial.println("# TEL,ms,roll,pitch,yaw,ur,up,uy,vbat,mode,state,flags,flap_hz,link_pps,alt,vz");
   } else if (!strcmp(cmd, "STATUS")) {
     printStatus();
-#if PAD_BACKEND == PAD_BP32
   } else if (!strcmp(cmd, "PAIR")) {
     BP32.forgetBluetoothKeys();
     BP32.enableNewBluetoothConnections(true);
     Serial.println("paired gamepads forgotten; put the gamepad in pairing mode now");
-#endif
   } else {
     Serial.println("? ARM DISARM MODE RTH TAKEOFF LAND UP DOWN THR LEFT RIGHT TURN STICKS SET SAVE CALIB TEL STATUS");
   }
@@ -623,26 +501,10 @@ void setup() {
   delay(300);
   oneShotSeq = (uint8_t)random(256);   // avoid seq collisions after a ground-station reboot
 
-#if PAD_BACKEND == PAD_BP32
   BP32.setup(&onPadConnected, &onPadDisconnected);
   BP32.enableVirtualDevice(false);
   BP32.enableNewBluetoothConnections(true);
-  Serial.println("gamepad: switch it to Bluetooth mode and hold its pairing button "
-                 "(GameSir G7 Pro: mode switch to BT, press the Xbox button, hold the pairing button)");
-#elif PAD_BACKEND == PAD_XBOX
-  xbox.begin();
-  Serial.println("Xbox: hold the pairing button on top of the controller until the logo flashes fast");
-#else
-  pinMode(PIN_ARM, INPUT_PULLUP);
-  pinMode(PIN_MODE, INPUT_PULLUP);
-  analogReadResolution(12);
-  if (HAS_STICKS) {   // sticks must be centred at power-up
-    centerRoll = averageRead(PIN_ROLL);
-    centerPitch = averageRead(PIN_PITCH);
-    centerYaw = averageRead(PIN_YAW);
-  }
-  lastModeSwitch = digitalRead(PIN_MODE) == LOW;
-#endif
+  Serial.println("G7 Pro: mode switch to Bluetooth, press the Xbox button, hold the pairing button");
   Serial.println(radioBegin() ? "ground station ready (ESP-NOW)" : "ESP-NOW init FAILED");
 #if ENABLE_WEB
   webBegin();
@@ -655,11 +517,7 @@ void loop() {
   static char usbBuf[96], voiceBuf[96];
   static size_t usbLen = 0, voiceLen = 0;
 
-#if PAD_BACKEND == PAD_BP32
   BP32.update();
-#elif PAD_BACKEND == PAD_XBOX
-  xbox.onLoop();
-#endif
   pollStream(Serial, usbBuf, usbLen, sizeof(usbBuf));
   pollStream(Serial1, voiceBuf, voiceLen, sizeof(voiceBuf));
   updateHome();
@@ -694,7 +552,7 @@ void loop() {
       thr = mode == proto::MODE_AUTO || mode == proto::MODE_RTH ? 0.5f + 0.5f * p.climb : p.thr;
     }
 
-    // No pilot device (e.g. Xbox out of range) and no text control: stop sending,
+    // No gamepad (e.g. out of range or switched off) and no text control: stop sending,
     // so the butterfly enters failsafe (stabilised glide) instead of flying on stale input.
     const bool haveControl = p.valid || source == SRC_TEXT;
     if (haveControl) {
@@ -725,7 +583,6 @@ void loop() {
 
   // LED: on while telemetry is arriving, blinking when the butterfly is silent
   const bool linked = lastTelMs != 0 && now - lastTelMs < 500;
-  const bool ledOn = linked || (now / 250) % 2;
-  digitalWrite(PIN_LED, ledOn != LED_ACTIVE_LOW ? HIGH : LOW);
+  digitalWrite(PIN_LED, (linked || (now / 250) % 2) ? HIGH : LOW);
   delay(1);
 }
