@@ -118,11 +118,11 @@ static void testForwardHome() {
   paramsDefaults(P);
   const kin::Geometry g = geoOf(P);
   const kin::Pose p = kin::forward(g, F6(P.home).v);
-  CHECK(fabsf(p.x - 220) < 0.01f && fabsf(p.y) < 0.01f && fabsf(p.z - 180) < 0.01f && fabsf(p.pitch) < 0.01f,
-        "home pose %.2f %.2f %.2f pitch %.2f (want 220 0 180 0)", p.x, p.y, p.z, p.pitch);
+  CHECK(fabsf(p.x - 310) < 0.01f && fabsf(p.y) < 0.01f && fabsf(p.z - 195) < 0.01f && fabsf(p.pitch) < 0.01f,
+        "home pose %.2f %.2f %.2f pitch %.2f (want 310 0 195 0)", p.x, p.y, p.z, p.pitch);
   const float left[5] = {90, 90, -90, 0, 0};
   const kin::Pose l = kin::forward(g, left);
-  CHECK(fabsf(l.x) < 0.01f && fabsf(l.y - 220) < 0.01f, "J1 +90 turns left (y+): %.2f %.2f", l.x, l.y);
+  CHECK(fabsf(l.x) < 0.01f && fabsf(l.y - 310) < 0.01f, "J1 +90 turns left (y+): %.2f %.2f", l.x, l.y);
 }
 
 static void testIkRoundTrip() {
@@ -159,7 +159,7 @@ static void testIkRejects() {
   float s[5];
   CHECK(kin::inverse(g, {600, 0, 100, 0, 0}, P.r_min, s) == kin::UNREACHABLE, "far pose must be unreachable");
   CHECK(kin::inverse(g, {20, 10, 100, -90, 0}, P.r_min, s) == kin::TOO_CLOSE, "pose at the base axis rejected");
-  CHECK(kin::inverse(g, {150, 0, 50, -90, 0}, P.r_min, s) == kin::OK, "pick pose (tool down) reachable");
+  CHECK(kin::inverse(g, {220, 0, 40, -60, 0}, P.r_min, s) == kin::OK, "pick pose (tool tilted down) reachable");
 }
 
 // ---------------- motion primitives ----------------
@@ -424,6 +424,7 @@ static void testTextCommands() {
   CHECK(!strncmp(r.text("UP 30"), "ok", 2), "UP");
   r.run(4);
   CHECK(fabsf(r.c.pose().z - 150) < 0.3f, "UP 30 -> z %.1f", r.c.pose().z);
+  CHECK(!strncmp(r.text("MOVE 220 0 40 -60"), "ok", 2), "documented pick pose: %s", lastReply);
   CHECK(strstr(r.text("MOVE 700 0 100"), "out of reach") != nullptr, "far MOVE rejected");
   CHECK(strstr(r.text("MOVE 200 0 0 -90"), "z_min") != nullptr, "MOVE into the table rejected");
   CHECK(!strncmp(r.text("J 2 175"), "error", 5), "J beyond the limit rejected");

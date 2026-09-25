@@ -4,27 +4,28 @@
 <text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">黄金规则：每装一个舵盘前，舵机先通电回中（1500 µs），舵盘按下图的“中位姿态”对准再拧螺丝</text>
 <rect x="40" y="100" width="300" height="130" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="190.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">① 底座</text>
-<text x="190.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">底板打孔装轴承转盘</text>
-<text x="190.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">J1 舵机竖直装在底座里</text>
-<text x="190.0" y="172" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">金属舵盘连转盘上层</text>
+<text x="190.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">两块横梁夹住 J1 舵机</text>
+<text x="190.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">输出轴朝上</text>
+<text x="190.0" y="172" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">底座螺丝固定在大底板上</text>
 <path d="M340,165 L388,165" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M388,165 L379.0,169.3 L379.0,160.7 Z" fill="#1B2A2F"/>
 <rect x="390" y="100" width="300" height="130" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="540.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">② 肩部 J2</text>
-<text x="540.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">J1 转盘上装 J2 舵机支架</text>
-<text x="540.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">J2 用扭力最大的 DS3225</text>
+<text x="540.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">J1 舵盘上装异型支架 +</text>
+<text x="540.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">多功能支架，J2 横装</text>
 <text x="540.0" y="172" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">中位时大臂竖直</text>
 <path d="M690,165 L738,165" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M738,165 L729.0,169.3 L729.0,160.7 Z" fill="#1B2A2F"/>
 <rect x="740" y="100" width="300" height="130" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="890.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">③ 大臂</text>
-<text x="890.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">两块 U 型支架 + 杯士轴承</text>
+<text x="890.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">两块长 U 支架 + 杯式轴承</text>
 <text x="890.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">做大臂（长 L2）</text>
 <text x="890.0" y="172" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">另一侧装轴承，不要悬臂</text>
 <rect x="40" y="290" width="300" height="130" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="190.0" y="312" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">④ 肘部 J3</text>
-<text x="190.0" y="330" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">J3 舵机装在大臂顶端</text>
-<text x="190.0" y="346" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">中位时小臂水平朝前</text>
+<text x="190.0" y="330" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">J3 装在大臂顶端</text>
+<text x="190.0" y="346" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">法兰杆做小臂</text>
+<text x="190.0" y="362" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">中位时小臂水平朝前</text>
 <path d="M340,355 L388,355" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M388,355 L379.0,359.3 L379.0,350.7 Z" fill="#1B2A2F"/>
 <rect x="390" y="290" width="300" height="130" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>

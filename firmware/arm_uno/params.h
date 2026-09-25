@@ -19,7 +19,7 @@ constexpr int NARM = 5;        // J1..J5 take part in the kinematics
 constexpr int GRIP = 5;        // index of the gripper
 
 constexpr uint16_t PARAMS_MAGIC = 0xA7E1;
-constexpr uint8_t PARAMS_VERSION = 1;
+constexpr uint8_t PARAMS_VERSION = 2;
 
 struct Params {
   uint16_t magic;
@@ -69,13 +69,14 @@ static const Params kParamDefaults ARM_PROGMEM = {
     PARAMS_MAGIC, PARAMS_VERSION,
     {1500, 1500 - 90 * ARM_K, 1500 + 90 * ARM_K, 1500, 1500, 1000},   // us0
     {ARM_K, ARM_K, ARM_K, ARM_K, ARM_K, 10.0f},                         // usdeg
-    {-90, 10, -160, -100, -90, 0},                                      // qmin
-    {90, 170, 10, 100, 90, 100},                                        // qmax
+    {-90, 40, -160, -90, -90, 0},                                       // qmin (J2 40: an MG996R cannot hold the
+                                                                        // arm stretched out; with a DS3225: LIM 2 10 170)
+    {90, 170, 0, 90, 90, 100},                                          // qmax
     {90, 60, 90, 120, 150, 150},                                        // vmax
     {180, 120, 180, 300, 400, 400},                                     // amax
     {0, 90, -90, 0, 0, 0},                                              // home
     {0, 100, -140, 40, 0, 0},                                           // park
-    75, 105, 100, 120,                                                  // d1 l2 l3 l4
+    75, 120, 130, 180,                                                  // d1 l2 l3 l4 (common aluminium 6-DOF kit, measure yours)
     10, 60,                                                             // z_min r_min
     8, 30,                                                              // deadband expo (%)
     80, 60,                                                             // v_lin v_ang

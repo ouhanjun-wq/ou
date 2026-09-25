@@ -101,8 +101,8 @@ USB Host Shield 库的 Xbox 360（XInput）驱动只认识名单里的手柄。�
 回复以 `ok` 或 `error:` 开头，例如：
 
 ```
-> MOVE 160 0 40 -90
-ok move to 160 0 40 -90
+> MOVE 220 0 40 -60
+ok move to 220 0 40 -60
 > MOVE 600 0 100
 error: out of reach
 ```
@@ -117,7 +117,7 @@ AI 智能体只需要一个工具：“发送一条文字指令，返回回复�
 
 ```bash
 pip install pyserial
-python3 tools/arm_client.py COM5 ON "MOVE 160 0 40 -90" CLOSE "UP 50" HOME
+python3 tools/arm_client.py COM5 ON "MOVE 220 0 40 -60" CLOSE "UP 50" HOME
 ```
 
 在提示词里写清楚坐标系和单位；每次先 `STATUS` 看当前位置；够不到时会返回 `error`。

@@ -6,7 +6,7 @@ The Uno is connected with its USB cable; this script talks to its serial port at
 
 Examples
   python3 tools/arm_client.py COM5 STATUS
-  python3 tools/arm_client.py /dev/ttyACM0 ON "MOVE 160 0 40 -90" CLOSE "UP 50" HOME
+  python3 tools/arm_client.py /dev/ttyACM0 ON "MOVE 220 0 40 -60" CLOSE "UP 50" HOME
   python3 tools/arm_client.py COM5 --file demo.txt        # one command per line
   python3 tools/arm_client.py COM5                        # interactive prompt
 
