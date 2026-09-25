@@ -63,7 +63,7 @@ function chip(t,c){return '<span class="chip '+(c||"")+'">'+t+'</span>'}
 function update(d){
   let h="";
   if(!d.ok){h+=chip("蝴蝶无信号","bad")}else{h+=chip(STATES[d.state]||"?",d.state==1?"ok":d.state==2?"bad":"");h+=chip(MODES[d.mode]||"?");h+=chip("链路 "+d.link+"/s",d.link>40?"ok":"warn");if(d.flags&2)h+=chip("低电量","bad");if(d.flags&16)h+=chip("充电中","warn");if(d.flags&64)h+=chip("返航中","warn")}
-  h+=chip(d.xbox?"手柄已连接":"手柄未连接",d.xbox?"ok":"warn");h+=chip(d.fix?"GPS 已定位":"GPS 未定位",d.fix?"ok":"warn");
+  h+=chip(d.pad?"手柄已连接":"手柄未连接",d.pad?"ok":"warn");h+=chip(d.fix?"GPS 已定位":"GPS 未定位",d.fix?"ok":"warn");
   $("chips").innerHTML=h;
   $("alt").textContent=d.ok?d.alt.toFixed(1):"—";$("vbat").textContent=d.ok?d.vbat.toFixed(2):"—";
   $("spd").textContent=d.fix?d.spd.toFixed(1):"—";$("sats").textContent=d.ok?d.sats:"—";
