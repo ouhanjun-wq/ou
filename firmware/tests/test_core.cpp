@@ -356,6 +356,75 @@ static void testStabilizeDirection() {
   CHECK(fabsf(o.ur) <= 1.5f * p.man_roll + 1e-3f, "roll output bounded: %.2f", o.ur);
 }
 
+static void testAutoMode() {
+  Params p;
+  paramsDefaults(p);
+  FlightCore fc;
+  fc.reinit(p, 200);
+  const float dt = 0.005f;
+  FlightSensors s;
+  s.imuOk = true;
+  s.baroOk = true;
+  const uint8_t AUTO = proto::MODE_AUTO;
+
+  CHECK(climbCommand(0.5f) == 0 && climbCommand(0.53f) == 0, "climb deadband");
+  CHECK(fabsf(climbCommand(1.0f) - 1) < 1e-5f && fabsf(climbCommand(0.0f) + 1) < 1e-5f, "climb range");
+
+  // In AUTO the "safe" throttle for arming is the centred stick, not zero.
+  fc.step(sticks(0.5f, 0, 0, 0, AUTO, false), s, p, dt);
+  FlightOutput o = fc.step(sticks(0.0f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.state == proto::ST_DISARMED, "AUTO armed with climb stick fully down");
+  fc.step(sticks(0.5f, 0, 0, 0, AUTO, false), s, p, dt);
+  o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.state == proto::ST_ARMED, "AUTO did not arm with centred stick");
+
+  // Armed but not launched: glide pose, no flapping, even with a small climb input.
+  o = fc.step(sticks(0.6f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.flapHz == 0, "flapping before launch gesture (f = %.2f)", o.flapHz);
+
+  // Launch gesture: push climb past half-way -> flapping above hover throttle.
+  o = fc.step(sticks(1.0f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.flapHz > 0 && o.thrCmd > p.thr_hover, "launch: f %.2f thr %.2f", o.flapHz, o.thrCmd);
+
+  // Climbing with the stick up until 2 m, then released: target locks at 2 m.
+  s.alt = 2.0f; s.vz = 0.8f;
+  fc.step(sticks(1.0f, 0, 0, 0, AUTO, true), s, p, dt);
+  s.vz = 0;
+  o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(fabsf(o.altTarget - 2.0f) < 1e-4f, "altitude target %.2f", o.altTarget);
+  s.alt = 1.5f; s.vz = -0.2f;
+  o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.thrCmd > p.thr_hover, "below target but thr %.3f <= hover", o.thrCmd);
+  s.alt = 2.5f; s.vz = 0.2f;
+  o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.thrCmd < p.thr_hover + 0.05f, "above target but thr %.3f", o.thrCmd);
+
+  // CMD_ALT raises the target.
+  FlightInputs up = sticks(0.5f, 0, 0, 0, AUTO, true);
+  up.altDelta = 1.0f;
+  o = fc.step(up, s, p, dt);
+  CHECK(fabsf(o.altTarget - 3.0f) < 1e-4f, "CMD_ALT target %.2f (want 3.0)", o.altTarget);
+
+  // Throttle command always stays in the valid range.
+  s.alt = -50; s.vz = -5;
+  for (int i = 0; i < 2000; ++i) o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.thrCmd <= 1.0f && o.thrCmd >= p.thr_idle, "thr out of range %.3f", o.thrCmd);
+
+  // Link loss -> glide; link back -> AUTO resumes without a new launch gesture.
+  s.alt = 2.0f; s.vz = 0;
+  FlightInputs lost = sticks(0.5f, 0, 0, 0, AUTO, true);
+  lost.linkOk = false;
+  o = fc.step(lost, s, p, dt);
+  CHECK(o.state == proto::ST_FAILSAFE && o.flapHz == 0, "AUTO failsafe");
+  o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.state == proto::ST_ARMED && o.flapHz > 0, "AUTO did not resume after failsafe");
+
+  // No barometer: AUTO degrades to HEADING_HOLD.
+  s.baroOk = false;
+  o = fc.step(sticks(0.5f, 0, 0, 0, AUTO, true), s, p, dt);
+  CHECK(o.mode == proto::MODE_HEADING_HOLD, "no-baro fallback mode %d", o.mode);
+}
+
 static void testProtocol() {
   proto::ControlPacket c = {};
   c.thr = 500; c.roll = -100; c.mode = 1; c.armed = 1;
@@ -383,6 +452,7 @@ int main() {
   testArming();
   testFlappingAndMixer();
   testStabilizeDirection();
+  testAutoMode();
   testProtocol();
   if (failures == 0) printf("all tests passed\n");
   return failures == 0 ? 0 : 1;

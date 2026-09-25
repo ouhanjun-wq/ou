@@ -23,12 +23,14 @@ enum FlightMode : uint8_t {
   MODE_MANUAL       = 0,  // sticks drive wing offsets directly
   MODE_STABILIZE    = 1,  // sticks = target angle, self-levelling
   MODE_HEADING_HOLD = 2,  // stabilize + hold heading when yaw stick centred
+  MODE_AUTO         = 3,  // heading hold + altitude hold; throttle = climb rate (0.5 = hold)
 };
 
 enum Command : uint8_t {
   CMD_TURN       = 1,  // arg = degrees (+ right / - left), HEADING_HOLD only
   CMD_CALIB_GYRO = 2,  // disarmed only
   CMD_SAVE       = 3,  // save parameters to flash, disarmed only
+  CMD_ALT        = 4,  // arg = altitude change in cm, AUTO mode only
 };
 
 enum State : uint8_t { ST_DISARMED = 0, ST_ARMED = 1, ST_FAILSAFE = 2 };
@@ -82,6 +84,8 @@ struct __attribute__((packed)) TelemetryPacket {
   uint8_t  mode, state, flags;
   uint8_t  flap_dhz;                   // flapping frequency, 0.1 Hz
   uint8_t  link_pps;                   // control packets received per second
+  int16_t  alt_cm;                     // baro altitude above arming point
+  int16_t  vz_cms;                     // climb rate, cm/s (up +)
   uint16_t crc;
 };
 

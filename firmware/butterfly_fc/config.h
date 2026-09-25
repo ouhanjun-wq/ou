@@ -8,6 +8,7 @@ constexpr int PIN_VBAT     = D0;   // GPIO1  battery divider (ADC1)
 constexpr int PIN_SERVO_L  = D1;   // GPIO2  left wing servo signal
 constexpr int PIN_SERVO_R  = D2;   // GPIO3  right wing servo signal
 constexpr int PIN_IMU_CS   = D3;   // GPIO4  ICM-42688-P chip select
+constexpr int PIN_BARO_CS  = D4;   // GPIO5  BMP280 chip select (same SPI bus)
 constexpr int PIN_IMU_SCK  = D8;   // GPIO7
 constexpr int PIN_IMU_MISO = D9;   // GPIO8
 constexpr int PIN_IMU_MOSI = D10;  // GPIO9

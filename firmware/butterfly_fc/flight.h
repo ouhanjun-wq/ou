@@ -48,19 +48,32 @@ struct FlightInputs {
   bool bench = false;             // USB bench test: armed without radio
   bool charging = false;          // Type-C charger plugged in: never arm
   float turnDeg = 0;              // pending CMD_TURN (consumed by step)
+  float altDelta = 0;             // pending CMD_ALT in metres (consumed by step)
 };
+
+// AUTO mode reads the throttle channel as a centred climb command:
+// 0.5 = hold altitude, 1 = full climb, 0 = full descent.
+inline float climbCommand(float thr) {
+  float c = clampf((thr - 0.5f) * 2.0f, -1.0f, 1.0f);
+  if (fabsf(c) < 0.1f) return 0.0f;
+  return (c - (c > 0 ? 0.1f : -0.1f)) / 0.9f;
+}
 
 struct FlightSensors {
   float rollAvg = 0, pitchAvg = 0;  // stroke-averaged attitude (deg)
   float yaw = 0;                    // heading (deg)
   float p = 0, q = 0, r = 0;        // notched body rates (deg/s)
   bool imuOk = false;
+  float alt = 0, vz = 0;            // stroke-averaged baro altitude (m), climb rate (m/s, up +)
+  bool baroOk = false;
 };
 
 struct FlightOutput {
   float wingL = 0, wingR = 0;     // wing angles (deg, + = up), before servo mapping
   float ur = 0, up = 0, uy = 0;   // control outputs (deg)
   float flapHz = 0;
+  float thrCmd = 0;               // effective throttle after the altitude controller
+  float altTarget = 0;
   uint8_t state = proto::ST_DISARMED;
   uint8_t mode = proto::MODE_MANUAL;
   bool armBlocked = false;
@@ -82,13 +95,31 @@ class FlightCore {
       in.mode = proto::MODE_STABILIZE;
     }
     uint8_t mode = s.imuOk ? in.mode : (uint8_t)proto::MODE_MANUAL;
-    if (mode > proto::MODE_HEADING_HOLD) mode = proto::MODE_MANUAL;
+    if (mode > proto::MODE_AUTO) mode = proto::MODE_MANUAL;
+    if (mode == proto::MODE_AUTO && !s.baroOk) mode = proto::MODE_HEADING_HOLD;  // no altitude sensor
+
+    const bool armed = state_ != proto::ST_DISARMED;
+
+    // ---- altitude hold (AUTO) ----
+    float thr = in.thr;
+    if (mode == proto::MODE_AUTO && armed) {
+      if (lastMode_ != proto::MODE_AUTO) {            // entering AUTO (or back from failsafe)
+        autoEngaged_ = autoEngaged_ || lastFlapHz_ > 0;  // already flying -> hold from here
+        altTarget_ = s.alt;
+        vzI_ = 0;
+      }
+      thr = altitudeControl(in, s, p, dt);
+    } else {
+      // Keep the engaged flag through a failsafe glide so AUTO resumes when the link returns.
+      if (!armed || state_ != proto::ST_FAILSAFE) autoEngaged_ = false;
+      altTarget_ = s.alt;
+    }
+    lastMode_ = armed ? mode : (uint8_t)0xFF;
 
     // ---- throttle -> flapping frequency and amplitude ----
     float f = 0, amp = 0;
-    const bool armed = state_ != proto::ST_DISARMED;
-    if (armed && in.thr > p.thr_idle) {
-      const float t = clampf((in.thr - p.thr_idle) / (1.0f - p.thr_idle), 0.0f, 1.0f);
+    if (armed && thr > p.thr_idle) {
+      const float t = clampf((thr - p.thr_idle) / (1.0f - p.thr_idle), 0.0f, 1.0f);
       f = p.f_min + t * (p.f_max - p.f_min);
       amp = p.amp_min + t * (p.amp_max - p.amp_min);
     }
@@ -98,7 +129,7 @@ class FlightCore {
 
     // ---- control ----
     float ur = 0, up = 0, uy = 0;
-    const bool integrate = armed && in.thr > p.thr_idle + 0.1f;
+    const bool integrate = armed && thr > p.thr_idle + 0.1f;
     if (!armed) {
       resetControllers(s);
     } else if (mode == proto::MODE_MANUAL) {
@@ -113,7 +144,8 @@ class FlightCore {
       const float qSp = clampf(p.ang_p_pitch * (pitchSp - s.pitchAvg), -200.0f, 200.0f);
 
       float rSp;
-      if (mode == proto::MODE_HEADING_HOLD && fabsf(in.yaw) < 0.05f) {
+      const bool holdHeading = mode == proto::MODE_HEADING_HOLD || mode == proto::MODE_AUTO;
+      if (holdHeading && fabsf(in.yaw) < 0.05f) {
         headingTarget_ = wrap180(headingTarget_ + in.turnDeg);
         rSp = clampf(p.head_p * wrap180(headingTarget_ - s.yaw), -p.max_yaw_rate, p.max_yaw_rate);
       } else {
@@ -132,6 +164,9 @@ class FlightCore {
     mix(p, amp, ur, up, uy, o);
     o.ur = ur; o.up = up; o.uy = uy;
     o.flapHz = f;
+    o.thrCmd = thr;
+    o.altTarget = altTarget_;
+    lastFlapHz_ = f;
     o.state = state_;
     o.mode = mode;
     o.armBlocked = armBlocked_;
@@ -173,10 +208,39 @@ class FlightCore {
     } else if (state_ == proto::ST_FAILSAFE) {
       state_ = proto::ST_ARMED;   // pilot regains control
     } else if (state_ == proto::ST_DISARMED) {
-      if (!prevArmReq_ && in.thr <= p.thr_idle + 0.02f) state_ = proto::ST_ARMED;
+      // Throttle must be "safe": low in normal modes, centred (= hold) in AUTO.
+      const bool thrSafe = in.mode == proto::MODE_AUTO ? fabsf(in.thr - 0.5f) < 0.1f
+                                                       : in.thr <= p.thr_idle + 0.02f;
+      if (!prevArmReq_ && thrSafe) state_ = proto::ST_ARMED;
       else armBlocked_ = true;    // switch was already on, or throttle not low
     }
     prevArmReq_ = in.armReq;
+  }
+
+  // Outer loop: altitude error -> climb-rate set-point. Inner loop: climb-rate PI -> throttle.
+  // After arming in AUTO the wings stay in glide pose until the climb stick is pushed
+  // past half-way once ("launch gesture"), so the butterfly never flaps in your hand by surprise.
+  float altitudeControl(const FlightInputs& in, const FlightSensors& s, const Params& p, float dt) {
+    const float c = climbCommand(in.thr);
+    if (!autoEngaged_) {
+      if (c <= 0.5f) return 0.0f;
+      autoEngaged_ = true;
+      altTarget_ = s.alt;
+      vzI_ = 0;
+    }
+    altTarget_ += in.altDelta;
+    float vzSp;
+    if (c != 0.0f) {
+      vzSp = c > 0 ? c * p.max_climb : c * p.max_descent;
+      altTarget_ = s.alt;                       // hold wherever the stick is released
+    } else {
+      vzSp = clampf(p.alt_p * (altTarget_ - s.alt), -p.max_descent, p.max_climb);
+    }
+    const float e = vzSp - s.vz;
+    const float out = p.thr_hover + p.vz_p * e + vzI_;
+    const bool saturated = (out >= 1.0f && e > 0) || (out <= p.thr_idle + 0.05f && e < 0);
+    if (!saturated) vzI_ = clampf(vzI_ + p.vz_i * e * dt, -0.3f, 0.3f);
+    return clampf(p.thr_hover + p.vz_p * e + vzI_, p.thr_idle + 0.05f, 1.0f);
   }
 
   void resetControllers(const FlightSensors& s) {
@@ -200,6 +264,9 @@ class FlightCore {
 
   RatePID pidR_, pidP_, pidY_;
   float headingTarget_ = 0;
+  float altTarget_ = 0, vzI_ = 0, lastFlapHz_ = 0;
+  bool autoEngaged_ = false;
+  uint8_t lastMode_ = 0xFF;
   float phase_ = 0;
   uint8_t state_ = proto::ST_DISARMED;
   bool prevArmReq_ = false;

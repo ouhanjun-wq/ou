@@ -7,6 +7,7 @@
 #include <SPI.h>
 
 #include "ahrs.h"
+#include "bmp280.h"
 #include "config.h"
 #include "filters.h"
 #include "flight.h"
@@ -21,6 +22,7 @@ FlightInputs gRadioIn;
 uint32_t gLastRadioMs = 0;
 volatile uint32_t gRadioPktCount = 0;
 float gPendingTurn = 0;
+float gPendingAlt = 0;
 volatile bool gCalibRequest = false;
 volatile bool gSaveRequest = false;
 Snapshot gSnap;
@@ -52,6 +54,8 @@ bool logPop(LogRec& r) {
 
 // ---------------- control-task objects ----------------
 static ICM42688 imu;
+static BMP280 baro;
+static bool baroPresent = false;
 static Mahony ahrs;
 static FlightCore core;
 static ServoOut servos;
@@ -102,7 +106,11 @@ static void controlTask(void*) {
   PT1 gLpf[3], aLpf[3];
   Decimator dec[3];
   Notch n1[3], n2[3];
-  static StrokeAvg<STROKE_MAX_N> sRoll, sPitch;
+  static StrokeAvg<STROKE_MAX_N> sRoll, sPitch, sAlt;
+  PT1 altLpf, vzLpf, pRefLpf;
+  float altRaw = 0, pRef = 0, prevAlt = 0, alt = 0, vz = 0;
+  int baroDiv = 0, baroBad = 0;
+  uint8_t prevState = proto::ST_DISARMED;
   FlightOutput lastOut;
   float lastNotchF = -1;
   int badReads = 0, attDiv = 0;
@@ -125,6 +133,9 @@ static void controlTask(void*) {
         aLpf[k].setCutoff(P.acc_lpf_hz, IMU_HZ);
       }
       core.reinit(P, CTRL_HZ);
+      altLpf.setCutoff(P.baro_lpf_hz, CTRL_HZ);
+      vzLpf.setCutoff(1.0f, CTRL_HZ);
+      pRefLpf.setCutoff(0.5f, CTRL_HZ / 10);
       lastNotchF = -1;
     }
 
@@ -178,6 +189,7 @@ static void controlTask(void*) {
       const int win = fFlap > 0.5f ? (int)lroundf(CTRL_HZ / fFlap) : (int)(CTRL_HZ * 0.25f);
       sRoll.setWindow(win);
       sPitch.setWindow(win);
+      sAlt.setWindow(win);
       lastNotchF = fFlap;
     }
     float gN[3];
@@ -185,12 +197,35 @@ static void controlTask(void*) {
     const float rollAvg = sRoll.apply(ahrs.roll);
     const float pitchAvg = sPitch.apply(ahrs.pitch);
 
+    // ---- barometer: 20 Hz read, stroke average + low-pass -> altitude, derivative -> climb rate ----
+    if (baroPresent && ++baroDiv >= 10) {
+      baroDiv = 0;
+      float pa, tc;
+      if (baro.read(pa, tc)) {
+        baroBad = 0;
+        const float pSmooth = pRefLpf.apply(pa);
+        if (pRef == 0) pRef = pSmooth;
+        if (lastOut.state != proto::ST_DISARMED && prevState == proto::ST_DISARMED) pRef = pSmooth;  // zero at arming
+        altRaw = pressureToAltitude(pa, pRef);
+      } else if (baroBad < 100) {
+        ++baroBad;
+      }
+      prevState = lastOut.state;
+    }
+    const bool baroOk = baroPresent && baroBad < 10;
+    alt = altLpf.apply(sAlt.apply(altRaw));
+    vz = vzLpf.apply((alt - prevAlt) * CTRL_HZ);
+    prevAlt = alt;
+
     FlightSensors s;
     s.rollAvg = P.stroke_avg_on > 0.5f ? rollAvg : ahrs.roll;
     s.pitchAvg = P.stroke_avg_on > 0.5f ? pitchAvg : ahrs.pitch;
     s.yaw = ahrs.yaw;
     s.p = gN[0]; s.q = gN[1]; s.r = gN[2];
     s.imuOk = imuOk;
+    s.alt = alt;
+    s.vz = vz;
+    s.baroOk = baroOk;
 
     // ---- inputs: radio or USB bench ----
     FlightInputs in;
@@ -201,6 +236,8 @@ static void controlTask(void*) {
     lastRx = gLastRadioMs;
     in.turnDeg = gPendingTurn;
     gPendingTurn = 0;
+    in.altDelta = gPendingAlt;
+    gPendingAlt = 0;
     bench = gBench;
     portEXIT_CRITICAL(&gMux);
     in.linkOk = lastRx != 0 && (millis() - lastRx) < (uint32_t)P.fs_timeout_ms;
@@ -237,6 +274,8 @@ static void controlTask(void*) {
     portENTER_CRITICAL(&gMux);
     gSnap.roll = ahrs.roll; gSnap.pitch = ahrs.pitch; gSnap.yaw = ahrs.yaw;
     gSnap.rollAvg = rollAvg; gSnap.pitchAvg = pitchAvg;
+    gSnap.alt = alt; gSnap.vz = vz;
+    gSnap.baroPresent = baroPresent; gSnap.baroOk = baroOk;
     for (int k = 0; k < 3; ++k) { gSnap.gyro[k] = gF[k]; gSnap.acc[k] = aF[k]; }
     gSnap.in = in;
     gSnap.out = out;
@@ -250,8 +289,8 @@ static void controlTask(void*) {
       logPush({t0, 'F', 7, {gD[0], gD[1], gD[2], gN[0], gN[1], gN[2], out.flapHz}});
     } else if (gLogMode == LOG_ATT && ++attDiv >= 4) {   // 50 Hz
       attDiv = 0;
-      logPush({millis(), 'A', 10, {ahrs.roll, ahrs.pitch, ahrs.yaw, rollAvg, pitchAvg,
-                                   out.ur, out.up, out.uy, in.thr, out.flapHz}});
+      logPush({millis(), 'A', 12, {ahrs.roll, ahrs.pitch, ahrs.yaw, rollAvg, pitchAvg,
+                                   out.ur, out.up, out.uy, out.thrCmd, out.flapHz, alt, vz}});
     }
   }
 }
@@ -273,6 +312,10 @@ void setup() {
   servos.begin(PIN_SERVO_L, PIN_SERVO_R);
   servos.writeWings(P.center, P.center, P);
 
+  pinMode(PIN_IMU_CS, OUTPUT);
+  digitalWrite(PIN_IMU_CS, HIGH);
+  pinMode(PIN_BARO_CS, OUTPUT);
+  digitalWrite(PIN_BARO_CS, HIGH);   // both chips deselected before the bus starts
   SPI.begin(PIN_IMU_SCK, PIN_IMU_MISO, PIN_IMU_MOSI, PIN_IMU_CS);
   imuPresent = imu.begin(SPI, PIN_IMU_CS);
   Serial.printf("IMU ICM-42688-P: %s (WHO_AM_I=0x%02X)\n", imuPresent ? "OK" : "NOT FOUND", imu.whoAmI());
@@ -280,6 +323,10 @@ void setup() {
     Serial.println("calibrating gyro, keep still ...");
     Serial.println(calibrateGyro() ? "gyro calibrated" : "gyro calibration FAILED (moving?) - run: calib");
   }
+
+  baroPresent = baro.begin(SPI, PIN_BARO_CS);
+  Serial.printf("baro BMP280: %s (chip id 0x%02X)%s\n", baroPresent ? "OK" : "NOT FOUND", baro.chipId(),
+                baroPresent ? "" : " - AUTO mode falls back to HEADING_HOLD");
 
   Serial.println(linkBegin() ? "ESP-NOW ready" : "ESP-NOW init FAILED");
   analogReadResolution(12);
@@ -336,6 +383,8 @@ void loop() {
               (s.in.charging ? proto::FLAG_CHARGING : 0);
     t.flap_dhz = (uint8_t)constrain(s.out.flapHz * 10, 0, 255);
     t.link_pps = pps;
+    t.alt_cm = (int16_t)constrain(s.alt * 100.0f, -32000.0f, 32000.0f);
+    t.vz_cms = (int16_t)constrain(s.vz * 100.0f, -32000.0f, 32000.0f);
     linkSendTelemetry(t);
   }
 

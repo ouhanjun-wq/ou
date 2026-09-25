@@ -10,6 +10,8 @@ struct Snapshot {
   float roll = 0, pitch = 0, yaw = 0, rollAvg = 0, pitchAvg = 0;
   float gyro[3] = {0, 0, 0};   // filtered body rates, deg/s
   float acc[3] = {0, 0, 0};    // filtered body accel, g
+  float alt = 0, vz = 0;       // m, m/s
+  bool baroPresent = false, baroOk = false;
   FlightInputs in;
   FlightOutput out;
   bool imuPresent = false, imuOk = false;
@@ -30,7 +32,7 @@ struct LogRec {
   uint32_t t;
   uint8_t kind;   // 'A', 'F', 'R'
   uint8_t n;      // number of values used
-  float v[10];
+  float v[12];
 };
 
 extern portMUX_TYPE gMux;
@@ -40,6 +42,7 @@ extern FlightInputs gRadioIn;
 extern uint32_t gLastRadioMs;
 extern volatile uint32_t gRadioPktCount;
 extern float gPendingTurn;
+extern float gPendingAlt;     // metres, from CMD_ALT
 extern volatile bool gCalibRequest;
 extern volatile bool gSaveRequest;
 

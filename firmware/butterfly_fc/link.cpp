@@ -39,6 +39,10 @@ static void onRecv(const esp_now_recv_info_t* info, const uint8_t* data, int len
         portENTER_CRITICAL(&gMux);
         gPendingTurn += c.arg;
         portEXIT_CRITICAL(&gMux);
+      } else if (c.cmd == proto::CMD_ALT) {
+        portENTER_CRITICAL(&gMux);
+        gPendingAlt += c.arg / 100.0f;
+        portEXIT_CRITICAL(&gMux);
       } else if (c.cmd == proto::CMD_CALIB_GYRO) {
         gCalibRequest = true;
       } else if (c.cmd == proto::CMD_SAVE) {

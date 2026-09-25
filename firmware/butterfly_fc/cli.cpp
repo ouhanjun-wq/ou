@@ -10,6 +10,7 @@ static const char* modeName(uint8_t m) {
     case proto::MODE_MANUAL: return "MANUAL";
     case proto::MODE_STABILIZE: return "STABILIZE";
     case proto::MODE_HEADING_HOLD: return "HEADING_HOLD";
+    case proto::MODE_AUTO: return "AUTO";
     default: return "?";
   }
 }
@@ -55,14 +56,17 @@ static void printStatus() {
                 s.out.flapHz);
   Serial.printf("att roll %.1f pitch %.1f yaw %.1f | avg roll %.1f pitch %.1f | loop max %lu us\n",
                 s.roll, s.pitch, s.yaw, s.rollAvg, s.pitchAvg, (unsigned long)s.loopMaxUs);
+  Serial.printf("baro %s | alt %.2f m (target %.2f) | vz %+.2f m/s | thr cmd %.2f\n",
+                s.baroPresent ? (s.baroOk ? "OK" : "FAULT") : "MISSING",
+                s.alt, s.out.altTarget, s.vz, s.out.thrCmd);
 }
 
 static void printImu() {
   Snapshot s = snap();
   Serial.printf("acc[g] x %+.2f y %+.2f z %+.2f | gyro[dps] p %+7.1f q %+7.1f r %+7.1f | "
-                "roll %+6.1f pitch %+6.1f yaw %+6.1f\n",
+                "roll %+6.1f pitch %+6.1f yaw %+6.1f | alt %+.2f m\n",
                 s.acc[0], s.acc[1], s.acc[2], s.gyro[0], s.gyro[1], s.gyro[2],
-                s.roll, s.pitch, s.yaw);
+                s.roll, s.pitch, s.yaw, s.alt);
 }
 
 static void listParams() {
@@ -128,7 +132,7 @@ static void handle(char* line) {
       gBench.yaw = constrain(atof(argv[4]), -1.0, 1.0);
     } else {
       gBench.thr = constrain(atof(argv[1]), 0.0, 1.0);
-      if (argc >= 3) gBench.mode = (uint8_t)constrain(atoi(argv[2]), 0, 2);
+      if (argc >= 3) gBench.mode = (uint8_t)constrain(atoi(argv[2]), 0, 2);   // no AUTO on the bench
       if (!gBench.active) gBench.startMs = millis();
       gBench.active = true;
       gServoTest = false;
@@ -142,7 +146,7 @@ static void handle(char* line) {
     else if (!strcmp(argv[1], "fft")) gLogMode = LOG_FFT;
     else if (!strcmp(argv[1], "raw")) gLogMode = LOG_RAW;
     else gLogMode = LOG_OFF;
-    if (gLogMode == LOG_ATT) Serial.println("# A,t_ms,roll,pitch,yaw,roll_avg,pitch_avg,ur,up,uy,thr,flap_hz");
+    if (gLogMode == LOG_ATT) Serial.println("# A,t_ms,roll,pitch,yaw,roll_avg,pitch_avg,ur,up,uy,thr_cmd,flap_hz,alt,vz");
     if (gLogMode == LOG_FFT) Serial.println("# F,t_us,p_dec,q_dec,r_dec,p_notch,q_notch,r_notch,flap_hz");
     if (gLogMode == LOG_RAW) Serial.println("# R,t_us,p_raw,q_raw,r_raw");
   } else {

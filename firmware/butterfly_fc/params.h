@@ -4,7 +4,7 @@
 #pragma once
 #include <stddef.h>
 
-constexpr unsigned PARAMS_VERSION = 1;
+constexpr unsigned PARAMS_VERSION = 2;
 
 struct Params {
   // ---- flapping waveform ----
@@ -47,6 +47,13 @@ struct Params {
   float i_limit;               // integrator limit (deg of wing offset)
   float ff;                    // stick feed-forward in stabilized modes (0..1)
 
+  // ---- AUTO: altitude hold (barometer) ----
+  float thr_hover;             // throttle that roughly holds altitude (from manual flights)
+  float max_climb, max_descent;  // m/s
+  float alt_p;                 // (m/s) per m of altitude error
+  float vz_p, vz_i;            // throttle per (m/s) of climb-rate error
+  float baro_lpf_hz;           // altitude smoothing after stroke averaging
+
   // ---- safety / misc ----
   float fs_timeout_ms;         // link loss -> failsafe (glide + level)
   float cells;                 // LiPo cell count
@@ -81,6 +88,9 @@ inline void paramsDefaults(Params& p) {
   p.rate_p_pitch = 0.08f; p.rate_i_pitch = 0.05f; p.rate_d_pitch = 0.0f;
   p.rate_p_yaw = 0.06f;   p.rate_i_yaw = 0.03f;   p.rate_d_yaw = 0.0f;
   p.i_limit = 8.0f; p.ff = 0.5f;
+
+  p.thr_hover = 0.65f; p.max_climb = 1.0f; p.max_descent = 0.7f;
+  p.alt_p = 1.0f; p.vz_p = 0.15f; p.vz_i = 0.1f; p.baro_lpf_hz = 2.0f;
 
   p.fs_timeout_ms = 500.0f;
   p.cells = 2.0f; p.vbat_ratio = 3.0f; p.vcell_warn = 3.5f;
