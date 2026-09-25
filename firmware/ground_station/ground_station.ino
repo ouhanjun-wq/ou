@@ -79,11 +79,10 @@ static bool radioBegin() {
   return esp_now_add_peer(&peer) == ESP_OK;
 }
 
-template <class T>
-static void sendOneShot(T& pkt, uint8_t type) {
-  proto::seal(pkt, type, NET_ID, oneShotSeq++);
+// Not a template: the .ino preprocessor generates broken prototypes for templates.
+static void sendRepeated(const void* pkt, size_t len) {
   for (int i = 0; i < 3; ++i) {     // repeated for reliability; receiver de-duplicates by seq
-    esp_now_send(kBroadcast, reinterpret_cast<const uint8_t*>(&pkt), sizeof(pkt));
+    esp_now_send(kBroadcast, static_cast<const uint8_t*>(pkt), len);
     delay(3);
   }
 }
@@ -92,14 +91,16 @@ static void sendCommand(uint8_t cmd, int16_t arg = 0) {
   proto::CommandPacket c = {};
   c.cmd = cmd;
   c.arg = arg;
-  sendOneShot(c, proto::PKT_COMMAND);
+  proto::seal(c, proto::PKT_COMMAND, NET_ID, oneShotSeq++);
+  sendRepeated(&c, sizeof(c));
 }
 
 static void sendParam(const char* name, float value) {
   proto::ParamPacket p = {};
   strncpy(p.name, name, sizeof(p.name) - 1);
   p.value = value;
-  sendOneShot(p, proto::PKT_PARAM);
+  proto::seal(p, proto::PKT_PARAM, NET_ID, oneShotSeq++);
+  sendRepeated(&p, sizeof(p));
 }
 
 // ---------------- sticks ----------------

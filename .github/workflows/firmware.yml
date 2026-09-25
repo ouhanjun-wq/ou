@@ -10,7 +10,7 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Host unit tests (filters, AHRS, flight logic, protocol)
         run: |
           g++ -std=c++17 -O1 -Wall -Wextra -Werror -I firmware/butterfly_fc \
@@ -24,7 +24,7 @@ jobs:
   compile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: arduino/compile-sketches@v1
         with:
           platforms: |
