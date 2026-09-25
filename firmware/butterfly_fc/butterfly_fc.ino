@@ -11,6 +11,7 @@
 #include "config.h"
 #include "filters.h"
 #include "flight.h"
+#include "gps.h"
 #include "icm42688.h"
 #include "params.h"
 #include "servo_out.h"
@@ -50,6 +51,41 @@ bool logPop(LogRec& r) {
   r = logBuf[logTail];
   logTail = (logTail + 1) % LOG_CAP;
   return true;
+}
+
+// ---------------- GPS (optional, UART, NMEA) ----------------
+// Auto-detects the module's baud rate, then parses GGA / RMC in loop().
+static NmeaParser gps;
+static uint32_t gpsBaudRate = 0, gpsTryStart = 0, gpsLastSentenceMs = 0, gpsSentencesAtTry = 0;
+static int gpsTryIndex = -1;
+static const uint32_t kGpsBauds[] = {115200, 38400, 9600, 57600};
+
+const GpsFix& gpsFix() { return gps.fix(); }
+bool gpsFresh() { return gps.fix().valid && millis() - gps.fix().updatedMs < 2000; }
+uint32_t gpsBaud() { return gpsBaudRate; }
+uint32_t gpsSentences() { return gps.sentences(); }
+
+static void gpsPoll() {
+  const uint32_t now = millis();
+  while (Serial1.available()) {
+    if (gps.feed((char)Serial1.read(), now)) gpsLastSentenceMs = now;
+  }
+  if (gpsBaudRate != 0) {
+    if (now - gpsLastSentenceMs > 5000) { gpsBaudRate = 0; gpsTryIndex = -1; }   // lost: search again
+    return;
+  }
+  if (gpsTryIndex >= 0 && gps.sentences() > gpsSentencesAtTry + 2) {             // locked on
+    gpsBaudRate = kGpsBauds[gpsTryIndex];
+    gpsLastSentenceMs = now;
+    return;
+  }
+  if (gpsTryIndex < 0 || now - gpsTryStart > 1500) {
+    gpsTryIndex = (gpsTryIndex + 1) % (int)(sizeof(kGpsBauds) / sizeof(kGpsBauds[0]));
+    Serial1.end();
+    Serial1.begin(kGpsBauds[gpsTryIndex], SERIAL_8N1, PIN_GPS_RX, PIN_GPS_TX);
+    gpsTryStart = now;
+    gpsSentencesAtTry = gps.sentences();
+  }
 }
 
 // ---------------- control-task objects ----------------
@@ -343,6 +379,7 @@ void loop() {
 
   cliPoll();
   cliDrainLog();
+  gpsPoll();
 
   if (now - lastVbat >= 100) {
     lastVbat = now;
@@ -385,6 +422,16 @@ void loop() {
     t.link_pps = pps;
     t.alt_cm = (int16_t)constrain(s.alt * 100.0f, -32000.0f, 32000.0f);
     t.vz_cms = (int16_t)constrain(s.vz * 100.0f, -32000.0f, 32000.0f);
+    const GpsFix& g = gps.fix();
+    const bool fixOk = gpsFresh();
+    t.lat_e7 = fixOk ? (int32_t)lround(g.lat * 1e7) : 0;
+    t.lon_e7 = fixOk ? (int32_t)lround(g.lon * 1e7) : 0;
+    t.gps_alt_dm = (int16_t)constrain(g.altMsl * 10.0f, -32000.0f, 32000.0f);
+    t.gspeed_cms = (uint16_t)constrain(g.speed * 100.0f, 0.0f, 65000.0f);
+    t.course_cd = (uint16_t)constrain(g.course * 100.0f, 0.0f, 35999.0f);
+    t.sats = g.sats;
+    t.hdop_d = (uint8_t)constrain(g.hdop * 10.0f, 0.0f, 255.0f);
+    if (fixOk) t.flags |= proto::FLAG_GPS_FIX;
     linkSendTelemetry(t);
   }
 

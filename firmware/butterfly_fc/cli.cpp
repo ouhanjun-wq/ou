@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "config.h"
+#include "gps.h"
 #include "shared.h"
 
 static const char* modeName(uint8_t m) {
@@ -41,7 +42,8 @@ static void printHelp() {
       "  servo <L_deg> <R_deg>      move wings (disarmed only)   servo off\n"
       "  bench <thr 0..1> [mode 0|1|2]   flap on the bench without radio\n"
       "  bench stick <roll> <pitch> <yaw>  (-1..1)             bench off\n"
-      "  log off|att|fft|raw        stream CSV (att 50 Hz, fft 200 Hz, raw 1 kHz)"));
+      "  log off|att|fft|raw        stream CSV (att 50 Hz, fft 200 Hz, raw 1 kHz)\n"
+      "  gps                        GPS status and position"));
 }
 
 static void printStatus() {
@@ -94,6 +96,17 @@ static void handle(char* line) {
     printStatus();
   } else if (!strcmp(cmd, "imu")) {
     printImu();
+  } else if (!strcmp(cmd, "gps")) {
+    const GpsFix& g = gpsFix();
+    if (gpsBaud() == 0) {
+      Serial.println("GPS: searching (no NMEA at 115200/38400/9600/57600 yet) - check TX->D7 and power");
+    } else {
+      Serial.printf("GPS: %lu baud, %lu sentences | %s | sats %u hdop %.1f\n", (unsigned long)gpsBaud(),
+                    (unsigned long)gpsSentences(), gpsFresh() ? "FIX" : "no fix (needs open sky)", g.sats, g.hdop);
+      if (gpsFresh())
+        Serial.printf("lat %.7f lon %.7f alt %.1f m | speed %.1f m/s course %.0f deg\n",
+                      g.lat, g.lon, g.altMsl, g.speed, g.course);
+    }
   } else if (!strcmp(cmd, "calib")) {
     if (!isDisarmed()) { Serial.println("refused: disarm first"); return; }
     gCalibRequest = true;

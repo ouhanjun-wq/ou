@@ -61,6 +61,13 @@ bool logPush(const LogRec& r);
 bool logPop(LogRec& r);
 extern volatile uint32_t gLogDropped;
 
+// GPS (owned by loop(), see butterfly_fc.ino)
+struct GpsFix;
+const GpsFix& gpsFix();
+bool gpsFresh();              // valid fix received within the last 2 s
+uint32_t gpsBaud();           // 0 while searching for the module
+uint32_t gpsSentences();
+
 // link.cpp
 bool linkBegin();
 void linkSendTelemetry(proto::TelemetryPacket& t);

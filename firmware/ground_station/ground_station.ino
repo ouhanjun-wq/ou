@@ -17,6 +17,9 @@
 //   LEFT [deg] | RIGHT [deg] | TURN <deg> | STICKS | SET <param> <value> | SAVE | CALIB
 //   TEL ON|OFF | STATUS
 // Moving a stick takes control back from text commands immediately (human override).
+//
+// Phone dashboard: join Wi-Fi "Butterfly-GS" (password butterfly123), open http://192.168.4.1
+// for live GPS position, track, telemetry and the optional camera stream.
 #include <WiFi.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
@@ -36,6 +39,18 @@ constexpr int PIN_LED = LED_BUILTIN;
 constexpr float TAKEOFF_THR = 0.75f;      // text TAKEOFF throttle in non-AUTO modes
 constexpr float THR_SLEW = 0.4f;          // text-command throttle ramp (per second)
 constexpr float OVERRIDE = 0.25f;         // stick deflection that cancels text control
+
+#ifndef ENABLE_WEB
+#define ENABLE_WEB 1                      // phone dashboard over the ground station's Wi-Fi AP
+#endif
+constexpr const char* AP_SSID = "Butterfly-GS";
+constexpr const char* AP_PASS = "butterfly123";                    // at least 8 characters
+constexpr const char* CAMERA_STREAM = "http://192.168.4.50:81/stream";  // camera_node address
+#if ENABLE_WEB
+#include <WebServer.h>
+#include "web_ui.h"
+static WebServer web(80);
+#endif
 
 #if USE_XBOX
 #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
@@ -94,9 +109,15 @@ static void onRecv(const esp_now_recv_info_t* info, const uint8_t* data, int len
 }
 
 static bool radioBegin() {
+#if ENABLE_WEB
+  // The access point sits on the ESP-NOW channel, so both share the one radio.
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.softAP(AP_SSID, AP_PASS, proto::WIFI_CHANNEL);
+#else
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   esp_wifi_set_channel(proto::WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
+#endif
   if (esp_now_init() != ESP_OK) return false;
   esp_now_register_recv_cb(onRecv);
   esp_now_peer_info_t peer = {};
@@ -253,6 +274,89 @@ static int averageRead(int pin) {
 }
 #endif
 
+// ---------------- phone dashboard ----------------
+static double homeLat = 0, homeLon = 0;
+static bool homeSet = false;
+
+// Home = position when the butterfly arms (or the first fix if it never armed yet).
+static void updateHome() {
+  static uint8_t prevState = proto::ST_DISARMED;
+  proto::TelemetryPacket t;
+  uint32_t age;
+  portENTER_CRITICAL(&telMux);
+  t = lastTel;
+  age = millis() - lastTelMs;
+  portEXIT_CRITICAL(&telMux);
+  if (lastTelMs == 0 || age > 1000) return;
+  const bool fix = t.flags & proto::FLAG_GPS_FIX;
+  const bool armEdge = t.state == proto::ST_ARMED && prevState == proto::ST_DISARMED;
+  prevState = t.state;
+  if (fix && (!homeSet || armEdge)) {
+    homeLat = t.lat_e7 / 1e7;
+    homeLon = t.lon_e7 / 1e7;
+    homeSet = true;
+  }
+}
+
+#if ENABLE_WEB
+static void handleApi() {
+  proto::TelemetryPacket t;
+  uint32_t age;
+  portENTER_CRITICAL(&telMux);
+  t = lastTel;
+  age = millis() - lastTelMs;
+  portEXIT_CRITICAL(&telMux);
+  const bool ok = lastTelMs != 0 && age < 1000;
+  const bool fix = ok && (t.flags & proto::FLAG_GPS_FIX);
+#if USE_XBOX
+  const bool pad = xbox.isConnected();
+#else
+  const bool pad = true;
+#endif
+  char home[64] = "null";
+  if (homeSet) snprintf(home, sizeof(home), "[%.7f,%.7f]", homeLat, homeLon);
+  char buf[640];
+  snprintf(buf, sizeof(buf),
+           "{\"ok\":%s,\"age\":%lu,\"state\":%u,\"mode\":%u,\"flags\":%u,\"vbat\":%.2f,\"alt\":%.2f,"
+           "\"vz\":%.2f,\"roll\":%.1f,\"pitch\":%.1f,\"yaw\":%.1f,\"flap\":%.1f,\"link\":%u,"
+           "\"fix\":%s,\"lat\":%.7f,\"lon\":%.7f,\"galt\":%.1f,\"spd\":%.2f,\"crs\":%.1f,\"sats\":%u,"
+           "\"hdop\":%.1f,\"home\":%s,\"xbox\":%s,\"armed\":%s,\"cam\":\"%s\"}",
+           ok ? "true" : "false", (unsigned long)age, t.state, t.mode, t.flags, t.vbat_mv / 1000.0f,
+           t.alt_cm / 100.0f, t.vz_cms / 100.0f, t.roll_cd / 100.0f, t.pitch_cd / 100.0f, t.yaw_cd / 100.0f,
+           t.flap_dhz / 10.0f, t.link_pps, fix ? "true" : "false", t.lat_e7 / 1e7, t.lon_e7 / 1e7,
+           t.gps_alt_dm / 10.0f, t.gspeed_cms / 100.0f, t.course_cd / 100.0f, t.sats, t.hdop_d / 10.0f,
+           home, pad ? "true" : "false", armed ? "true" : "false", CAMERA_STREAM);
+  web.sendHeader("Cache-Control", "no-store");
+  web.send(200, "application/json", buf);
+}
+
+static void handleSetHome() {
+  proto::TelemetryPacket t;
+  portENTER_CRITICAL(&telMux);
+  t = lastTel;
+  portEXIT_CRITICAL(&telMux);
+  if (t.flags & proto::FLAG_GPS_FIX) {
+    homeLat = t.lat_e7 / 1e7;
+    homeLon = t.lon_e7 / 1e7;
+    homeSet = true;
+  }
+  char buf[80];
+  if (homeSet) snprintf(buf, sizeof(buf), "{\"home\":[%.7f,%.7f]}", homeLat, homeLon);
+  else snprintf(buf, sizeof(buf), "{\"home\":null}");
+  web.send(200, "application/json", buf);
+}
+
+static void webBegin() {
+  web.on("/", []() { web.send(200, "text/html; charset=utf-8", WEB_PAGE); });
+  web.on("/api", handleApi);
+  web.on("/sethome", handleSetHome);
+  web.onNotFound([]() { web.send(404, "text/plain", "not found"); });
+  web.begin();
+  Serial.printf("phone dashboard: join Wi-Fi \"%s\" (password %s), open http://%s\n", AP_SSID, AP_PASS,
+                WiFi.softAPIP().toString().c_str());
+}
+#endif
+
 // ---------------- text commands ----------------
 static void takeTextControl(const Pilot& p) {
   if (source == SRC_TEXT) return;
@@ -287,6 +391,11 @@ static void printStatus() {
                   t.state, modeName(t.mode), t.roll_cd / 100.0f, t.pitch_cd / 100.0f, t.yaw_cd / 100.0f,
                   t.alt_cm / 100.0f, t.vz_cms / 100.0f, t.vbat_mv / 1000.0f, t.flap_dhz / 10.0f,
                   t.link_pps, t.flags, (t.flags & proto::FLAG_CHARGING) ? " CHARGING (arming locked)" : "");
+    if (t.flags & proto::FLAG_GPS_FIX)
+      Serial.printf("GPS: %.7f, %.7f | %u sats | %.1f m/s | home %s\n", t.lat_e7 / 1e7, t.lon_e7 / 1e7, t.sats,
+                    t.gspeed_cms / 100.0f, homeSet ? "set" : "not set");
+    else
+      Serial.printf("GPS: no fix (%u sats)\n", t.sats);
   }
 }
 
@@ -418,6 +527,9 @@ void setup() {
   lastModeSwitch = digitalRead(PIN_MODE) == LOW;
 #endif
   Serial.println(radioBegin() ? "ground station ready (ESP-NOW)" : "ESP-NOW init FAILED");
+#if ENABLE_WEB
+  webBegin();
+#endif
   Serial.println("type STATUS");
 }
 
@@ -431,6 +543,10 @@ void loop() {
 #endif
   pollStream(Serial, usbBuf, usbLen, sizeof(usbBuf));
   pollStream(Serial1, voiceBuf, voiceLen, sizeof(voiceBuf));
+  updateHome();
+#if ENABLE_WEB
+  web.handleClient();
+#endif
 
   const uint32_t now = millis();
   if (now - lastSend >= 20) {   // 50 Hz

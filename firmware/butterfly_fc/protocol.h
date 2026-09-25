@@ -41,6 +41,7 @@ enum StatusFlag : uint8_t {
   FLAG_ARM_BLOCKED = 1 << 2,  // arm switch on while throttle not low
   FLAG_BENCH       = 1 << 3,  // USB bench mode active
   FLAG_CHARGING    = 1 << 4,  // Type-C charger connected (arming locked)
+  FLAG_GPS_FIX     = 1 << 5,  // GPS position valid (fresh, quality > 0)
 };
 
 struct __attribute__((packed)) Header {
@@ -86,6 +87,12 @@ struct __attribute__((packed)) TelemetryPacket {
   uint8_t  link_pps;                   // control packets received per second
   int16_t  alt_cm;                     // baro altitude above arming point
   int16_t  vz_cms;                     // climb rate, cm/s (up +)
+  int32_t  lat_e7, lon_e7;             // GPS position, degrees x 1e7 (WGS-84)
+  int16_t  gps_alt_dm;                 // GPS altitude MSL, decimetres
+  uint16_t gspeed_cms;                 // GPS ground speed, cm/s
+  uint16_t course_cd;                  // GPS course over ground, centi-degrees
+  uint8_t  sats;                       // satellites used
+  uint8_t  hdop_d;                     // HDOP x 10 (255 = unknown)
   uint16_t crc;
 };
 

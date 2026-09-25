@@ -7,6 +7,7 @@
 #include "ahrs.h"
 #include "filters.h"
 #include "flight.h"
+#include "gps.h"
 #include "params.h"
 #include "protocol.h"
 
@@ -425,6 +426,46 @@ static void testAutoMode() {
   CHECK(o.mode == proto::MODE_HEADING_HOLD, "no-baro fallback mode %d", o.mode);
 }
 
+static void feedLine(NmeaParser& g, const char* body, bool goodChecksum = true) {
+  uint8_t sum = 0;
+  for (const char* p = body; *p; ++p) sum ^= (uint8_t)*p;
+  if (!goodChecksum) sum ^= 0x55;
+  char line[128];
+  snprintf(line, sizeof(line), "$%s*%02X\r\n", body, sum);
+  for (const char* p = line; *p; ++p) g.feed(*p, 1234);
+}
+
+static void testGps() {
+  NmeaParser g;
+  // Known sentence from the NMEA spec examples (checksum 47).
+  const char* spec = "$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47\r\n";
+  for (const char* p = spec; *p; ++p) g.feed(*p, 1000);
+  const GpsFix& f = g.fix();
+  CHECK(f.valid && f.quality == 1 && f.sats == 8, "GGA fix: valid %d q %d sats %d", f.valid, f.quality, f.sats);
+  CHECK(fabs(f.lat - (48 + 7.038 / 60)) < 1e-7 && fabs(f.lon - (11 + 31.0 / 60)) < 1e-7,
+        "GGA position %.7f %.7f", f.lat, f.lon);
+  CHECK(fabsf(f.altMsl - 545.4f) < 1e-3f && fabsf(f.hdop - 0.9f) < 1e-4f, "GGA alt %.1f hdop %.2f", f.altMsl, f.hdop);
+
+  // Southern / western hemisphere, GN talker, RMC speed and course.
+  feedLine(g, "GNRMC,081836,A,3751.65,S,14507.36,W,10.0,054.7,191194,020.3,E,A");
+  CHECK(g.fix().lat < -37.86 && g.fix().lat > -37.87 && g.fix().lon < -145.12 && g.fix().lon > -145.13,
+        "RMC S/W position %.5f %.5f", g.fix().lat, g.fix().lon);
+  CHECK(fabsf(g.fix().speed - 5.14444f) < 1e-3f && fabsf(g.fix().course - 54.7f) < 1e-3f,
+        "RMC speed %.3f course %.1f", g.fix().speed, g.fix().course);
+
+  // Bad checksum is rejected and counted; no-fix GGA clears validity.
+  const uint32_t before = g.sentences();
+  feedLine(g, "GPGGA,000000,0000.000,N,00000.000,E,1,05,1.0,1.0,M,,M,,", false);
+  CHECK(g.sentences() == before && g.checksumErrors() == 1, "bad checksum accepted");
+  feedLine(g, "GPGGA,000001,,,,,0,00,99.9,,M,,M,,");
+  CHECK(!g.fix().valid && g.fix().sats == 0, "no-fix GGA still valid");
+
+  // Garbage and overlong lines don't crash or produce sentences.
+  for (int i = 0; i < 500; ++i) g.feed((char)('A' + i % 26), 0);
+  g.feed('\n', 0);
+  CHECK(g.checksumErrors() == 1, "garbage produced a checksum error");
+}
+
 static void testProtocol() {
   proto::ControlPacket c = {};
   c.thr = 500; c.roll = -100; c.mode = 1; c.armed = 1;
@@ -453,6 +494,7 @@ int main() {
   testFlappingAndMixer();
   testStabilizeDirection();
   testAutoMode();
+  testGps();
   testProtocol();
   if (failures == 0) printf("all tests passed\n");
   return failures == 0 ? 0 : 1;

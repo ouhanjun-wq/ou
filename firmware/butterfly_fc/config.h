@@ -12,6 +12,8 @@ constexpr int PIN_BARO_CS  = D4;   // GPIO5  BMP280 chip select (same SPI bus)
 constexpr int PIN_IMU_SCK  = D8;   // GPIO7
 constexpr int PIN_IMU_MISO = D9;   // GPIO8
 constexpr int PIN_IMU_MOSI = D10;  // GPIO9
+constexpr int PIN_GPS_TX   = D5;   // GPIO6  -> GPS RX (optional, only for configuration)
+constexpr int PIN_GPS_RX   = D7;   // GPIO44 <- GPS TX (NMEA)
 constexpr int PIN_CHG_DETECT = D6; // GPIO43 Type-C charger VBUS via 100k/200k divider (HIGH = charging)
 constexpr int PIN_LED      = LED_BUILTIN;  // GPIO21, active LOW
 
