@@ -4,6 +4,7 @@
 |---|---|
 | `butterfly_fc/` | **机上飞控**：ICM-42688-P 陀螺仪增稳、扑翼同步滤波、双舵机混控、ESP-NOW 通信、USB 命令行 |
 | `ground_station/` | **地面站**：Xbox 手柄（BLE）⇢ ESP-NOW 桥接；也支持自制摇杆（`USE_XBOX=0`）；提供文本指令接口（语音 / AI / 电脑） |
+| `camera_node/` | **可选摄像头节点**（XIAO ESP32S3 Sense）：MJPEG 视频流，画面显示在手机网页里 |
 | `tests/` | 主机端单元测试（滤波器、姿态解算、飞行逻辑、通信协议），不需要硬件 |
 | `../tools/gyro_fft.py` | 采集陀螺仪数据并画频谱，调滤波器用 |
 
@@ -66,6 +67,7 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
  IMU CS    ◄─── D3 (GPIO4)                  D10 ──► IMU SDI / 气压计 SDA  (MOSI)
  气压计 CSB ◄─── D4 (GPIO5)                  D9  ◄── IMU SDO / 气压计 SDO  (MISO)
  充电检测  ────► D6 (GPIO43)                 D8  ──► IMU SCLK / 气压计 SCL (SCK)
+ GPS TX    ────► D7 (GPIO44)   （可选）      D5  ──► GPS RX（可选，只在配置模块时用）
                 └──────────────────────────────────────┘
 ```
 
@@ -111,6 +113,10 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 
 **遥控器供电**：把一块 1S LiPo（300–500 mAh）焊到 XIAO 背面的 **BAT+ / BAT−** 焊盘上。XIAO ESP32S3 板上自带锂电池充电电路，所以插上它的 USB-C 就能直接充电，不需要额外的充电模块。
 
+### 手机网页（GPS 位置 / 遥测 / 摄像头）
+
+地面站默认开启 Wi-Fi 热点（`ENABLE_WEB 1`）。手机连接 **`Butterfly-GS`**（密码 `butterfly123`），用浏览器打开 **`http://192.168.4.1`**，就能看到实时遥测、以“家”为中心的 GPS 轨迹和地图跳转链接。如果装了摄像头节点，页面上还会显示画面。热点和 ESP-NOW 共用信道 1，不会影响控制链路。详见 [`docs/gps-and-camera.md`](../docs/gps-and-camera.md)。
+
 ## 3. 飞控 USB 命令行
 
 打开串口监视器：115200，行尾选 **换行 (Newline)**。
@@ -123,6 +129,7 @@ P-MOS 电源开关的接法（开关本身只走微小电流，所以小拨动�
 | `servo <L度> <R度>` / `servo off` | 舵机测试（仅限未解锁时） |
 | `bench <油门0..1> [模式0/1/2]` | 台架扑翼：不用遥控器也能解锁。120 秒后自动关闭 |
 | `bench stick <roll> <pitch> <yaw>` / `bench off` | 台架模式下模拟打杆 / 退出台架模式 |
+| `gps` | GPS 状态：波特率、卫星数、是否定位、坐标 |
 | `log att` / `log fft` / `log raw` / `log off` | 输出 CSV 日志：姿态 50 Hz / 滤波前后陀螺 200 Hz / 原始陀螺 1 kHz |
 
 ## 4. 遥控器文本指令（语音 / AI 接口）
@@ -177,3 +184,4 @@ g++ -std=c++17 -O1 -Wall -Wextra -I../butterfly_fc test_core.cpp -o test_core &&
 - 混控：频率和幅值映射、横滚 / 偏航差动、限幅。
 - 增稳方向正确。
 - 通信协议：CRC 校验、网络 ID 过滤。
+- GPS：NMEA 标准例句解析、南纬 / 西经、RMC 地速和航向、校验失败拒收、无定位、乱码输入。

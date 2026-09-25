@@ -6,6 +6,7 @@
 > - 项目调研：[`bionic-butterfly-research.md`](bionic-butterfly-research.md)
 > - 增稳与降噪原理：[`gyro-stabilization-and-noise-reduction.md`](gyro-stabilization-and-noise-reduction.md)
 > - 固件接线、命令和参数：[`../firmware/README.md`](../firmware/README.md)
+> - GPS 与摄像头扩展（可选）：[`gps-and-camera.md`](gps-and-camera.md)
 
 ---
 
@@ -23,6 +24,7 @@ flowchart LR
   P5 --> P6[阶段6<br/>增稳调参]
   P6 --> P7[阶段7<br/>AUTO 定高定向<br/>🎯 最终验收]
   P7 --> P8[阶段8<br/>语音 / AI 扩展]
+  P7 --> P9[阶段9 可选<br/>GPS / 摄像头]
 ```
 
 | 阶段 | 内容 | 预计耗时（业余时间） | 出口条件 |
@@ -35,6 +37,7 @@ flowchart LR
 | 5 | MANUAL 手动首飞 | 1–3 天 | 能直飞 10 秒并完成转向 |
 | 6 | STABILIZE 增稳调参 | 2–5 天 | 松杆后自动回平，无发散振荡 |
 | 7 | HEADING_HOLD → AUTO 定高 | 2–4 天 | **最终验收通过** |
+| 9（可选） | GPS 定位 / 摄像头 | 1–3 天 | 手机上能看到位置或画面，`thr_hover` 仍 ≤ 0.8 |
 
 总计大约 **5–9 周**。
 
@@ -202,6 +205,7 @@ $$
 | 机身（碳杆 + 3D 打印件） | 8–15 |
 | 翅膀 ×2 | 15–25 |
 | **合计目标** | $\le 75 \sim 85\ \text{g}$ |
+| 可选：GPS / 摄像头 | +3 / +4–7 g，见 [`gps-and-camera.md`](gps-and-camera.md) |
 
 每做完一个部件就称一次，把实际重量记下来。如果超重 10 g 以上，先减重再往下做。
 
@@ -491,6 +495,20 @@ DISARM
 
 ---
 
+## 10b. 阶段 9：GPS 定位与摄像头（可选，验收之后再做）
+
+按重量评估，**GPS（约 3 g）可以直接加**。摄像头（4–7 g）要先确认余量足够；两样都要装时，需要做“加大版”机体。详见 [`gps-and-camera.md`](gps-and-camera.md)。
+
+- [ ] 加装前，确认基础版的 `thr_hover` ≤ 0.7（油门余量 ≥ 30%）。
+- [ ] **GPS**：TX→D7，天线朝上；室外输入 `gps`，显示 `FIX` 且卫星数 ≥ 8。
+- [ ] **手机查看**：连接 Wi-Fi `Butterfly-GS`（密码 `butterfly123`），打开 `http://192.168.4.1`，能看到位置和轨迹。
+- [ ] **摄像头**（二选一）：
+  - 方案 A：模拟 5.8 GHz 一体摄像头 + Android OTG 接收器，适合看着画面飞。
+  - 方案 B：XIAO ESP32S3 Sense 摄像头节点，画面在同一个手机网页里显示。
+- [ ] 加装后重做吊线测试（RT 按到 85% 以内时细线变松），重新记录 `thr_hover`，再按阶段 7 的剧本飞一次。
+
+---
+
 ## 11. 故障排查
 
 | 现象 | 可能原因 | 处理 |
@@ -502,6 +520,10 @@ DISARM
 | 解锁被拒绝（`arm refused` / `BLOCKED`） | 非 AUTO 模式下 RT 没松开；AUTO 模式下左摇杆没回中；刚拔掉充电线 | 松开 RT 或让左摇杆回中；先按 B 再长按 A |
 | Xbox 手柄一直连不上（`searching...`） | 手柄固件太旧，不支持 BLE；手柄正在和别的设备连接 | 用 “Xbox 配件” 应用升级固件；关掉电脑或手机的蓝牙；长按配对键重新配对 |
 | 飞行中手柄偶尔断连 | 地面站离手柄太远，或者被身体挡住 | 把地面站绑在手柄背面 |
+| `gps` 一直显示 `searching` | GPS 的 TX 没接到 D7；模块没有供电 | 检查接线；按模块标注确认供电电压（3.3 V 或 5 V） |
+| GPS 一直没有 `FIX` | 在室内，或者天线被挡住 | 到室外开阔处等 1 分钟；天线朝上，远离 ESP32 天线 |
+| 手机打不开 192.168.4.1 | 手机没连上 `Butterfly-GS`，或者自动切回了其他 Wi-Fi | 重新连接；iPhone 提示“无互联网连接”时选“保持连接” |
+| 网页上没有摄像头画面 | 摄像头节点比地面站先上电；没选 OPI PSRAM | 先给地面站上电；重新上传 camera_node 并选 OPI PSRAM |
 | AUTO 模式下显示 HOLD | 气压计没检测到（`baro ... NOT FOUND`） | 检查 CSB→D4 的接线和气压计的 chip id |
 | 一出手就翻 | 重心不对；翅膀不对称；混控方向错 | 重做滑翔测试；称两只翅膀；重做吊线测试 |
 | 升力不够 | 太重；扑翼频率或幅值不够 | 减重；提高 `f_max` / `amp_max`；把 `squareness` 调到 0.5；先用 Type-C 充满电再飞 |
