@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "motion.h"
+#include "pca9685.h"
 #include "pgm.h"
 
 namespace arm {
@@ -126,7 +127,7 @@ ARM_NOINLINE inline void runCommand(ArmCore& c, const Sensors& sens, char* line,
     o.text(PSTR("ON OFF HOME STOP MODE JOINT|XYZ SPEED J MOVE UP DOWN LEFT RIGHT FORWARD BACK GRIP OPEN CLOSE REC "
                 "CLEAR PLAY STATUS"));
 #if ARM_SETUP_COMMANDS
-    o.text(PSTR(" | setup: CENTER PULSE MARK LIM GEO POSE SHOW SAVE DEFAULTS"));
+    o.text(PSTR(" | setup: CENTER PULSE OSC MARK LIM GEO POSE SHOW SAVE DEFAULTS"));
 #endif
     o.end();
     return;
@@ -207,6 +208,16 @@ ARM_NOINLINE inline void runCommand(ArmCore& c, const Sensors& sens, char* line,
   if (IS("CENTER")) {   // every servo at 1500 us = the centre pose used during assembly
     for (int k = 0; k < NJ; ++k) c.rawUs[k] = 1500;
     okLine(o, PSTR("all servos 1500 us (the assembly centre pose); ON, then PULSE / MARK"));
+    return;
+  }
+  if (IS("OSC")) {      // OSC <Hz measured on a servo signal pin> corrects the PCA9685 clock
+    const long k = nnum == 1 ? pca::oscFromFrameHz(num[0]) : 0;
+    if (k < 20000 || k > 30000) { errLine(o, PSTR("OSC Hz (40..60, measured with the multimeter)")); return; }
+    P.osc_khz = (uint16_t)k;
+    o.text(PSTR("ok osc_khz "));
+    o.num(k);
+    o.text(PSTR(" (SAVE to keep it)"));
+    o.end();
     return;
   }
   if (IS("PULSE")) {

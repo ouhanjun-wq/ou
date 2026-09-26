@@ -15,11 +15,11 @@
 <text x="462" y="260" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">x 正前方（工作区）</text>
 <rect x="135" y="215" width="90" height="110" rx="6" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="180" y="255" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">电控托板</text>
-<text x="180" y="275" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">Uno · 降压</text>
-<text x="180" y="291" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">分线板</text>
+<text x="180" y="275" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">Uno · PCA9685</text>
+<text x="180" y="291" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">电压模块</text>
 <path d="M225,250 L240,250" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
 <rect x="94" y="150" width="26" height="22" rx="3" fill="#555"/>
-<text x="90" y="166" font-size="12" text-anchor="end" font-weight="700" fill="#1B2A2F">DC 12 V + 开关</text>
+<text x="90" y="166" font-size="12" text-anchor="end" font-weight="700" fill="#1B2A2F">DC 6 V 进线</text>
 <rect x="102" y="130" width="26" height="46" rx="4" fill="#607D8B"/>
 <rect x="102" y="360" width="26" height="46" rx="4" fill="#607D8B"/>
 <text x="90" y="390" font-size="12" text-anchor="end" font-weight="700" fill="#455A64">F 型夹 × 2</text>

@@ -1,8 +1,8 @@
 // 机械臂 · 电控托板 (electronics tray)
 //
 // 所有电控部件装在这一块板上，板子再用 4 颗木螺丝固定在底板上（机械臂正后方，见图 6）。
-// - 有固定孔的：Arduino Uno（官方孔位）、舵机分线板（洞洞板）：打印立柱 + M2.5 / M3 自攻螺丝
-// - 固定孔不统一的：两个降压模块、WAGO 端子：扎带槽 + 双面胶
+// - 有固定孔的：Arduino Uno（官方孔位）、PCA9685 舵机驱动板：打印立柱 + M2.5 自攻螺丝
+// - 固定孔不统一的：电压检测模块、WAGO 端子：扎带槽 + 双面胶
 //
 // 打印：PETG，层高 0.2 mm，3 圈壁，20% 填充，平放，不需要支撑。
 // ★ 不同店铺的模块孔距不一样：先量你的模块，改下面 [模块] 里的数字。
@@ -23,12 +23,11 @@ post_hole = 2.2;       // M2.5 自攻螺丝底孔
 // Arduino Uno R3（上面叠 USB Host Shield），68.6 x 53.3，官方 4 个安装孔（相对左下角）
 uno = [12, 12, 68.6, 53.3];
 uno_holes = [[14.0, 2.5], [15.3, 50.7], [66.1, 7.6], [66.1, 35.5]];
-// 舵机分线板：50 x 70 洞洞板，四角孔距 45 x 65（横放）
-perf = [100, 10, 70, 50, 65, 45];          // [x, y, 长, 宽, 孔距x, 孔距y]
+// PCA9685 舵机驱动板：62.5 x 25.4，四角孔距约 55.9 x 19.1（先量你的板子）
+pca = [100, 20, 62.5, 25.4, 55.9, 19.1];  // [x, y, 长, 宽, 孔距x, 孔距y]
 // 扎带固定区： [x, y, 长, 宽]
-buck = [10, 78, 66, 40];                  // 20 A 降压模块（带散热片）
-mp1584 = [95, 75, 25, 20];                // MP1584 小降压
-wago = [130, 72, 60, 22];                 // WAGO 分线端子
+vsense = [15, 85, 30, 16];                // 电压检测模块
+wago = [100, 80, 60, 22];                 // WAGO 分线端子（4 个并排）
 
 /* [扎带] */
 tie_w = 3.2;           // 扎带宽 3 mm
@@ -83,11 +82,11 @@ difference() {
       translate([tray_w / 2 - 30, -1, tray_t]) cube([60, 4, rib_h + 1]);
       translate([-1, tray_d / 2 - 15, tray_t]) cube([4, 30, rib_h + 1]);
     }
-    post_pair(perf);
+    post_pair(pca);
     for (h = uno_holes) post(uno[0] + h[0], uno[1] + h[1]);
   }
-  for (m = [buck, mp1584, wago]) { tie_slots(m); outline(m); }
-  outline(perf);
+  for (m = [vsense, wago]) { tie_slots(m); outline(m); }
+  outline(pca);
   outline(uno);
   // 四角固定孔（带沉头）
   for (x = [7, tray_w - 7], y = [7, tray_d - 7])
@@ -95,8 +94,8 @@ difference() {
       cylinder(d = corner_hole, h = tray_t + 2);
       translate([0, 0, tray_t - 1]) cylinder(d1 = corner_hole, d2 = corner_hole + 4, h = 2.01);
     }
-  // 减重 + 通风孔（降压模块下面）
-  for (i = [0:4]) translate([buck[0] + 10 + i * 11, buck[1] + 10, -1]) cube([6, buck[3] - 20, tray_t + 2]);
+  // 减重孔
+  for (i = [0:3]) translate([60 + i * 11, 82, -1]) cube([6, 26, tray_t + 2]);
 }
 
 echo(str("托板 ", tray_w, " x ", tray_d, " mm"));

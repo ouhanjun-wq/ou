@@ -1,114 +1,98 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="720" viewBox="0 0 1100 720" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
 <rect width="1100" height="720" fill="#FFFFFF"/>
-<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 1  电源：12 V → 6 V 舵机电（经过急停）/ 5 V 给 Uno</text>
-<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">舵机电和 Uno 分开降压；大电流只走粗线，不经过 Uno</text>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 1  电源：6 V 适配器 → 急停 → 舵机；Uno 用 USB 供电</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">全部是现成模块，接头用 WAGO 或螺丝端子，不用焊；舵机大电流不经过 Uno</text>
 <rect x="40" y="100" width="180" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
 <text x="130.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">电源适配器</text>
-<text x="130.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">12 V 5 A（≥ 60 W）</text>
-<text x="130.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">DC 5.5×2.1 插头</text>
-<rect x="290" y="100" width="180" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="380.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">DC 母座 + 保险丝</text>
-<text x="380.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">带接线端子</text>
-<text x="380.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">刀片保险 7.5 A</text>
-<rect x="540" y="100" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="620.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">船型开关</text>
-<text x="620.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">KCD4 · 16 A</text>
-<path d="M220,150 L290,150" fill="none" stroke="#D23B2F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M470,150 L540,150" fill="none" stroke="#D23B2F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M700,150 L840,150 L840,260" fill="none" stroke="#D23B2F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="760" cy="150" r="5" fill="#D23B2F"/>
-<path d="M760,150 L760,225 L455,225 L455,260" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="710" y="114" width="36.8" height="22" rx="11" fill="#D23B2F"/>
-<text x="728.4" y="129.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">12 V</text>
-<rect x="740" y="260" width="200" height="110" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="840.0" y="282" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">大电流降压模块</text>
-<text x="840.0" y="300" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">20 A / 300 W · CC/CV</text>
-<text x="840.0" y="316" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">12 V → 6.0 V</text>
-<rect x="360" y="260" width="190" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="455.0" y="282" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">MP1584EN 降压</text>
-<text x="455.0" y="300" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">3 A</text>
-<text x="455.0" y="316" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">12 V → 5.3 V</text>
-<rect x="250" y="300" width="70" height="30" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
-<text x="285.0" y="319.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">SS14 ▶</text>
-<path d="M360,315 L320,315" fill="none" stroke="#A87B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M250,315 L210,315" fill="none" stroke="#A87B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="40" y="265" width="170" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="125.0" y="287" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">Arduino Uno</text>
-<text x="125.0" y="305" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 引脚（≈ 5.0 V）</text>
-<text x="125.0" y="321" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">不用 DC 口</text>
-<text x="285" y="290" font-size="11" text-anchor="middle" font-weight="400" fill="#5E6E72">防 USB 倒灌</text>
-<rect x="880" y="440" width="190" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="975.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">急停开关</text>
-<text x="975.0" y="480" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">常闭 NC · 22 mm</text>
-<text x="975.0" y="496" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">蘑菇头 · 10 A</text>
-<rect x="420" y="440" width="360" height="110" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="600.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">舵机分线板（6 V 母线）</text>
-<text x="600.0" y="480" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">+ 2 × 2200 µF 16 V 电解电容</text>
-<text x="600.0" y="496" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 个舵机都从这里取电（图 3）</text>
-<path d="M790,370 L790,426 L975,426 L975,440" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="790" cy="370" r="4" fill="#E07B00"/>
-<text x="790" y="362" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">V+ 出</text>
-<rect x="800" y="387" width="44.0" height="22" rx="11" fill="#E07B00"/>
-<text x="822.0" y="402.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">6.0 V</text>
-<path d="M880,520 L780,520" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="880" cy="520" r="4" fill="#E07B00"/>
-<text x="888" y="524" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F"></text>
-<circle cx="780" cy="520" r="4" fill="#E07B00"/>
-<text x="772" y="524" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">V+</text>
-<rect x="40" y="440" width="300" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
-<text x="190.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">急停检测分压</text>
-<text x="190.0" y="480" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">舵机母线 → 10 kΩ → A3 → 10 kΩ → GND</text>
-<text x="190.0" y="496" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 V 时 A3 ≈ 3 V</text>
-<path d="M420,470 L340,470" fill="none" stroke="#E07B00" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="340" cy="470" r="4" fill="#E07B00"/>
-<text x="332" y="474" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">6V</text>
-<circle cx="340" cy="515" r="4" fill="#1F6FB5"/>
-<text x="332" y="519" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">A3</text>
-<path d="M340,515 L380,515" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="384" y="504" width="72.8" height="22" rx="11" fill="#1F6FB5"/>
-<text x="420.4" y="519.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">→ Uno A3</text>
-<path d="M130,200 L130,222" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="108" y="222" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="122.8" y="237.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<path d="M380,200 L380,222" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="358" y="222" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="372.8" y="237.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<path d="M890,370 L890,392" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="868" y="392" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="882.8" y="407.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<path d="M455,370 L455,392" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="433" y="392" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="447.8" y="407.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<path d="M125,365 L125,387" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="103" y="387" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="117.8" y="402.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<path d="M600,550 L600,572" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="578" y="572" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="592.8" y="587.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<path d="M190,550 L190,572" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="168" y="572" width="29.6" height="22" rx="11" fill="#222222"/>
-<text x="182.8" y="587.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
-<text x="1060" y="610" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">所有 GND 汇到大降压模块的 GND 端子（星形接地）</text>
-<circle cx="50" cy="636" r="10" fill="#1B2A2F"/>
-<text x="50" y="640.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
-<text x="68" y="640" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">先调电压：大降压模块空载调到 6.0 V，MP1584 调到 5.3 V（经过 SS14 后约 5.0 V）</text>
-<circle cx="50" cy="666" r="10" fill="#1B2A2F"/>
-<text x="50" y="670.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
-<text x="68" y="670" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">急停串在 6 V 舵机线上：按下 = 舵机断电，Uno 从 A3 发现后也停掉舵机信号</text>
-<circle cx="630" cy="636" r="10" fill="#1B2A2F"/>
-<text x="630" y="640.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
-<text x="648" y="640" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">6 V 和 GND 大电流线用 18 AWG，其余用 22 AWG</text>
-<circle cx="630" cy="666" r="10" fill="#1B2A2F"/>
-<text x="630" y="670.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">4</text>
-<text x="648" y="670" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">不要用 Uno 的 DC 口供电：板载稳压器带不动手柄</text>
-<path d="M40,705 L68,705" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="74" y="709" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">12 V</text>
-<path d="M136,705 L164,705" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="170" y="709" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">6 V 舵机电</text>
-<path d="M271,705 L299,705" fill="none" stroke="#A87B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="305" y="709" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">5 V</text>
-<path d="M354,705 L382,705" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="388" y="709" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">GND</text>
-<path d="M437,705 L465,705" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="471" y="709" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">信号</text>
+<text x="130.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 V 10 A（≥ 60 W）</text>
+<text x="130.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">DC 5.5 插头</text>
+<rect x="270" y="100" width="170" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="355.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">DC 母座转接线端子</text>
+<text x="355.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">插适配器</text>
+<text x="355.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">+ / − 拧螺丝</text>
+<rect x="490" y="100" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="570.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">带线保险丝座</text>
+<text x="570.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">刀片保险丝 10 A</text>
+<rect x="700" y="100" width="170" height="100" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="785.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">急停开关</text>
+<text x="785.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">常闭 NC · 10 A</text>
+<text x="785.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">兼总开关</text>
+<rect x="920" y="100" width="150" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="995.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">WAGO 分线</text>
+<text x="995.0" y="140" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">221-413</text>
+<text x="995.0" y="156" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 V 分两路</text>
+<path d="M220,150 L270,150" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M440,150 L490,150" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M650,150 L700,150" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M870,150 L920,150" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="226" y="114" width="29.6" height="22" rx="11" fill="#E07B00"/>
+<text x="240.8" y="129.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">6 V</text>
+<rect x="876" y="114" width="51.2" height="22" rx="11" fill="#E07B00"/>
+<text x="901.6" y="129.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">急停后</text>
+<rect x="700" y="300" width="370" height="140" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="885.0" y="346" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">PCA9685 舵机驱动板</text>
+<text x="885.0" y="364" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">蓝色接线端子 V+ / GND ← 6 V</text>
+<text x="885.0" y="380" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">+ 2200 µF 电容（白条纹接 GND）</text>
+<text x="885.0" y="396" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 个舵机插通道 0–5（图 3）</text>
+<path d="M1020,200 L1020,300" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1020" cy="300" r="4" fill="#E07B00"/>
+<text x="1020" y="316" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">V+</text>
+<rect x="380" y="300" width="260" height="140" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="510.0" y="346" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">电压检测模块</text>
+<text x="510.0" y="364" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">学习套件里有（0–25 V，5 : 1）</text>
+<text x="510.0" y="380" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 V 时 S 输出 1.2 V</text>
+<text x="510.0" y="396" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">拍下急停 → 0 V</text>
+<path d="M960,200 L960,250 L510,250 L510,300" fill="none" stroke="#E07B00" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="510" cy="300" r="4" fill="#E07B00"/>
+<text x="510" y="316" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">VCC</text>
+<circle cx="380" cy="400" r="4" fill="#1F6FB5"/>
+<text x="388" y="404" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">S</text>
+<path d="M380,400 L340,400" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="263.2" y="389" width="72.8" height="22" rx="11" fill="#1F6FB5"/>
+<text x="299.59999999999997" y="404.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">→ Uno A3</text>
+<rect x="40" y="480" width="280" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="180.0" y="502" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">Arduino Uno R3</text>
+<text x="180.0" y="520" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">只用 USB 口供电</text>
+<text x="180.0" y="536" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">（USB Host Shield 和手柄也从这里取电）</text>
+<rect x="40" y="620" width="280" height="60" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="180.0" y="642" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">充电宝 / 手机充电头</text>
+<text x="180.0" y="660" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5 V ≥ 1 A · 学习套件的 USB 线</text>
+<path d="M180,620 L180,580" fill="none" stroke="#A87B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="190" y="606" font-size="12" text-anchor="start" font-weight="700" fill="#A87B00">USB 5 V</text>
+<path d="M355,200 L355,222" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="333" y="222" width="29.6" height="22" rx="11" fill="#222222"/>
+<text x="347.8" y="237.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
+<path d="M560,440 L560,462" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="538" y="462" width="29.6" height="22" rx="11" fill="#222222"/>
+<text x="552.8" y="477.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
+<path d="M900,440 L900,462" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="878" y="462" width="29.6" height="22" rx="11" fill="#222222"/>
+<text x="892.8" y="477.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
+<path d="M320,530 L360,530" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="364" y="519" width="231.20000000000002" height="22" rx="11" fill="#222222"/>
+<text x="479.6" y="534.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND ← PCA9685 排针 GND（图 2）</text>
+<text x="1060" y="500" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">所有 GND 用 WAGO 接在一起：适配器 −、PCA9685 端子 GND、电压检测模块 GND</text>
+<circle cx="390" cy="576" r="10" fill="#1B2A2F"/>
+<text x="390" y="580.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="408" y="580" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">适配器插上就是 6 V，不用调电位器</text>
+<circle cx="390" cy="606" r="10" fill="#1B2A2F"/>
+<text x="390" y="610.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="408" y="610" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">急停串在 6 V 线上：拍下 = 舵机断电；旋开 = 通电</text>
+<circle cx="390" cy="636" r="10" fill="#1B2A2F"/>
+<text x="390" y="640.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="408" y="640" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">电压检测模块接在急停后面，A3 才能发现急停</text>
+<circle cx="770" cy="576" r="10" fill="#1B2A2F"/>
+<text x="770" y="580.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">4</text>
+<text x="788" y="580" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">6 V / GND 线用 18 AWG</text>
+<circle cx="770" cy="606" r="10" fill="#1B2A2F"/>
+<text x="770" y="610.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">5</text>
+<text x="788" y="610" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">舵机电不要接 Uno 的 5V / VIN</text>
+<path d="M380,700 L408,700" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="414" y="704" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">6 V 舵机电</text>
+<path d="M515,700 L543,700" fill="none" stroke="#A87B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="549" y="704" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">5 V</text>
+<path d="M598,700 L626,700" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="632" y="704" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">GND</text>
+<path d="M681,700 L709,700" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="715" y="704" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">信号</text>
 </svg>

@@ -38,7 +38,6 @@ jobs:
             - firmware/arm_uno
           libraries: |
             - name: USB Host Shield Library 2.0
-            - name: Servo
           cli-compile-flags: |
             - --build-property
             - compiler.cpp.extra_flags=${{ matrix.build.flags }}

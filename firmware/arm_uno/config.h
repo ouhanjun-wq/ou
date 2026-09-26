@@ -3,10 +3,10 @@
 #pragma once
 #include <Arduino.h>
 
-// The USB Host Shield uses D9 (INT), D10 (SS) and D11-D13 (SPI). Keep D7 free as well:
-// some shield versions use it as the MAX3421E reset.
-const uint8_t SERVO_PIN[6] = {2, 3, 4, 5, 6, 8};   // J1 .. J6
-const uint8_t PIN_VSENSE = A3;          // servo supply after the E-stop, through 10k / 10k
+// The USB Host Shield uses D9 (INT), D10 (SS) and D11-D13 (SPI); some versions also D7.
+// Servos: PCA9685 servo driver module on I2C (SDA = A4, SCL = A5), J1 .. J6 on channels 0 .. 5.
+const uint8_t SERVO_CH0 = 0;
+const uint8_t PIN_VSENSE = A3;          // servo supply after the E-stop, through the voltage sensor module (5:1)
 // Optional offline voice module: its TX goes to D0 (RX), sharing the USB serial port.
 // Set the module to the same baud rate. Unplug it while uploading a sketch.
 const uint32_t SERIAL_BAUD = 9600;

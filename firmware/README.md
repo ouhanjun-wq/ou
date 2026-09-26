@@ -10,7 +10,8 @@
 
 | 文件 | 内容 |
 |---|---|
-| `arm_uno.ino` | 主循环（50 Hz）、读手柄、Servo 输出、EEPROM 存储 |
+| `arm_uno.ino` | 主循环（50 Hz）、读手柄、舵机输出、EEPROM 存储 |
+| `pca9685.h` | PCA9685 舵机驱动板的 I2C 代码（直接操作寄存器，不用 Wire 库，省 flash） |
 | `config.h` | 引脚、`SETUP_MODE`（标定程序开关）、EEPROM 布局 |
 | `motion.h` | 状态机：关节 / XYZ 点动、五次多项式轨迹、示教回放、急停（纯 C++，可单元测试） |
 | `kinematics.h` | 正 / 逆运动学（纯 C++） |
@@ -23,9 +24,9 @@
 1. 安装 **Arduino IDE 2.x**。
 2. **工具 → 管理库**，安装：
    - **USB Host Shield Library 2.0**（作者 Oleg Mazurov / Kristian Sloth Lauszus）
-   - **Servo**（Arduino 官方）
+   - PCA9685 不用装库：代码在 `pca9685.h` 里
 3. 打开 `firmware/arm_uno/arm_uno.ino`，**开发板选 Arduino Uno**，选对端口，上传。
-4. 编译结果大约是：**程序空间 96%，全局变量 55%**。Uno 基本装满了，想加新功能请换 **Arduino Mega 2560**（开发板选 Mega，代码和接线不用改）。
+4. 编译结果大约是：**程序空间 96%，全局变量 53%**。Uno 基本装满了，想加新功能请换 **Arduino Mega 2560**（开发板选 Mega，代码和接线不用改）。
 
 > 💡 CI（`.github/workflows/firmware.yml`）每次提交都会编译正常程序和标定程序（`arduino:avr:uno`），并运行单元测试。
 
@@ -36,7 +37,7 @@ Uno 的 32 KB 程序空间放不下“手柄库 + 全部标定命令”，所以
 | `config.h` | 程序 | 有什么 |
 |---|---|---|
 | `#define SETUP_MODE 0` | **正常程序**（默认） | 手柄 + 运动指令 |
-| `#define SETUP_MODE 1` | **标定程序** | 没有手柄；运动指令 + 标定指令（`CENTER` `PULSE` `MARK` `LIM` `GEO` `POSE` `SHOW` `SAVE` `DEFAULTS`） |
+| `#define SETUP_MODE 1` | **标定程序** | 没有手柄；运动指令 + 标定指令（`CENTER` `PULSE` `OSC` `MARK` `LIM` `GEO` `POSE` `SHOW` `SAVE` `DEFAULTS`） |
 
 标定结果存在 EEPROM 里，两个程序共用。标定完换回正常程序，数据不会丢。
 
@@ -46,12 +47,12 @@ Uno 的 32 KB 程序空间放不下“手柄库 + 全部标定命令”，所以
 
 | Uno 引脚 | 接什么 |
 |---|---|
-| D2 / D3 / D4 / D5 / D6 / D8 | 舵机信号 J1 / J2 / J3 / J4 / J5 / J6 |
-| A3 | 舵机电压检测（10 kΩ + 10 kΩ 分压，接在急停后面） |
+| A4（SDA）/ A5（SCL） | PCA9685 舵机驱动板（I2C，地址 0x40）；J1–J6 插在通道 0–5 |
+| 5V / GND | PCA9685 的 VCC / GND（Uno 本身用 USB 供电） |
+| A3 | 舵机电压检测（电压检测模块 `S`，5 : 1 分压，接在急停后面） |
 | D0（RX） | 语音模块 TX（可选；上传程序时要拔掉） |
-| 5V / GND | ← MP1584 5.3 V 经 SS14 |
 | D9、D10、D11、D12、D13 | **USB Host Shield 占用** |
-| D7 | 留空（有些扩展板用它复位芯片） |
+| D2–D8 | 空闲 |
 
 ## 3. 连接 G7 Pro
 
@@ -146,6 +147,7 @@ python3 tools/arm_client.py COM5 ON "MOVE 220 0 40 -60" CLOSE "UP 50" HOME
 | `CENTER` | 所有舵机 1500 µs（装配时的中位姿态）。在 `ON` 之前输入 |
 | `PULSE <1–6> <µs>` | 给某个舵机直接发脉宽（400–2700） |
 | `PULSE OFF` | 结束，关节重新按角度控制 |
+| `OSC <Hz>` | 用万用表 Hz 档量到的舵机信号频率校准 PCA9685 的时钟（可选，例如 `OSC 53.4`），让脉宽更准；`SAVE` 保存 |
 | `MARK <1–6> <角度>` | “这个关节现在就在这个角度”；同一个关节记两次（相差 ≥ 20°）就算出标定值 |
 | `LIM <1–6> <最小> <最大>` | 软件限位（度；J6 是 %） |
 | `GEO d1 L2 L3 L4` | 机械尺寸（mm，见图 4） |

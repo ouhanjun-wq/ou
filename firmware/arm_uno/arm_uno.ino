@@ -2,6 +2,7 @@
 // GameSir G7 Pro through a USB Host Shield 2.0.
 //
 // Board: Arduino Uno R3. Library: "USB Host Shield Library 2.0" (Library Manager).
+// Servos: PCA9685 16-channel servo driver module (I2C on A4 / A5), J1..J6 on channels 0..5.
 // G7 Pro: USB cable (or its 2.4G receiver) into the shield's USB-A port, PC / XInput mode.
 // Not detected? The library only accepts known USB IDs: see firmware/README.md ("VID / PID").
 //
@@ -20,7 +21,6 @@
 // offline voice module whose TX is wired to D0 (RX).
 #include <EEPROM.h>
 #include <SPI.h>
-#include <Servo.h>
 
 #include "config.h"
 #if !SETUP_MODE
@@ -29,6 +29,7 @@
 #define ARM_SETUP_COMMANDS SETUP_MODE
 
 #include "commands.h"
+#include "pca9685.h"
 
 #if SETUP_MODE
 #define PAD_CONNECTED false
@@ -102,7 +103,7 @@ Params params;
 EepromStore store;
 arm::ArmCore core(params, store);
 arm::Sensors sensors;
-Servo servo[NJ];
+pca::Pca9685 servos;
 
 static bool saveParams(const Params& p) {
   EEPROM.put(EE_PARAMS, p);           // put() only rewrites bytes that changed
@@ -130,24 +131,20 @@ static arm::PadInput readPad() {
 }
 
 static void applyOutputs() {
-  static bool attached = false;
+  static bool active = false, warned = false;
+  bool ok = true;
   if (core.power) {
-    if (!attached) {
-      // Attach and set the first pulse with interrupts off, so the very first pulse is
-      // already the park pose (Servo.h would otherwise send 1500 us once).
-      noInterrupts();
-      for (int j = 0; j < NJ; ++j) {
-        servo[j].attach(SERVO_PIN[j], 400, 2700);
-        servo[j].writeMicroseconds((int)lroundf(core.pulseUs(j)));
-      }
-      interrupts();
-      attached = true;
-    }
-    for (int j = 0; j < NJ; ++j) servo[j].writeMicroseconds((int)lroundf(core.pulseUs(j)));
-  } else if (attached) {
-    for (int j = 0; j < NJ; ++j) servo[j].detach();   // no pulses: the servos stop driving
-    attached = false;
+    // All six channels in one transfer: the first pulses are already the park pose.
+    uint16_t count[NJ];
+    for (int j = 0; j < NJ; ++j) count[j] = pca::usToCount(core.pulseUs(j), params.osc_khz);
+    ok = servos.write(SERVO_CH0, count, NJ);
+    active = true;
+  } else if (active) {
+    ok = servos.allOff();                  // no pulses: the servos stop driving
+    active = !ok;                          // try again next cycle
   }
+  if (!ok && !warned) Serial.println(F("PCA9685 not answering (SDA A4, SCL A5, VCC 5V, GND)"));
+  warned = !ok;
 }
 
 static void handleLine(char* line) {
@@ -176,6 +173,7 @@ void setup() {
     Serial.println(F("no saved parameters: DEFAULTS (calibrate first!)"));
   }
   core.reset();
+  if (!servos.begin()) Serial.println(F("PCA9685 NOT found (SDA A4, SCL A5, VCC 5V, GND)"));
   store.begin();
   Serial.print(store.count());
   Serial.println(F(" waypoints in EEPROM"));

@@ -19,7 +19,7 @@ constexpr int NARM = 5;        // J1..J5 take part in the kinematics
 constexpr int GRIP = 5;        // index of the gripper
 
 constexpr uint16_t PARAMS_MAGIC = 0xA7E1;
-constexpr uint8_t PARAMS_VERSION = 2;
+constexpr uint8_t PARAMS_VERSION = 3;
 
 struct Params {
   uint16_t magic;
@@ -51,7 +51,8 @@ struct Params {
   // playback / safety / hardware
   uint16_t dwell_ms;    // pause at every waypoint
   uint16_t estop_mv;    // servo supply below this while on = E-stop pressed (0 = off)
-  uint16_t vdiv_x100;   // divider ratio x100 on A3 (10k + 10k = 200)
+  uint16_t vdiv_x100;   // divider ratio x100 on A3 (voltage sensor module 30k + 7.5k = 500)
+  uint16_t osc_khz;     // PCA9685 oscillator (OSC command; nominal 25000)
   int16_t pulse_min;    // absolute pulse limits (us)
   int16_t pulse_max;
 };
@@ -84,7 +85,8 @@ static const Params kParamDefaults ARM_PROGMEM = {
     3,                                                                  // grip_backoff
     300,                                                                // dwell_ms
     3000,                                                               // estop_mv
-    200,                                                                // vdiv_x100
+    500,                                                                // vdiv_x100
+    25000,                                                              // osc_khz
     500, 2500,                                                          // pulse_min pulse_max
 };
 #undef ARM_K
