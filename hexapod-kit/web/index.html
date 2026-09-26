@@ -483,7 +483,8 @@ main{min-width:0;padding-block:28px 96px}
 <p>⚠️ <strong>舵机不能只靠 USB 供电。</strong> 18 个舵机要用电池（扩展板上稳压）。只插 USB 时可以刷固件、敲串口命令，但舵机不会动。</p>
 </blockquote>
 <h3 id="home-5">我还需要你提供（不影响开工）</h3>
-<p>扩展板<strong>正面、背面</strong>各一张清晰照片，拍清楚芯片型号和丝印。有商品详情页里的引脚图更好。有了它，我能把默认插口表改成跟你的板子一模一样。没有也没关系：<a href="#servo">舵机接线与标定</a> 里的 <code>findall</code> 命令能在桌上把每个插口找出来。</p>
+<p>从商品图看，扩展板很可能是 <strong>GPIO 直连型</strong>（中间插 ESP32，两边各一排 3 针舵机插座，没有 PCA9685 芯片），固件会自动识别。</p>
+<p>请再拍一张扩展板的<strong>丝印特写</strong>：每个舵机插座旁边印的引脚编号（例如 <code>13</code>、<code>D13</code>、<code>IO13</code>）要看得清。背面有字也拍一张。有了它，我能把默认插口表改成跟你的板子一模一样。没有也没关系：<a href="#servo">舵机接线与标定</a> 里的 <code>findall</code> 命令能在桌上把每个插口找出来。</p>
 <h3 id="home-6">和 <code>hexapod/</code> 文件夹的关系</h3>
 <p>仓库里的 <a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/README.md" target="_blank" rel="noopener"><code>hexapod/</code></a> 是另一条路线：XIAO ESP32S3 + ROS 2 + 12 舵机，需要电脑和雷达。你现在用的是 18 舵机套件，照这个文件夹做就行。以后想学 ROS，再看那边。</p>
 </section>
@@ -733,6 +734,7 @@ Servos are OFF. Lay the robot on its belly, then press A (or type 'stand'). 'hel
 <ul>
 <li>显示 <code>0x40  PCA9685 servo chip</code>（可能还有 <code>0x41</code>）→ 你的扩展板是 <strong>PCA9685 型</strong>。</li>
 <li>显示 <code>0 device(s)</code> → 你的扩展板多半是 <strong>GPIO 直连型</strong>。</li>
+<li>从商品图看，这个套件的扩展板中间插 ESP32、两边各一排 3 针舵机插座，看不到 PCA9685 芯片，所以<strong>很可能是 GPIO 直连型</strong>：<code>i2c</code> 显示 0 个设备是正常的，固件会自动用 GPIO 插口表。</li>
 <li>把结果记下来，第 5 步要用。</li>
 </ul>
 </li>
@@ -1122,6 +1124,9 @@ set tibia 75
 </tr>
 </tbody>
 </table></div>
+<blockquote>
+<p>从商品图看，这个套件的扩展板没有 PCA9685 芯片，舵机插座直接连到 ESP32 引脚，<strong>很可能是 GPIO 直连型</strong>。</p>
+</blockquote>
 <p>第一次开机时，固件会按板子类型猜一张表：</p>
 <ul>
 <li>PCA9685 型：左边 3 条腿 → <code>0x40</code> 通道 0–8，右边 → <code>0x41</code> 通道 0–8。</li>
