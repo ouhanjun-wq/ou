@@ -4,7 +4,7 @@
 
 | 文件 | 零件 | 数量 | 外形尺寸 | 打印重量（约） |
 |---|---|---|---|---|
-| [`electronics_tray.scad`](electronics_tray.scad) → [`stl/electronics_tray.stl`](stl/electronics_tray.stl) | 电控托板：Arduino Uno（官方 4 个孔位）和舵机分线板用立柱固定，两个降压模块、WAGO 端子用扎带固定 | 1 | 200 × 130 × 9 mm | 55–60 g |
+| [`electronics_tray.scad`](electronics_tray.scad) → [`stl/electronics_tray.stl`](stl/electronics_tray.stl) | 电控托板：Arduino Uno（官方 4 个孔位）和 PCA9685 舵机驱动板用立柱固定，电压检测模块、WAGO 端子用扎带固定 | 1 | 200 × 130 × 9 mm | 55–60 g |
 | [`cable_clip.scad`](cable_clip.scad) → [`stl/cable_clip.stl`](stl/cable_clip.stl) | 舵机线夹：卡在 2 mm 厚的支架板边上，能放 3 根并排的舵机线 | 10 左右 | 11.5 × 14.6 × 8 mm | 0.5 g / 个 |
 
 ![电控托板](img/electronics_tray.png)
@@ -18,8 +18,8 @@
 | 零件 | 参数 | 含义 | 默认值 |
 |---|---|---|---|
 | 托板 | `uno` / `uno_holes` | Uno 的位置和 4 个安装孔（官方尺寸，一般不用改） | 68.6 × 53.3 |
-| 托板 | `perf` | 舵机分线板（洞洞板）：`[x, y, 长, 宽, 孔距x, 孔距y]` | 50 × 70 板，孔距 65 × 45 |
-| 托板 | `buck` / `mp1584` / `wago` | 扎带固定区：`[x, y, 长, 宽]` | 见文件 |
+| 托板 | `pca` | PCA9685 舵机驱动板：`[x, y, 长, 宽, 孔距x, 孔距y]` | 62.5 × 25.4 板，孔距约 55.9 × 19.1 |
+| 托板 | `vsense` / `wago` | 扎带固定区：`[x, y, 长, 宽]` | 见文件 |
 | 托板 | `post_hole` | 立柱底孔（M2.5 自攻螺丝用 2.2） | 2.2 mm |
 | 线夹 | `sheet_t` | 支架板厚 | 2.0 mm |
 | 线夹 | `cables` / `cable_w` / `cable_h` | 并排几根线 / 线宽 / 线厚 | 3 / 3.6 / 1.3 mm |
@@ -49,8 +49,8 @@ openscad -o stl/cable_clip.stl cable_clip.scad
 **托板**：
 
 1. 四角用 4 颗 **M4 × 16 木螺丝**固定在底板上，位置在机械臂底座**正后方**（图 6）。
-2. Uno（上面叠着 USB Host Shield）和舵机分线板用 **M2.5 × 6 自攻螺丝**拧在立柱上。
-3. 20 A 降压模块、MP1584、WAGO 端子：底面贴一层双面胶，再用 3 mm 扎带从托板下面的扎带孔穿上来绑紧。降压模块下面有通风孔，**散热片朝上**。
+2. Uno（上面叠着 USB Host Shield）和 PCA9685 用 **M2.5 × 6 自攻螺丝**拧在立柱上。PCA9685 的蓝色端子朝托板外侧，方便接电源线。
+3. 电压检测模块、WAGO 端子：底面贴一层双面胶，再用 3 mm 扎带从托板下面的扎带孔穿上来绑紧。
 4. 线从托板边上的缺口出去，不要压在模块下面。
 
 **线夹**：

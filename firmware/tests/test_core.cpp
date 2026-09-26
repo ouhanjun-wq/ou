@@ -11,6 +11,7 @@
 #include "kinematics.h"
 #include "motion.h"
 #include "params.h"
+#include "pca9685.h"
 
 static int failures = 0, checks = 0;
 #define CHECK(cond, ...)                              \
@@ -467,6 +468,21 @@ static void testParams() {
   CHECK(!parseNum("abc", v) && !parseNum("1.2.3", v) && !parseNum("-", v) && !parseNum("", v), "parseNum rejects");
 }
 
+static void testServoDriver() {
+  CHECK(pca::usToCount(1500, 25000) == 307, "1500 us = 307 counts at 25 MHz (%u)", pca::usToCount(1500, 25000));
+  CHECK(pca::usToCount(0, 25000) == 0 && pca::usToCount(30000, 25000) == 4095, "counts clamp to 0..4095");
+  CHECK(labs(pca::oscFromFrameHz(50.03f) - 25000) <= 2, "nominal frame rate = 25 MHz");
+  Rig r;
+  CHECK(!strncmp(r.text("OSC 53.5"), "ok", 2), "OSC");
+  const float us = pca::usToCount(1500, r.P.osc_khz) * 1e6f / (4096.0f * 53.5f);   // what the servo sees
+  CHECK(fabsf(us - 1500) < 4, "after OSC the pulse is right on a fast clone (%.1f us)", us);
+  const uint16_t keep = r.P.osc_khz;
+  CHECK(!strncmp(r.text("OSC 5"), "error", 5) && r.P.osc_khz == keep, "OSC rejects implausible readings");
+  Params P;
+  paramsDefaults(P);
+  CHECK(P.osc_khz == 25000 && P.vdiv_x100 == 500, "defaults: 25 MHz, voltage sensor module 5:1");
+}
+
 int main() {
   testForwardHome();
   testIkRoundTrip();
@@ -484,6 +500,7 @@ int main() {
   testCalibration();
   testTextCommands();
   testParams();
+  testServoDriver();
   printf("%d checks, %d failures\n", checks, failures);
   return failures ? 1 : 0;
 }

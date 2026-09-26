@@ -46,15 +46,15 @@ class Svg:
             f'<text x="{x}" y="{y}" font-size="{size}" text-anchor="{anchor}" font-weight="{weight}" '
             f'fill="{color or C["ink"]}">{escape(s)}</text>')
 
-    def box(self, x, y, w, h, title, sub="", fill=None, dashed=False):
+    def box(self, x, y, w, h, title, sub="", fill=None, dashed=False, title_dy=22):
         dash = ' stroke-dasharray="6 4"' if dashed else ""
         self.parts.append(
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" fill="{fill or C["box"]}" '
             f'stroke="{C["boxline"]}" stroke-width="1.6"{dash}/>')
-        self.text(x + w / 2, y + 22, title, 14, "middle", "700")
+        self.text(x + w / 2, y + title_dy, title, 14, "middle", "700")
         if sub:
             for i, line in enumerate(sub.split("\n")):
-                self.text(x + w / 2, y + 40 + i * 16, line, 11.5, "middle", color=C["mute"])
+                self.text(x + w / 2, y + title_dy + 18 + i * 16, line, 11.5, "middle", color=C["mute"])
 
     def pin(self, x, y, label, side="left", color=None):
         """A terminal dot on a box edge with its label inside the box."""
@@ -167,154 +167,169 @@ def uno(s, x, y, used):
 
 # ---------------------------------------------------------------------------
 def fig_overview():
-    s = Svg(1100, 500, "图 0  系统总览（Arduino Uno R3 版）",
-            "G7 Pro 用 USB 线插在 USB Host Shield 上；Uno 直接输出 6 路舵机信号；电脑 / AI / 语音走串口")
+    s = Svg(1100, 500, "图 0  系统总览（Arduino Uno R3 版，全部用现成模块）",
+            "G7 Pro 插在 USB Host Shield 上；Uno 通过 I2C 让 PCA9685 驱动 6 个舵机；电脑 / AI / 语音走串口")
     s.box(40, 120, 190, 100, "盖世小鸡 G7 Pro", "PC / XInput 模式\nUSB-C 线（或 2.4G 接收器）")
     s.box(340, 90, 240, 70, "USB Host Shield 2.0", "MAX3421E · 叠插在 Uno 上")
     s.box(340, 170, 240, 120, "Arduino Uno R3", "ATmega328P · 32 KB / 2 KB\n逆运动学 · 平滑 · 示教\n路点存 EEPROM",
           fill=C["hi"])
-    s.box(690, 110, 180, 120, "舵机分线板", "6 × 3 针排针\n6 V 母线 + GND\n2 × 2200 µF")
+    s.box(690, 110, 180, 120, "PCA9685 舵机驱动板", "16 路（用通道 0–5）\n6 V 从蓝色端子进\n+ 2200 µF")
     s.box(930, 90, 140, 190, "机械臂", "J1 底座\nJ2 大臂\nJ3 小臂\nJ4 手腕俯仰\nJ5 手腕旋转\nJ6 夹爪")
-    s.box(690, 330, 180, 110, "电源", "12 V 适配器\n→ 6 V 舵机 / 5 V Uno\n急停开关")
+    s.box(690, 330, 180, 110, "舵机电源", "6 V 10 A 适配器\n急停开关（兼总开关）\n电压检测模块 → A3")
+    s.box(340, 360, 240, 80, "充电宝 / 手机充电头", "USB 5 V → Uno")
     s.box(40, 290, 190, 70, "电脑 / AI", "USB 串口 9600", dashed=True)
     s.box(40, 390, 190, 70, "可选：语音模块", "TX → D0（RX）", dashed=True)
     s.wire([(230, 170), (290, 170), (290, 125), (340, 125)], C["sig"], 3)
     s.text(260, 160, "USB", 13, "middle", "700", C["sig"])
-    s.wire([(580, 230), (690, 230)], C["sig"], 3)
-    s.text(635, 220, "PWM×6", 11.5, "middle", "700", C["sig"])
-    s.text(635, 250, "D2–D6、D8", 11, "middle", color=C["mute"])
+    s.wire([(580, 230), (690, 230)], C["i2c"], 3)
+    s.text(635, 220, "I2C", 12, "middle", "700", C["i2c"])
+    s.text(635, 250, "A4 · A5", 11, "middle", color=C["mute"])
     s.arrow(870, 170, 928, 170, C["v6"], 3)
     s.wire([(780, 330), (780, 230)], C["v6"], 3)
     s.text(790, 290, "6 V", 12, weight="700", color=C["v6"])
-    s.wire([(690, 400), (620, 400), (620, 275), (580, 275)], C["v5"], 2.5)
-    s.text(628, 340, "5 V", 12, weight="700", color=C["v5"])
+    s.wire([(460, 360), (460, 290)], C["v5"], 2.5)
+    s.text(468, 332, "5 V", 12, weight="700", color=C["v5"])
     s.wire([(230, 325), (300, 325), (300, 250), (340, 250)], C["sig"], 2.5)
     s.wire([(230, 425), (310, 425), (310, 270), (340, 270)], C["sig"], 2.5, True)
     s.text(250, 318, "USB", 11.5, weight="700", color=C["sig"])
-    s.legend(40, 485, [("信号 / USB", C["sig"], False), ("6 V 舵机电", C["v6"], False), ("5 V", C["v5"], False),
-                       ("可选", C["sig"], True)])
+    s.legend(40, 485, [("信号 / USB", C["sig"], False), ("I2C", C["i2c"], False), ("6 V 舵机电", C["v6"], False),
+                       ("5 V", C["v5"], False), ("可选", C["sig"], True)])
     s.save("fig0-overview.svg")
 
 
 def fig_power():
-    s = Svg(1100, 720, "图 1  电源：12 V → 6 V 舵机电（经过急停）/ 5 V 给 Uno",
-            "舵机电和 Uno 分开降压；大电流只走粗线，不经过 Uno")
-    s.box(40, 100, 180, 100, "电源适配器", "12 V 5 A（≥ 60 W）\nDC 5.5×2.1 插头")
-    s.box(290, 100, 180, 100, "DC 母座 + 保险丝", "带接线端子\n刀片保险 7.5 A")
-    s.box(540, 100, 160, 100, "船型开关", "KCD4 · 16 A")
-    s.wire([(220, 150), (290, 150)], C["v12"], 4)
-    s.wire([(470, 150), (540, 150)], C["v12"], 4)
-    s.wire([(700, 150), (840, 150), (840, 260)], C["v12"], 4)
-    s.dot(760, 150, C["v12"])
-    s.wire([(760, 150), (760, 225), (455, 225), (455, 260)], C["v12"], 3)
-    s.tag(710, 125, "12 V", C["v12"])
-    s.box(740, 260, 200, 110, "大电流降压模块", "20 A / 300 W · CC/CV\n12 V → 6.0 V", fill=C["hi"])
-    s.box(360, 260, 190, 110, "MP1584EN 降压", "3 A\n12 V → 5.3 V")
-    s.part(250, 300, 70, 30, "SS14 ▶")
-    s.wire([(360, 315), (320, 315)], C["v5"], 3)
-    s.wire([(250, 315), (210, 315)], C["v5"], 3)
-    s.box(40, 265, 170, 100, "Arduino Uno", "5V 引脚（≈ 5.0 V）\n不用 DC 口")
-    s.text(285, 290, "防 USB 倒灌", 11, "middle", color=C["mute"])
-    s.box(880, 440, 190, 110, "急停开关", "常闭 NC · 22 mm\n蘑菇头 · 10 A")
-    s.box(420, 440, 360, 110, "舵机分线板（6 V 母线）", "+ 2 × 2200 µF 16 V 电解电容\n6 个舵机都从这里取电（图 3）",
-          fill=C["hi"])
-    s.wire([(790, 370), (790, 426), (975, 426), (975, 440)], C["v6"], 4)
-    s.pin(790, 370, "V+ 出", "bottom", C["v6"])
-    s.tag(800, 398, "6.0 V", C["v6"])
-    s.wire([(880, 520), (780, 520)], C["v6"], 4)
-    s.pin(880, 520, "", "left", C["v6"])
-    s.pin(780, 520, "V+", "right", C["v6"])
-    s.box(40, 440, 300, 110, "急停检测分压", "舵机母线 → 10 kΩ → A3 → 10 kΩ → GND\n6 V 时 A3 ≈ 3 V")
-    s.wire([(420, 470), (340, 470)], C["v6"], 2.5)
-    s.pin(340, 470, "6V", "right", C["v6"])
-    s.pin(340, 515, "A3", "right", C["sig"])
-    s.wire([(340, 515), (380, 515)], C["sig"], 2.5)
-    s.tag(384, 515, "→ Uno A3", C["sig"])
-    for gx, gy in ((130, 200), (380, 200), (890, 370), (455, 370), (125, 365), (600, 550), (190, 550)):
+    s = Svg(1100, 720, "图 1  电源：6 V 适配器 → 急停 → 舵机；Uno 用 USB 供电",
+            "全部是现成模块，接头用 WAGO 或螺丝端子，不用焊；舵机大电流不经过 Uno")
+    s.box(40, 100, 180, 100, "电源适配器", "6 V 10 A（≥ 60 W）\nDC 5.5 插头")
+    s.box(270, 100, 170, 100, "DC 母座转接线端子", "插适配器\n+ / − 拧螺丝")
+    s.box(490, 100, 160, 100, "带线保险丝座", "刀片保险丝 10 A")
+    s.box(700, 100, 170, 100, "急停开关", "常闭 NC · 10 A\n兼总开关", fill=C["hi"])
+    s.box(920, 100, 150, 100, "WAGO 分线", "221-413\n6 V 分两路")
+    for x1, x2 in ((220, 270), (440, 490), (650, 700), (870, 920)):
+        s.wire([(x1, 150), (x2, 150)], C["v6"], 4)
+    s.tag(226, 125, "6 V", C["v6"])
+    s.tag(876, 125, "急停后", C["v6"])
+    s.box(700, 300, 370, 140, "PCA9685 舵机驱动板", "蓝色接线端子 V+ / GND ← 6 V\n+ 2200 µF 电容（白条纹接 GND）\n6 个舵机插通道 0–5（图 3）",
+          fill=C["hi"], title_dy=46)
+    s.wire([(1020, 200), (1020, 300)], C["v6"], 4)
+    s.pin(1020, 300, "V+", "top", C["v6"])
+    s.box(380, 300, 260, 140, "电压检测模块", "学习套件里有（0–25 V，5 : 1）\n6 V 时 S 输出 1.2 V\n拍下急停 → 0 V", title_dy=46)
+    s.wire([(960, 200), (960, 250), (510, 250), (510, 300)], C["v6"], 2.5)
+    s.pin(510, 300, "VCC", "top", C["v6"])
+    s.pin(380, 400, "S", "left", C["sig"])
+    s.wire([(380, 400), (340, 400)], C["sig"], 2.5)
+    s.tag(336, 400, "→ Uno A3", C["sig"], "end")
+    s.box(40, 480, 280, 100, "Arduino Uno R3", "只用 USB 口供电\n（USB Host Shield 和手柄也从这里取电）")
+    s.box(40, 620, 280, 60, "充电宝 / 手机充电头", "5 V ≥ 1 A · 学习套件的 USB 线")
+    s.wire([(180, 620), (180, 580)], C["v5"], 3)
+    s.text(190, 606, "USB 5 V", 12, weight="700", color=C["v5"])
+    for gx, gy in ((355, 200), (560, 440), (900, 440)):
         s.wire([(gx, gy), (gx, gy + 22)], C["gnd"], 2.5)
         s.tag(gx - 22, gy + 33, "GND", C["gnd"])
-    s.text(1060, 610, "所有 GND 汇到大降压模块的 GND 端子（星形接地）", 12, "end", color=C["mute"])
-    s.note(40, 640, 1, "先调电压：大降压模块空载调到 6.0 V，MP1584 调到 5.3 V（经过 SS14 后约 5.0 V）")
-    s.note(40, 670, 2, "急停串在 6 V 舵机线上：按下 = 舵机断电，Uno 从 A3 发现后也停掉舵机信号")
-    s.note(620, 640, 3, "6 V 和 GND 大电流线用 18 AWG，其余用 22 AWG")
-    s.note(620, 670, 4, "不要用 Uno 的 DC 口供电：板载稳压器带不动手柄")
-    s.legend(40, 705, [("12 V", C["v12"], False), ("6 V 舵机电", C["v6"], False), ("5 V", C["v5"], False),
-                       ("GND", C["gnd"], False), ("信号", C["sig"], False)])
+    s.wire([(320, 530), (360, 530)], C["gnd"], 2.5)
+    s.tag(364, 530, "GND ← PCA9685 排针 GND（图 2）", C["gnd"])
+    s.text(1060, 500, "所有 GND 用 WAGO 接在一起：适配器 −、PCA9685 端子 GND、电压检测模块 GND", 12, "end", color=C["mute"])
+    s.note(380, 580, 1, "适配器插上就是 6 V，不用调电位器")
+    s.note(380, 610, 2, "急停串在 6 V 线上：拍下 = 舵机断电；旋开 = 通电")
+    s.note(380, 640, 3, "电压检测模块接在急停后面，A3 才能发现急停")
+    s.note(760, 580, 4, "6 V / GND 线用 18 AWG")
+    s.note(760, 610, 5, "舵机电不要接 Uno 的 5V / VIN")
+    s.legend(380, 700, [("6 V 舵机电", C["v6"], False), ("5 V", C["v5"], False), ("GND", C["gnd"], False),
+                        ("信号", C["sig"], False)])
     s.save("fig1-power.svg")
 
 
-SERVO_PINS = ["D2", "D3", "D4", "D5", "D6", "D8"]
-
-
 def fig_signals():
-    used = set(SERVO_PINS) | {"A3", "D0", "5V", "GND", "GND_B"}
-    s = Svg(1100, 700, "图 2  信号接线：Arduino Uno R3 引脚",
-            "浅灰 = USB Host Shield 占用（D9–D13），D7 也留空；舵机信号 D2–D6、D8；A3 测舵机电压；D0 接语音模块")
-    p = uno(s, 280, 300, used)
-    s.box(260, 90, 580, 110, "舵机分线板（图 3）", "每个舵机插一个 3 针排针：S（信号）· V+ · GND")
-    for i, pin in enumerate(SERVO_PINS):      # each header sits right above its Uno pin
-        px, py = p[pin]
-        s.pin(px, 200, f"J{i + 1}", "bottom", C["sig"])
-        s.wire([(px, 200), (px, py)], C["sig"], 2.5)
-    s.box(900, 110, 170, 110, "可选：语音模块", "CI-03T / ASR-PRO\n9600 bps", dashed=True)
-    s.pin(900, 190, "TX", "left", C["sig"])
+    used = {"A3", "A4", "A5", "D0", "5V", "GND"}
+    s = Svg(1100, 720, "图 2  信号接线：Arduino Uno R3 引脚",
+            "浅灰 = USB Host Shield 占用（D9–D13）；I2C：A4 = SDA、A5 = SCL 接 PCA9685；A3 测舵机电压；D0 接语音模块")
+    p = uno(s, 280, 110, used)
+    s.box(40, 110, 190, 150, "USB Host Shield 2.0", "直接叠插在 Uno 上\n占用 D9–D13\nUSB-A 口插 G7 Pro\n线插在它上面的排母")
+    s.box(900, 20, 170, 80, "可选：语音模块", "CI-03T / ASR-PRO · 9600", dashed=True)
     px, py = p["D0"]
-    s.wire([(900, 190), (880, 190), (880, 268), (px, 268), (px, py)], C["sig"], 2.5, True)
-    s.text(885, 256, "TX → D0", 11.5, weight="700", color=C["sig"])
-    s.box(40, 90, 190, 150, "USB Host Shield 2.0", "直接叠插在 Uno 上\n占用 D9–D13\nD7 留空\nUSB-A 口插 G7 Pro")
-    s.tag(p["A3"][0] - 20, p["A3"][1] + 34, "A3 ← 分压（图 1）", C["sig"])
-    s.tag(p["5V"][0] - 60, p["5V"][1] + 34, "5V ← MP1584 经 SS14", C["v5"])
-    s.wire([p["GND"], (p["GND"][0], p["GND"][1] + 64), (p["GND"][0] + 40, p["GND"][1] + 64)], C["gnd"], 2)
-    s.tag(p["GND"][0] + 40, p["GND"][1] + 64, "GND（接电源地）", C["gnd"])
-    s.note(40, 640, 1, "舵机信号线用杜邦线；舵机的 V+ / GND 只接分线板，不接 Uno")
-    s.note(40, 670, 2, "上传程序时拔掉语音模块的 TX 线（D0 也是下载口）")
-    s.note(620, 640, 3, "Uno 的 GND 必须和舵机电源 GND 相连")
-    s.legend(620, 675, [("信号", C["sig"], False), ("5 V", C["v5"], False), ("GND", C["gnd"], False)])
+    s.pin(900, 80, "TX", "left", C["sig"])
+    s.wire([(900, 80), (px, 80), (px, py)], C["sig"], 2.5, True)
+    # PCA9685 header drawn rotated so SDA / SCL sit right under A4 / A5
+    s.box(560, 480, 510, 140, "PCA9685 舵机驱动板", "只接 4 根杜邦线（公对母）\n排针上的 OE、V+ 不接", title_dy=60)
+    hdr = [("V+", 702), ("VCC", 726), ("SDA", p["A4"][0]), ("SCL", p["A5"][0]), ("OE", 798), ("GND", 822)]
+    for name, x in hdr:
+        col = C["i2c"] if name in ("SDA", "SCL") else (C["v5"] if name == "VCC" else
+                                                       (C["gnd"] if name == "GND" else "#B0B8BA"))
+        s.pin(x, 480, name, "top", col)
+    for pin in ("A4", "A5"):
+        s.wire([p[pin], (p[pin][0], 480)], C["i2c"], 3)
+    s.text(p["A5"][0] + 12, 440, "SDA ← A4 · SCL ← A5", 12, weight="700", color=C["i2c"])
+    s.wire([(726, 480), (726, 462)], C["v5"], 2)
+    s.tag(720, 452, "Uno 5V", C["v5"], "end")
+    s.wire([(822, 480), (822, 462)], C["gnd"], 2)
+    s.tag(830, 460, "Uno GND", C["gnd"])
+    s.text(702, 632, "V+ / OE 不接", 11.5, "middle", "700", C["v12"])
+    s.box(240, 480, 280, 140, "电压检测模块", "左边端子接 6 V（急停后，图 1）\n“+” 针不接", title_dy=60)
+    for name, x, col in (("S", 320, C["sig"]), ("+", 380, "#B0B8BA"), ("−", 440, C["gnd"])):
+        s.pin(x, 480, name, "top", col)
+    s.wire([(320, 480), (320, 462)], C["sig"], 2)
+    s.tag(314, 452, "Uno A3", C["sig"], "end")
+    s.wire([(440, 480), (440, 462)], C["gnd"], 2)
+    s.tag(448, 452, "Uno GND", C["gnd"])
+    s.wire([p["A3"], (p["A3"][0], 382)], C["sig"], 2)
+    s.tag(p["A3"][0] + 6, 392, "A3", C["sig"], "end")
+    s.wire([p["5V"], (p["5V"][0], 382)], C["v5"], 2)
+    s.tag(p["5V"][0] + 6, 392, "5V", C["v5"], "end")
+    s.wire([p["GND"], (p["GND"][0], 424), (p["GND"][0] + 12, 424)], C["gnd"], 2)
+    s.tag(p["GND"][0] + 12, 424, "GND（PCA9685 + 电压模块）", C["gnd"])
+    s.note(40, 660, 1, "同名标签连在一起：例如 “Uno 5V” 接到 Uno 的 5V 排母")
+    s.note(40, 690, 2, "上传程序时拔掉语音模块的 TX 线（D0 也是下载口）")
+    s.note(620, 660, 3, "Uno 的 GND 经过 PCA9685 和舵机电源 GND 相连")
+    s.legend(620, 695, [("I2C", C["i2c"], False), ("信号", C["sig"], False), ("5 V", C["v5"], False),
+                        ("GND", C["gnd"], False)])
     s.save("fig2-signals.svg")
 
 
 SERVOS = [
-    ("J1 底座旋转", "MG996R（套件自带）", "D2"),
-    ("J2 大臂（肩）", "MG996R（套件自带）· 可升级 DS3225MG", "D3"),
-    ("J3 小臂（肘）", "MG996R（套件自带）", "D4"),
-    ("J4 手腕俯仰", "MG996R（套件自带）", "D5"),
-    ("J5 手腕旋转", "MG996R（套件自带）", "D6"),
-    ("J6 夹爪", "MG996R（套件自带）", "D8"),
+    ("J1 底座旋转", "MG996R（套件自带）· 通道 0"),
+    ("J2 大臂（肩）", "MG996R（套件自带）· 通道 1 · 可升级 DS3225MG"),
+    ("J3 小臂（肘）", "MG996R（套件自带）· 通道 2"),
+    ("J4 手腕俯仰", "MG996R（套件自带）· 通道 3"),
+    ("J5 手腕旋转", "MG996R（套件自带）· 通道 4"),
+    ("J6 夹爪", "MG996R（套件自带）· 通道 5"),
 ]
 
 
 def fig_servos():
-    s = Svg(1100, 620, "图 3  舵机分线板：6 V 母线 + 信号引出",
-            "一块 5 × 7 cm 洞洞板：两条粗铜线做 V+ / GND 母线，6 组 3 针排针；舵机插头直接插上去")
-    s.box(40, 100, 380, 470, "舵机分线板（洞洞板）", "")
-    s.wire([(80, 150), (80, 520)], C["v6"], 6)
-    s.wire([(110, 150), (110, 520)], C["gnd"], 6)
-    s.text(80, 140, "V+", 12, "middle", "700", C["v6"])
-    s.text(110, 140, "GND", 12, "middle", "700")
-    s.part(60, 530, 30, 26, "")
-    s.part(100, 530, 30, 26, "")
-    s.text(140, 548, "2 × 2200 µF（白条纹接 GND）", 11.5, color=C["mute"])
-    s.tag(150, 115, "← 6 V（急停后，图 1）", C["v6"])
+    s = Svg(1100, 620, "图 3  舵机插到 PCA9685 舵机驱动板",
+            "6 V 从蓝色端子进；6 个舵机插头直接插在通道 0–5 的三针排针上（不用焊）")
+    s.box(40, 100, 420, 470, "PCA9685 16 路舵机驱动板", "")
+    s.parts.append(f'<rect x="60" y="150" width="130" height="50" rx="4" fill="#2E6DB4" stroke="{C["boxline"]}"/>')
+    s.text(92, 181, "V+", 13, "middle", "700", "#FFFFFF")
+    s.text(158, 181, "GND", 13, "middle", "700", "#FFFFFF")
+    s.tag(60, 222, "← 6 V（急停后，图 1）", C["v6"])
+    s.part(80, 250, 36, 50, "")
+    s.text(124, 272, "2200 µF", 12, weight="700")
+    s.text(124, 290, "白条纹 = −，接 GND", 11, color=C["mute"])
+    s.text(60, 330, "板上没焊大电容的：", 11.5, color=C["mute"])
+    s.text(60, 346, "把电容两只脚和电源线一起", 11.5, color=C["mute"])
+    s.text(60, 362, "拧进蓝色端子", 11.5, color=C["mute"])
+    s.text(60, 520, "排针 GND · OE · SCL · SDA · VCC · V+", 11, color=C["mute"])
+    s.text(60, 536, "接 Uno（图 2）", 11, color=C["mute"])
+    s.text(300, 138, "PWM", 10, "middle", "700")
+    s.text(326, 138, "V+", 10, "middle", "700")
+    s.text(352, 138, "GND", 10, "middle", "700")
     rows = []
-    for i in range(6):
-        cy = 190 + i * 55
+    for i in range(16):
+        cy = 150 + i * 24
+        used = i < 6
         for k, col in enumerate(("#E3A600", C["v12"], "#5A4A42")):
-            s.parts.append(f'<rect x="{200 + k * 26}" y="{cy - 10}" width="20" height="20" rx="2" fill="{col}"/>')
-        s.wire([(80, cy), (226, cy)], C["v6"], 2)
-        s.wire([(110, cy + 6), (252, cy + 6)], C["gnd"], 2)
-        s.text(290, cy + 5, f"J{i + 1}", 13, "start", "700")
+            s.parts.append(f'<rect x="{290 + k * 26}" y="{cy - 8}" width="20" height="16" rx="2" fill="{col}" '
+                           f'fill-opacity="{1 if used else 0.25}"/>')
+        s.text(282, cy + 4, f"通道 {i}", 11, "end", "700" if used else "400", C["ink"] if used else C["mute"])
         rows.append(cy)
-    s.text(210, 175, "S", 10, "middle", "700")
-    s.text(236, 175, "V+", 10, "middle", "700")
-    s.text(262, 175, "G", 10, "middle", "700")
-    for i, (name, model, pin) in enumerate(SERVOS):
+    for i, (name, model) in enumerate(SERVOS):
         cy = rows[i]
         bx, by = 560, 100 + i * 78
         s.box(bx, by, 500, 64, name, model, fill=C["hi"] if i == 1 else None)
-        s.tag(320, cy, f"S → Uno {pin}", C["sig"])
-        s.wire([(412, cy), (470, by + 32), (560, by + 32)], "#E3A600", 3)
-    s.note(40, 600, 1, "S 排针用杜邦线接到 Uno（图 2）；舵机插头：橙 = S，红 = V+，棕 = GND")
-    s.note(620, 600, 2, "J4–J6 离底座远，用 22 AWG 舵机延长线")
+        s.wire([(372, cy), (470, by + 32), (560, by + 32)], "#E3A600", 3)
+    s.note(40, 600, 1, "舵机插头：棕 = GND、红 = V+、橙 = PWM；棕色对准 GND 那一排")
+    s.note(620, 600, 2, "J4–J6 线不够长，用 22 AWG 舵机延长线")
     s.save("fig3-servos.svg")
 
 
@@ -467,11 +482,11 @@ def fig_layout():
     s.parts.append(f'<rect x="{ex}" y="{ey}" width="90" height="110" rx="6" fill="{C["hi"]}" '
                    f'stroke="{C["boxline"]}" stroke-width="1.6"/>')
     s.text(ex + 45, ey + 40, "电控托板", 13, "middle", "700")
-    s.text(ex + 45, ey + 60, "Uno · 降压", 11, "middle", color=C["mute"])
-    s.text(ex + 45, ey + 76, "分线板", 11, "middle", color=C["mute"])
+    s.text(ex + 45, ey + 60, "Uno · PCA9685", 11, "middle", color=C["mute"])
+    s.text(ex + 45, ey + 76, "电压模块", 11, "middle", color=C["mute"])
     s.wire([(ex + 90, ay - 20), (ax - 50, ay - 20)], C["sig"], 2.5, True)
     s.parts.append(f'<rect x="{ox - 26}" y="{oy + 30}" width="26" height="22" rx="3" fill="#555"/>')
-    s.text(ox - 30, oy + 46, "DC 12 V + 开关", 12, "end", "700")
+    s.text(ox - 30, oy + 46, "DC 6 V 进线", 12, "end", "700")
     for cy in (oy + 10, oy + bh - 60):
         s.parts.append(f'<rect x="{ox - 18}" y="{cy}" width="26" height="46" rx="4" fill="#607D8B"/>')
     s.text(ox - 30, oy + bh - 30, "F 型夹 × 2", 12, "end", "700", "#455A64")
