@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Build the single-page website (hexapod/web/index.html) from the hexapod docs.
+"""Build the single-page websites from the Markdown docs:
+
+    hexapod/web/index.html       (XIAO ESP32S3 + ROS 2 hexapod, docs in hexapod/)
+    hexapod-kit/web/index.html   (18-servo kit + G7 Pro gamepad, docs in hexapod-kit/)
 
     pip install markdown-it-py==3.0.0 mdit-py-plugins==0.4.2
-    python3 hexapod/web/build_site.py
+    python3 hexapod/web/build_site.py                 # both sites
+    python3 hexapod/web/build_site.py hexapod-kit     # just one
 
-Every section of the page is generated from a Markdown file in this folder's
-parent, so the website and the docs never drift apart: edit the .md files,
-re-run this script, commit both.
+Every section of a page is generated from a Markdown file listed in SITES, so the
+websites and the docs never drift apart: edit the .md files, re-run this script,
+commit both.
 
 The output is an Artifact page body (no <html>/<body> wrapper): it carries its
 own <title>, <style> and <script>. SVG diagrams are inlined, PNG previews are
@@ -26,24 +30,68 @@ from mdit_py_plugins.tasklists import tasklists_plugin
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
-OUT = os.path.join(HERE, "index.html")
 REPO = "https://github.com/ouhanjun-wq/ou"
 BRANCH = "claude/ros-esp32-s3-project-ypzx2b"
 
-# (section id, source file relative to the repo root, navigation label)
-DOCS = [
-    ("home", "hexapod/README.md", "总览"),
-    ("start", "hexapod/docs/beginner-plan.md", "新手计划"),
-    ("bom", "hexapod/docs/bom.md", "详细材料清单"),
-    ("plan", "hexapod/docs/build-plan.md", "总计划与步骤"),
-    ("wire", "hexapod/docs/wiring-guide.md", "接线与装配"),
-    ("soft", "hexapod/docs/software-setup.md", "软件与烧录"),
-    ("phone", "hexapod/docs/phone-control.md", "手机控制"),
-    ("cad", "hexapod/cad/README.md", "3D 打印件"),
-    ("links", "hexapod/docs/links.md", "网站汇总"),
-    ("research", "hexapod/docs/project-research.md", "项目调研"),
-]
-DOC_BY_PATH = {path: key for key, path, _ in DOCS}
+# One entry per website. "docs": (section id, source file relative to the repo root, nav label).
+SITES = {
+    "hexapod": {
+        "out": "hexapod/web/index.html",
+        "docs": [
+            ("home", "hexapod/README.md", "总览"),
+            ("start", "hexapod/docs/beginner-plan.md", "新手计划"),
+            ("bom", "hexapod/docs/bom.md", "详细材料清单"),
+            ("plan", "hexapod/docs/build-plan.md", "总计划与步骤"),
+            ("wire", "hexapod/docs/wiring-guide.md", "接线与装配"),
+            ("soft", "hexapod/docs/software-setup.md", "软件与烧录"),
+            ("phone", "hexapod/docs/phone-control.md", "手机控制"),
+            ("cad", "hexapod/cad/README.md", "3D 打印件"),
+            ("links", "hexapod/docs/links.md", "网站汇总"),
+            ("research", "hexapod/docs/project-research.md", "项目调研"),
+        ],
+        "title": "XIAO 六足机器人",
+        "desc": "XIAO ESP32S3 + micro-ROS + ROS 2 Jazzy 六足机器人：材料清单、接线、装配、软件安装、3D 打印件",
+        "brand": "XIAO 六足机器人<small>ESP32S3 · micro-ROS · ROS 2</small>",
+        "buy": '    <span id="buy-text">材料：还要花 —</span>\n',
+        "hero": '    <h1>XIAO <span>六足</span>机器人</h1>\n    <p class="lede">XIAO ESP32S3 Plus 跑 micro-ROS，通过 Wi-Fi 连到电脑上的 ROS 2 Jazzy：12 个舵机三角步态行走，LD14P 雷达建图，手机浏览器遥控。材料、接线、装配、软件，全部在这一页。纯新手从 <a href="#start">新手计划</a> 开始，一步步打勾做到最后。</p>\n    <div class="pins" aria-label="XIAO 引脚分配">\n      <span><b>D0</b> OE</span><span><b>D1</b> INT</span><span><b>D2</b> LED</span><span><b>D3</b> 电池</span>\n      <span><b>D4</b> SDA</span><span><b>D5</b> SCL</span><span><b>D6</b> 雷达 RX</span><span><b>D7</b> 雷达 TX</span>\n      <span><b>D8–D10</b> I²S</span>\n    </div>\n    <dl class="facts">\n      <div><dt>舵机</dt><dd>12 × MG90S</dd></div>\n      <div><dt>电脑端</dt><dd>ROS 2 Jazzy</dd></div>\n      <div><dt>电池</dt><dd>3S 11.1 V</dd></div>\n      <div><dt>遥控</dt><dd>手机 Wi-Fi</dd></div>\n    </dl>\n',
+        "hero_img": ("cad/img/assembly.png", "整机装配预览（站立膝角 60°）", "hexapod/README.md"),
+        "footer": '<p class="footer">由 <code>hexapod/web/build_site.py</code> 从仓库里的 Markdown 文档生成。软件来自开源项目 <a href="https://github.com/SeekerRobot/seeker-robot" target="_blank" rel="noopener">SeekerRobot/seeker-robot</a>（Apache-2.0）。勾选状态只保存在你自己的浏览器里。</p>',
+        "key": "hexapod-web-v1",
+    },
+    "hexapod-kit": {
+        "out": "hexapod-kit/web/index.html",
+        "docs": [
+            ("home", "hexapod-kit/README.md", "总览"),
+            ("start", "hexapod-kit/docs/beginner-plan.md", "新手计划"),
+            ("servo", "hexapod-kit/docs/servo-setup.md", "舵机接线与标定"),
+            ("pad", "hexapod-kit/docs/gamepad.md", "G7 Pro 手柄"),
+            ("fw", "hexapod-kit/docs/firmware.md", "固件与命令"),
+            ("links", "hexapod-kit/docs/links.md", "网站汇总"),
+        ],
+        "title": "G7 Pro 六足机器人",
+        "desc": "18 舵机六足机器人套件（ESP32）+ 盖世小鸡 G7 Pro 蓝牙手柄：新手计划、舵机标定、按键、固件命令",
+        "brand": "G7 Pro 六足机器人<small>ESP32 · Bluepad32 · 18 舵机</small>",
+        "buy": "",
+        "hero": """    <h1>G7 Pro<br><span>六足</span>机器人</h1>
+    <p class="lede">成品 18 舵机六足套件换上开源固件：原版 ESP32 用蓝牙直接连盖世小鸡 G7 Pro 手柄，三角 / 涟漪 / 波浪三种步态，全向行走、扭身、急停。不用电脑、不用手机 App。纯新手从 <a href="#start">新手计划</a> 开始，一步步打勾做到用手柄遥控它走起来。</p>
+    <div class="pins" aria-label="G7 Pro 按键">
+      <span><b>左摇杆</b> 走 / 横移</span><span><b>右摇杆</b> 转向</span><span><b>A</b> 起立 / 趴下</span>
+      <span><b>B</b> 急停</span><span><b>X</b> 换步态</span><span><b>Y</b> 扭身</span>
+      <span><b>LB / RB</b> 速度档</span><span><b>十字键</b> 高度 / 抬腿</span>
+    </div>
+    <dl class="facts">
+      <div><dt>舵机</dt><dd>18 个</dd></div>
+      <div><dt>主板</dt><dd>ESP32</dd></div>
+      <div><dt>遥控</dt><dd>G7 Pro</dd></div>
+    </dl>
+""",
+        "hero_img": ("docs/img/fig1-system.svg", "系统连接图", "hexapod-kit/README.md"),
+        "footer": '<p class="footer">由 <code>hexapod/web/build_site.py</code> 从仓库里的 Markdown 文档生成。'
+                  '手柄连接用开源库 <a href="https://github.com/ricardoquesada/bluepad32" target="_blank" '
+                  'rel="noopener">Bluepad32</a>（Apache-2.0）。勾选状态只保存在你自己的浏览器里。</p>',
+        "key": "hexapod-kit-web-v1",
+    },
+}
 
 
 def gh_slug(text):
@@ -81,7 +129,10 @@ def github_url(repo_path):
 
 
 class Site:
-    def __init__(self):
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.docs = cfg["docs"]
+        self.doc_by_path = {path: key for key, path, _ in self.docs}
         self.md = new_md()
         self.slugs = {}        # doc key -> {github slug: page id}
         self.headings = {}     # doc key -> [(level, id, text)]
@@ -91,7 +142,7 @@ class Site:
 
     # -- pass 1: parse and give every heading a stable ASCII id -------------
     def parse(self):
-        for key, path, _ in DOCS:
+        for key, path, _ in self.docs:
             src = open(os.path.join(ROOT, path), encoding="utf-8").read()
             toks = self.md.parse(src)
             slugs, heads, n = {}, [], 0
@@ -117,8 +168,8 @@ class Site:
             return href, True
         path, _, anchor = unquote(href).partition("#")
         target = os.path.normpath(os.path.join(os.path.dirname(doc_path), path)) if path else doc_path
-        if target in DOC_BY_PATH:
-            key = DOC_BY_PATH[target]
+        if target in self.doc_by_path:
+            key = self.doc_by_path[target]
             if not anchor:
                 return "#" + key, False
             hid = self.slugs[key].get(anchor)
@@ -184,7 +235,7 @@ class Site:
     def build(self):
         self.parse()
         sections, nav = [], []
-        for key, path, label in DOCS:
+        for key, path, label in self.docs:
             body = self.render_doc(key, path)
             sub = "".join(
                 f'<li><a href="#{hid}">{html.escape(text)}</a></li>'
@@ -198,22 +249,26 @@ class Site:
                 f'<h2 class="sec-title" id="{key}-title">{html.escape(label)}</h2>'
                 f'<p class="doc-sub">{html.escape(self.titles.get(key, ""))}</p></header>\n'
                 f'{body}</section>')
-        page = TEMPLATE.replace("%NAV%", "\n".join(nav)).replace("%SECTIONS%", "\n".join(sections))
-        page = page.replace("%HERO_IMG%", self.image_html("cad/img/assembly.png", "整机装配预览（站立膝角 60°）",
-                                                          "hexapod/README.md"))
+        cfg = self.cfg
+        page = TEMPLATE
+        for name in ("title", "desc", "brand", "buy", "hero", "footer", "key"):
+            page = page.replace("%" + name.upper() + "%", cfg[name])
+        page = page.replace("%NAV%", "\n".join(nav)).replace("%SECTIONS%", "\n".join(sections))
+        page = page.replace("%HERO_IMG%", self.image_html(*cfg["hero_img"]))
         ids = set(re.findall(r'\sid="([^"]+)"', page))
         for ref in set(re.findall(r'href="#([^"]+)"', page)):
             if ref not in ids:
                 self.errors.append(f"dangling in-page link #{ref}")
         if self.errors:
             sys.exit("\n".join(self.errors))
-        with open(OUT, "w", encoding="utf-8") as f:
+        out = os.path.join(ROOT, cfg["out"])
+        with open(out, "w", encoding="utf-8") as f:
             f.write(page)
-        print(f"wrote {os.path.relpath(OUT, ROOT)} ({len(page) // 1024} KB)")
+        print(f"wrote {cfg['out']} ({len(page) // 1024} KB)")
 
 
-TEMPLATE = r"""<title>XIAO 六足机器人</title>
-<meta name="description" content="XIAO ESP32S3 + micro-ROS + ROS 2 Jazzy 六足机器人：材料清单、接线、装配、软件安装、3D 打印件">
+TEMPLATE = r"""<title>%TITLE%</title>
+<meta name="description" content="%DESC%">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
@@ -327,6 +382,7 @@ main{min-width:0;padding-block:28px 96px}
 .doc .fig img{max-height:460px;width:auto;margin-inline:auto;background:#F7F7F7}
 .fig-cap{display:block;font-size:12.5px;color:var(--muted);padding:6px 10px}
 .tbl .fig-svg svg{min-width:420px}
+.hero .fig-svg svg{min-width:0}
 .math-block{overflow-x:auto;padding:6px 0;margin:10px 0}
 .task-list-item{list-style:none;margin-left:-1.4em}
 .task-list-item-checkbox{width:17px;height:17px;margin:0 8px 0 0;vertical-align:-3px;accent-color:var(--accent);cursor:pointer}
@@ -355,40 +411,26 @@ main{min-width:0;padding-block:28px 96px}
 
 <div class="shell">
 <nav class="nav" aria-label="目录">
-  <a class="brand" href="#top">XIAO 六足机器人<small>ESP32S3 · micro-ROS · ROS 2</small></a>
+  <a class="brand" href="#top">%BRAND%</a>
   <ol>
 %NAV%
   </ol>
   <div class="progress-mini" aria-live="polite">
     <span id="prog-text">新手计划：0 / 0 步</span>
     <div class="bar"><i id="prog-bar"></i></div>
-    <span id="buy-text">材料：还要花 —</span>
-  </div>
+%BUY%  </div>
 </nav>
 
 <main id="top">
 <div class="hero">
   <div>
-    <h1>XIAO <span>六足</span>机器人</h1>
-    <p class="lede">XIAO ESP32S3 Plus 跑 micro-ROS，通过 Wi-Fi 连到电脑上的 ROS 2 Jazzy：12 个舵机三角步态行走，LD14P 雷达建图，手机浏览器遥控。材料、接线、装配、软件，全部在这一页。纯新手从 <a href="#start">新手计划</a> 开始，一步步打勾做到最后。</p>
-    <div class="pins" aria-label="XIAO 引脚分配">
-      <span><b>D0</b> OE</span><span><b>D1</b> INT</span><span><b>D2</b> LED</span><span><b>D3</b> 电池</span>
-      <span><b>D4</b> SDA</span><span><b>D5</b> SCL</span><span><b>D6</b> 雷达 RX</span><span><b>D7</b> 雷达 TX</span>
-      <span><b>D8–D10</b> I²S</span>
-    </div>
-    <dl class="facts">
-      <div><dt>舵机</dt><dd>12 × MG90S</dd></div>
-      <div><dt>电脑端</dt><dd>ROS 2 Jazzy</dd></div>
-      <div><dt>电池</dt><dd>3S 11.1 V</dd></div>
-      <div><dt>遥控</dt><dd>手机 Wi-Fi</dd></div>
-    </dl>
-  </div>
+%HERO%  </div>
   %HERO_IMG%
 </div>
 
 %SECTIONS%
 
-<p class="footer">由 <code>hexapod/web/build_site.py</code> 从仓库里的 Markdown 文档生成。软件来自开源项目 <a href="https://github.com/SeekerRobot/seeker-robot" target="_blank" rel="noopener">SeekerRobot/seeker-robot</a>（Apache-2.0）。勾选状态只保存在你自己的浏览器里。</p>
+%FOOTER%
 </main>
 </div>
 
@@ -398,7 +440,7 @@ window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
 <script>
 (function () {
-  var KEY = "hexapod-web-v1";
+  var KEY = "%KEY%";
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { state = {}; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
@@ -538,4 +580,5 @@ window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\
 """
 
 if __name__ == "__main__":
-    Site().build()
+    for name in sys.argv[1:] or SITES:
+        Site(SITES[name]).build()

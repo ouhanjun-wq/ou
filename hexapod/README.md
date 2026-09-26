@@ -1,5 +1,7 @@
 # ROS 2 六足机器人（XIAO ESP32S3 Plus / Sense）
 
+> 🦿 **买的是 18 舵机成品套件（原版 ESP32 主板），想用盖世小鸡 G7 Pro 手柄遥控？** 看 **[`hexapod-kit/`](../hexapod-kit/README.md)**。那条路线不需要电脑、ROS 和雷达。
+
 > 这个文件夹是 ROS 2 六足机器人项目（仓库根目录是 6 自由度机械臂项目）。
 > 软件用开源项目 **[SeekerRobot/seeker-robot](https://github.com/SeekerRobot/seeker-robot)**（Apache-2.0），这里补上它没有的：**中文材料清单、模块化接线方案、可打印的机身、分步骤的安装和测试流程**。
 

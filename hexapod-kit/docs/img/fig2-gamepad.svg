@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="900" height="560" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">G7 Pro 按键图</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">Xbox 布局；手柄断开时机器人自动停下站稳</text>
+<path d="M300,200 Q450,170 600,200 Q655,210 665,310 Q680,440 620,450 Q580,455 545,380 L355,380 Q320,455 280,450 Q220,440 235,310 Q245,210 300,200 Z" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="2"/>
+<rect x="275" y="168" width="90" height="20" rx="10" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<rect x="535" y="168" width="90" height="20" rx="10" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="320" y="183" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">LB</text>
+<text x="580" y="183" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">RB</text>
+<circle cx="320" cy="260" r="30" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2"/>
+<circle cx="320" cy="260" r="17" fill="#5E6E72"/>
+<text x="320" y="264" font-size="11" text-anchor="middle" font-weight="700" fill="#FFFFFF">L</text>
+<circle cx="520" cy="340" r="30" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="2"/>
+<circle cx="520" cy="340" r="17" fill="#5E6E72"/>
+<text x="520" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#FFFFFF">R</text>
+<path d="M371,313 h18 v18 h18 v18 h-18 v18 h-18 v-18 h-18 v-18 h18 Z" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<circle cx="580" cy="236" r="12" fill="#C9A100"/>
+<text x="580" y="240.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">Y</text>
+<circle cx="556" cy="260" r="12" fill="#1F6FB5"/>
+<text x="556" y="264.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">X</text>
+<circle cx="604" cy="260" r="12" fill="#D23B2F"/>
+<text x="604" y="264.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">B</text>
+<circle cx="580" cy="284" r="12" fill="#1E8A5A"/>
+<text x="580" y="288.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">A</text>
+<circle cx="450" cy="228" r="14" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<circle cx="450" cy="228" r="7" fill="#1E8A5A"/>
+<path d="M280,178 L172,96" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="280" cy="178" r="3.5" fill="#1B2A2F"/>
+<text x="168" y="100" font-size="13" text-anchor="end" font-weight="700" fill="#1B2A2F">LB：速度档 −</text>
+<text x="168" y="118" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">3 档：慢 / 中 / 快</text>
+<path d="M290,260 L172,201" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="290" cy="260" r="3.5" fill="#1B2A2F"/>
+<text x="168" y="205" font-size="13" text-anchor="end" font-weight="700" fill="#1B2A2F">左摇杆：走路</text>
+<text x="168" y="223" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">上下 = 前进 / 后退</text>
+<text x="168" y="241" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">左右 = 横着走</text>
+<text x="168" y="259" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">按住 Y 时：俯仰 / 侧倾</text>
+<path d="M353,340 L172,326" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="353" cy="340" r="3.5" fill="#1B2A2F"/>
+<text x="168" y="330" font-size="13" text-anchor="end" font-weight="700" fill="#1B2A2F">十字键</text>
+<text x="168" y="348" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">上 / 下 = 机身升高 / 降低</text>
+<text x="168" y="366" font-size="12" text-anchor="end" font-weight="400" fill="#5E6E72">左 / 右 = 抬腿降低 / 升高</text>
+<path d="M620,178 L728,96" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="620" cy="178" r="3.5" fill="#1B2A2F"/>
+<text x="732" y="100" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">RB：速度档 +</text>
+<path d="M592,236 L728,156" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="592" cy="236" r="3.5" fill="#1B2A2F"/>
+<text x="732" y="160" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">Y（按住）：扭身模式</text>
+<text x="732" y="178" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">脚不动，只动身体</text>
+<path d="M544,260 L728,208" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="544" cy="260" r="3.5" fill="#1B2A2F"/>
+<text x="732" y="212" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">X：换步态</text>
+<text x="732" y="230" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">三角 → 涟漪 → 波浪</text>
+<path d="M616,260 L728,258" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="616" cy="260" r="3.5" fill="#1B2A2F"/>
+<text x="732" y="262" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">B：急停</text>
+<text x="732" y="280" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">松开两个摇杆后解除</text>
+<path d="M580,296 L728,308" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="580" cy="296" r="3.5" fill="#1B2A2F"/>
+<text x="732" y="312" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">A：起立 / 趴下</text>
+<text x="732" y="330" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">开机后第一次按 = 舵机上电</text>
+<path d="M550,340 L728,368" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="550" cy="340" r="3.5" fill="#1B2A2F"/>
+<text x="732" y="372" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">右摇杆：左右 = 原地转向</text>
+<text x="732" y="390" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">按住 Y 时：扭腰 / 前后平移</text>
+<path d="M450,214 L442,466" fill="none" stroke="#5E6E72" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="450" cy="214" r="3.5" fill="#1B2A2F"/>
+<text x="438" y="470" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">Xbox 键：开机；配对时长按背面配对键</text>
+<circle cx="40" cy="521" r="10" fill="#1B2A2F"/>
+<text x="40" y="525.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="58" y="525" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">手柄背面模式开关必须在「蓝牙」档；2.4G 接收器和有线模式单片机用不了</text>
+</svg>
