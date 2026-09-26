@@ -144,6 +144,7 @@ main{min-width:0;padding-block:28px 96px}
   <a class="brand" href="#top">XIAO 六足机器人<small>ESP32S3 · micro-ROS · ROS 2</small></a>
   <ol>
 <li><a class="nav-sec" href="#home">总览</a><ol class="nav-sub"><li><a href="#home-1">硬件一览</a></li></ol></li>
+<li><a class="nav-sec" href="#start">新手计划</a><ol class="nav-sub"><li><a href="#start-1">0. 开始之前：先看懂要做什么</a></li><li><a href="#start-6">1. 买东西（第 1 周）</a></li><li><a href="#start-7">2. 准备电脑（第 1–2 周，等快递的时候做）</a></li><li><a href="#start-12">3. 第一次成功：用手机遥控仿真里的机器人（不需要任何硬件）</a></li><li><a href="#start-13">4. 打印结构件（第 2 周）</a></li><li><a href="#start-14">5. 电子入门：焊排针、第一次刷固件（第 3 周）</a></li><li><a href="#start-18">6. 桌面上逐个测试模块（第 3–4 周）</a></li><li><a href="#start-26">7. 组装机器人 + 舵机标定（第 4–5 周）</a></li><li><a href="#start-27">8. 🎯 最终目标：用手机遥控机器人走路</a></li><li><a href="#start-28">9. 以后可以继续玩的</a></li><li><a href="#start-29">10. 时间表（参考）</a></li></ol></li>
 <li><a class="nav-sec" href="#bom">详细材料清单</a><ol class="nav-sub"><li><a href="#bom-1">0. 你已经有的：Arduino 学习套件（顶配豪华版）+ 电子元件包</a></li><li><a href="#bom-2">1. 一页总表</a></li><li><a href="#bom-3">A. 电子模块</a></li><li><a href="#bom-14">B. 电源</a></li><li><a href="#bom-24">C. 连接线材</a></li><li><a href="#bom-33">D. 结构件与紧固件</a></li><li><a href="#bom-42">E. 工具（已有就不用买）</a></li><li><a href="#bom-43">F. 电脑、手机、网络（一般都有）</a></li></ol></li>
 <li><a class="nav-sec" href="#plan">总计划与步骤</a><ol class="nav-sub"><li><a href="#plan-1">0. 用的是哪个开源项目</a></li><li><a href="#plan-2">1. 全局路线图</a></li><li><a href="#plan-3">2. 材料清单（BOM）</a></li><li><a href="#plan-5">3. 设计校核（为什么这样选）</a></li><li><a href="#plan-11">4. 分阶段步骤</a></li><li><a href="#plan-21">5. 故障排查</a></li><li><a href="#plan-22">6. 安全规则</a></li></ol></li>
 <li><a class="nav-sec" href="#wire">接线与装配</a><ol class="nav-sub"><li><a href="#wire-1">1. 接线总表（先看这张）</a></li><li><a href="#wire-2">2. 电源接线</a></li><li><a href="#wire-5">3. 信号接线</a></li><li><a href="#wire-13">4. 12 个舵机插哪个通道</a></li><li><a href="#wire-14">5. 面包板（免焊）/ 洞洞板布局</a></li><li><a href="#wire-15">6. 机械装配</a></li><li><a href="#wire-19">7. 第一次通电检查清单</a></li><li><a href="#wire-20">8. 另一种做法：做原版 Sesame V2 PCB（进阶）</a></li></ol></li>
@@ -154,7 +155,7 @@ main{min-width:0;padding-block:28px 96px}
 <li><a class="nav-sec" href="#research">项目调研</a><ol class="nav-sub"><li><a href="#research-1">1. 怎么搜的</a></li><li><a href="#research-2">2. 候选项目对比</a></li><li><a href="#research-3">3. 为什么选 Seeker</a></li><li><a href="#research-4">4. 用 XIAO ESP32S3 Plus 行不行</a></li><li><a href="#research-5">5. 它缺什么、这个文件夹怎么补</a></li></ol></li>
   </ol>
   <div class="progress-mini" aria-live="polite">
-    <span id="prog-text">步骤清单：0 / 0</span>
+    <span id="prog-text">新手计划：0 / 0 步</span>
     <div class="bar"><i id="prog-bar"></i></div>
     <span id="buy-text">材料：还要花 —</span>
   </div>
@@ -164,7 +165,7 @@ main{min-width:0;padding-block:28px 96px}
 <div class="hero">
   <div>
     <h1>XIAO <span>六足</span>机器人</h1>
-    <p class="lede">XIAO ESP32S3 Plus 跑 micro-ROS，通过 Wi-Fi 连到电脑上的 ROS 2 Jazzy：12 个舵机三角步态行走，LD14P 雷达建图，Nav2 自主导航。材料、接线、装配、软件，全部在这一页。</p>
+    <p class="lede">XIAO ESP32S3 Plus 跑 micro-ROS，通过 Wi-Fi 连到电脑上的 ROS 2 Jazzy：12 个舵机三角步态行走，LD14P 雷达建图，手机浏览器遥控。材料、接线、装配、软件，全部在这一页。纯新手从 <a href="#start">新手计划</a> 开始，一步步打勾做到最后。</p>
     <div class="pins" aria-label="XIAO 引脚分配">
       <span><b>D0</b> OE</span><span><b>D1</b> INT</span><span><b>D2</b> LED</span><span><b>D3</b> 电池</span>
       <span><b>D4</b> SDA</span><span><b>D5</b> SCL</span><span><b>D6</b> 雷达 RX</span><span><b>D7</b> 雷达 TX</span>
@@ -258,6 +259,10 @@ main{min-width:0;padding-block:28px 96px}
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>🚀 <a href="#start"><code>docs/beginner-plan.md</code></a></td>
+<td><strong>新手计划</strong>：纯新手从 0 开始，买东西 → 装电脑 → 手机遥控仿真 → 打印 → 焊接刷固件 → 逐个测模块 → 组装标定 → <strong>手机遥控真机</strong>，每一步有 “成功的样子” 和 “卡住了怎么办”</td>
+</tr>
 <tr>
 <td>🖥️ <a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/web/index.html" target="_blank" rel="noopener"><code>web/index.html</code></a></td>
 <td><strong>网页版</strong>：下面所有文档合成一页，材料清单可勾选并实时算剩余花费，步骤清单记进度。由 <a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/web/build_site.py" target="_blank" rel="noopener"><code>web/build_site.py</code></a> 从文档生成</td>
@@ -639,6 +644,1022 @@ main{min-width:0;padding-block:28px 96px}
 </tbody>
 </table></div>
 <p>接线图由 <a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/docs/img/make_diagrams.py" target="_blank" rel="noopener"><code>docs/img/make_diagrams.py</code></a> 生成（纯 Python 标准库）：改了以后运行 <code>python3 hexapod/docs/img/make_diagrams.py</code>。</p>
+</section>
+<section class="doc" id="start" aria-labelledby="start-title">
+<header class="doc-head"><p class="eyebrow"><a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/docs/beginner-plan.md" target="_blank" rel="noopener">hexapod/docs/beginner-plan.md</a></p><h2 class="sec-title" id="start-title">新手计划</h2><p class="doc-sub">新手计划：从 0 开始到用手机遥控六足机器人</p></header>
+<blockquote>
+<p><strong>写给谁</strong>：没做过机器人、没用过 Linux / ROS 也没关系。会用电脑、会用手机、愿意照着一步步做就行。
+<strong>最后的样子</strong>：手机连上家里 Wi-Fi，浏览器打开一个网页，手指推屏幕上的摇杆，六足机器人<strong>前进、后退、原地转圈</strong>，连续走 3 米不摔倒。
+<strong>怎么用这份计划</strong>：从上往下做，<strong>每做完一步就勾一下</strong>（网页版能勾选，进度会显示在左边目录下面）。每一步都写了 “✅ 成功的样子”，<strong>没看到就先别往下做</strong>，按 “❌ 卡住了” 去查。</p>
+</blockquote>
+<hr />
+<h3 id="start-1">0. 开始之前：先看懂要做什么</h3>
+<h4 id="start-2">0.1 这台机器人由哪几部分组成</h4>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>部分</th>
+<th>是什么</th>
+<th>大白话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>身体</td>
+<td>3D 打印的底板、甲板、6 条腿</td>
+<td>骨架</td>
+</tr>
+<tr>
+<td>12 个舵机</td>
+<td>MG90S，每条腿 2 个</td>
+<td>肌肉：一个管腿左右摆，一个管腿上下抬</td>
+</tr>
+<tr>
+<td>PCA9685</td>
+<td>舵机驱动板</td>
+<td>帮主控同时指挥 12 个舵机</td>
+</tr>
+<tr>
+<td>XIAO ESP32S3 Plus</td>
+<td>主控板（你已经有了）</td>
+<td>小脑：算步态、连 Wi-Fi</td>
+</tr>
+<tr>
+<td>BNO085</td>
+<td>姿态传感器</td>
+<td>平衡感：知道身体歪没歪</td>
+</tr>
+<tr>
+<td>LD14P</td>
+<td>360° 激光雷达</td>
+<td>眼睛：扫描周围的墙和障碍</td>
+</tr>
+<tr>
+<td>3S 电池 + 5 V 降压</td>
+<td>电源</td>
+<td>心脏</td>
+</tr>
+<tr>
+<td>电脑（Ubuntu + ROS 2）</td>
+<td>大脑</td>
+<td>建地图、规划路线、把手机的指令转给机器人</td>
+</tr>
+<tr>
+<td>手机浏览器</td>
+<td>遥控器</td>
+<td>屏幕上的摇杆</td>
+</tr>
+</tbody>
+</table></div>
+<div class="fig-row"><span class="fig fig-svg"><svg role="img" aria-label="系统总览" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="560" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 0  系统总览</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">电脑上跑 ROS 2（建图、导航、识别），机器人上的 XIAO ESP32S3 Plus 通过 Wi-Fi 用 micro-ROS 连过来</text>
+<rect x="40" y="100" width="330" height="130" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="205.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">电脑：Ubuntu 24.04 + Docker</text>
+<text x="205.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">ROS 2 Jazzy（Seeker 的 Docker 容器）</text>
+<text x="205.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">micro-ROS Agent  UDP 8888</text>
+<text x="205.0" y="176" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">SLAM Toolbox 建图 · Nav2 导航</text>
+<text x="205.0" y="193" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">YOLO 识别 · 语音指令（可选）</text>
+<rect x="460" y="120" width="170" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="545.0" y="142" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">Wi-Fi 路由器</text>
+<text x="545.0" y="162" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">2.4 GHz，同一网段</text>
+<rect x="720" y="100" width="340" height="130" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="890.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">XIAO ESP32S3 Plus（机器人上）</text>
+<text x="890.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">micro-ROS 客户端（Wi-Fi）</text>
+<text x="890.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">步态：/cmd_vel → 12 个舵机角度</text>
+<text x="890.0" y="176" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">雷达 · IMU · 电池电压</text>
+<text x="890.0" y="193" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">摄像头：可选卫星板（Sense / ESP32-CAM）</text>
+<path d="M370,165 L460,165" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<path d="M630,165 L720,165" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="545" y="108" font-size="12" text-anchor="middle" font-weight="700" fill="#1B2A2F">micro-ROS UDP 8888 + HTTP</text>
+<text x="205" y="256" font-size="12" text-anchor="middle" font-weight="400" fill="#5E6E72">↓ /cmd_vel  /mcu/hexapod_cmd</text>
+<text x="205" y="274" font-size="12" text-anchor="middle" font-weight="400" fill="#5E6E72">↑ /mcu/imu  /mcu/scan</text>
+<text x="205" y="292" font-size="12" text-anchor="middle" font-weight="400" fill="#5E6E72">↑ /mcu/battery_voltage  /mcu/heartbeat</text>
+<rect x="40" y="400" width="140" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="110.0" y="422" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">PCA9685</text>
+<text x="110.0" y="442" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">16 路舵机驱动</text>
+<text x="110.0" y="459" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">I²C 0x40</text>
+<path d="M110,400 L110,360 L890,360 L890,230" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="110" y="512" font-size="12" text-anchor="middle" font-weight="700" fill="#E07B00">12 × MG90S 舵机</text>
+<rect x="220" y="400" width="140" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="290.0" y="422" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">BNO085</text>
+<text x="290.0" y="442" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">9 轴姿态</text>
+<text x="290.0" y="459" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">I²C 0x4B · INT</text>
+<path d="M290,400 L290,360 L890,360 L890,230" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="400" y="400" width="140" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="470.0" y="422" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">LD14P 雷达</text>
+<text x="470.0" y="442" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">360° 8 m</text>
+<text x="470.0" y="459" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">UART 230400</text>
+<path d="M470,400 L470,360 L890,360 L890,230" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="580" y="400" width="140" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="650.0" y="422" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">OLED 0.96″</text>
+<text x="650.0" y="442" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">SSD1306</text>
+<text x="650.0" y="459" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">I²C 0x3C</text>
+<path d="M650,400 L650,360 L890,360 L890,230" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="760" y="400" width="140" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="830.0" y="422" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">MAX98357A</text>
+<text x="830.0" y="442" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">I²S 功放</text>
+<text x="830.0" y="459" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">+ 3 W 喇叭</text>
+<path d="M830,400 L830,360 L890,360 L890,230" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="940" y="400" width="140" height="90" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="1010.0" y="422" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">WS2812</text>
+<text x="1010.0" y="442" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">RGB 灯</text>
+<text x="1010.0" y="459" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">（可选）</text>
+<path d="M1010,400 L1010,360 L890,360 L890,230" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="890" cy="360" r="5" fill="#1F6FB5"/>
+<text x="900" y="300" font-size="12" text-anchor="start" font-weight="700" fill="#1F6FB5">机器人内部接线（见图 1、图 2）</text>
+<path d="M40,545 L68,545" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="74" y="549" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">无线</text>
+<path d="M110,545 L138,545" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="144" y="549" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">有线信号</text>
+</svg><span class="fig-cap">系统总览</span></span></div>
+<h4 id="start-3">0.2 几个名词（不用背，遇到了回来查）</h4>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>名词</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ROS 2</strong></td>
+<td>机器人软件的 “操作系统”，各个程序通过 “话题” 互相发消息。我们用 <strong>Jazzy</strong> 版本</td>
+</tr>
+<tr>
+<td><strong>话题</strong></td>
+<td>程序之间传消息的频道，比如 <code>/cmd_vel</code> 就是 “速度指令” 频道</td>
+</tr>
+<tr>
+<td><strong>micro-ROS</strong></td>
+<td>能跑在单片机上的迷你 ROS，让 XIAO 能通过 Wi-Fi 收发 ROS 消息</td>
+</tr>
+<tr>
+<td><strong>Agent</strong></td>
+<td>电脑上的一个程序，负责和机器人上的 micro-ROS 对接，<strong>每次用都要先开</strong></td>
+</tr>
+<tr>
+<td><strong>Docker / 容器</strong></td>
+<td>一个 “打包好的软件盒子”，ROS 2 和所有工具都装在里面，不会弄乱你的电脑</td>
+</tr>
+<tr>
+<td><strong>固件</strong></td>
+<td>刷进 XIAO 的程序</td>
+</tr>
+<tr>
+<td><strong>PlatformIO（<code>pio</code>）</strong></td>
+<td>编译、刷固件的工具，已经装在容器里</td>
+</tr>
+<tr>
+<td><strong>Seeker</strong></td>
+<td>我们用的开源项目 <a href="https://github.com/SeekerRobot/seeker-robot" target="_blank" rel="noopener">SeekerRobot/seeker-robot</a>，程序都是现成的</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="start-4">0.3 要花多少时间和钱</h4>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>大约</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>钱</td>
+<td><strong>¥600–1110</strong>（XIAO 和两个套件你已经有了，明细见 <a href="#bom"><code>bom.md</code></a>）</td>
+</tr>
+<tr>
+<td>时间</td>
+<td>每周末做 1–2 天，<strong>5–7 个周末</strong>。其中等快递 1–2 周可以同时装电脑软件</td>
+</tr>
+<tr>
+<td>最难的一步</td>
+<td>阶段 7 的舵机标定，要耐心，留一整天</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="start-5">0.4 安全规则（先读，很重要）</h4>
+<ol>
+<li><strong>锂电池</strong>：充电时人要在旁边；鼓包、变形立刻停用；不要过放（每节不低于 3.3 V，整包不低于 9.9 V）。</li>
+<li><strong>降压模块先单独量电压</strong>，确认是 5 V 左右再接任何东西，否则会烧坏主控和舵机。</li>
+<li><strong>刷固件时关掉电池开关</strong>，只用 USB 供电。</li>
+<li>舵机第一次通电时<strong>手离开腿</strong>，舵机会突然转动。</li>
+<li>电烙铁 300 °C 以上，用完放回烙铁架，拔电源。</li>
+</ol>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-1" class="task-list-item-checkbox"  type="checkbox"> 我读完了第 0 节，知道要做什么、要花多少钱和时间、安全规则是什么</li>
+</ul>
+<hr />
+<h3 id="start-6">1. 买东西（第 1 周）</h3>
+<p><strong>目标</strong>：把缺的零件和工具买齐。<strong>时间</strong>：下单 1 小时，等快递 1–2 周（等的时候去做阶段 2）。</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-2" class="task-list-item-checkbox"  type="checkbox"> <strong>1.1 核对你已经有的</strong>：XIAO ESP32S3 Plus、Arduino 学习套件（顶配豪华版）、电子元件包。能用的零件见 <a href="#bom-1"><code>bom.md</code> 第 0 节</a>（电压检测模块、灯环、面包板、杜邦线、排针、电阻、二极管、小螺丝刀）。</li>
+<li class="task-list-item enabled"><input id="task-start-3" class="task-list-item-checkbox"  type="checkbox"> <strong>1.2 下单电子模块</strong>：PCA9685 驱动板 × 1、BNO085 模块 × 1、LD14P 雷达（带转接板套装）× 1、<strong>MG90S 金属齿 180° 舵机 × 14</strong>。
+<ul>
+<li>舵机一定要写着 “180°” 和 “金属齿”；雷达一定是 <strong>LD14P</strong>，不要买成 LD06 / LD19。</li>
+</ul>
+</li>
+<li class="task-list-item enabled"><input id="task-start-4" class="task-list-item-checkbox"  type="checkbox"> <strong>1.3 下单电源</strong>：3S 11.1 V 1300 mAh XT30 电池 × 2、平衡充电器 × 1（有航模充电器就不用）、12 V 转 5 V 5 A 灌胶降压模块 × 1、迷你刀片保险丝座 + 5 A 保险丝、KCD1 船型开关 × 2、XT30 公母带线 × 2 对、1000 µF 16 V 电容 × 2、锂电 BB 响 × 1。</li>
+<li class="task-list-item enabled"><input id="task-start-5" class="task-list-item-checkbox"  type="checkbox"> <strong>1.4 下单线材和结构件</strong>：20 AWG 红黑硅胶线各 2 m、热缩管套装、M3 × 25 铜柱 4 根 + M3 × 6 螺丝 8 颗、M2 × 6 自攻螺丝 100 颗、M3 尼龙柱套装、魔术贴扎带 × 2、尼龙扎带一包、双面泡棉胶。</li>
+<li class="task-list-item enabled"><input id="task-start-6" class="task-list-item-checkbox"  type="checkbox"> <strong>1.5 工具</strong>（没有的才买）：<strong>万用表</strong>（必须）、电烙铁 + 焊锡、<strong>舵机测试仪</strong>（¥5，强烈建议）、游标卡尺、十字螺丝刀 PH0 / PH1、剥线钳。</li>
+<li class="task-list-item enabled"><input id="task-start-7" class="task-list-item-checkbox"  type="checkbox"> <strong>1.6 3D 打印件</strong>：有打印机就自己打（阶段 4）；没有就把 <a href="https://github.com/ouhanjun-wq/ou/tree/claude/ros-esp32-s3-project-ypzx2b/hexapod/cad/stl" target="_blank" rel="noopener"><code>../cad/stl/</code></a> 里的 5 个文件发给淘宝 “3D 打印代打” 店铺，材料选 <strong>PETG</strong>，数量：底板 1、甲板 1、大腿 A 3、大腿 B 3、小腿 8。</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：所有订单都下好了，<a href="#bom"><code>bom.md</code></a> 总表里除了 “可选” 的都有着落。
+<strong>💡 省钱</strong>：OLED、功放、摄像头板都是可选的，先不买，不影响遥控走路。</p>
+<hr />
+<h3 id="start-7">2. 准备电脑（第 1–2 周，等快递的时候做）</h3>
+<p><strong>目标</strong>：电脑上装好 Ubuntu 24.04、Docker，把 Seeker 项目下载好并编译成功。<strong>时间</strong>：半天到一天（大部分时间在等下载）。</p>
+<h4 id="start-8">2.1 装 Ubuntu 24.04</h4>
+<p>推荐用一台<strong>旧笔记本</strong>专门装 Ubuntu，或者在现在的电脑上装<strong>双系统</strong>（Windows 和 Ubuntu 开机时二选一）。</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-8" class="task-list-item-checkbox"  type="checkbox"> <strong>2.1.1</strong> 在 <a href="https://ubuntu.com/download/desktop" target="_blank" rel="noopener">https://ubuntu.com/download/desktop</a> 下载 <strong>Ubuntu 24.04 LTS 桌面版</strong>（约 6 GB）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-9" class="task-list-item-checkbox"  type="checkbox"> <strong>2.1.2</strong> 准备一个 ≥ 8 GB 的 U 盘，用 <a href="https://etcher.balena.io/" target="_blank" rel="noopener">balenaEtcher</a> 或 <a href="https://rufus.ie/" target="_blank" rel="noopener">Rufus</a> 把下载的 <code>.iso</code> 写进去。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-10" class="task-list-item-checkbox"  type="checkbox"> <strong>2.1.3</strong> 电脑插 U 盘开机，按 F12 / F2 / Esc（不同品牌不一样）选 U 盘启动，按官方教程安装：<a href="https://ubuntu.com/tutorials/install-ubuntu-desktop" target="_blank" rel="noopener">https://ubuntu.com/tutorials/install-ubuntu-desktop</a>。</p>
+<ul>
+<li>装双系统时选 “Install Ubuntu alongside Windows”（和 Windows 共存），<strong>不要选清空整个硬盘</strong>。</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-11" class="task-list-item-checkbox"  type="checkbox"> <strong>2.1.4</strong> 装好后连上 Wi-Fi，打开 “终端”（按 <code>Ctrl + Alt + T</code>），输入下面这句更新系统（输入密码时屏幕不显示，是正常的）：</p>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y
+</code></pre>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：能进 Ubuntu 桌面、能上网，终端里命令跑完没有红色 <code>E:</code> 错误。
+<strong>❌ 卡住了</strong>：进不了 U 盘启动 → 进 BIOS 关掉 “Secure Boot” 再试。实在不想装 Ubuntu，用 Windows + Docker Desktop 也行，但步骤多几步（<a href="#soft-1"><code>software-setup.md</code> §1</a>）。</p>
+<h4 id="start-9">2.2 装 Git 和 Docker</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-12" class="task-list-item-checkbox"  type="checkbox"> <strong>2.2.1</strong> 在终端里一行一行复制运行（每行运行完再下一行）：</p>
+<pre><code class="language-bash">sudo apt install -y git git-lfs curl
+git lfs install
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+sudo usermod -aG dialout $USER
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-13" class="task-list-item-checkbox"  type="checkbox"> <strong>2.2.2</strong> <strong>注销重新登录</strong>（右上角 → 注销），让权限生效。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-14" class="task-list-item-checkbox"  type="checkbox"> <strong>2.2.3</strong> 测试 Docker：</p>
+<pre><code class="language-bash">docker run --rm hello-world
+</code></pre>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：屏幕打印出 <code>Hello from Docker!</code>。
+<strong>❌ 卡住了</strong>：<code>permission denied</code> → 没注销重新登录；下载很慢 → 网络问题，给 Docker 配镜像加速（<a href="#soft-26"><code>software-setup.md</code> §9</a>）。</p>
+<h4 id="start-10">2.3 下载 Seeker 项目，填 Wi-Fi 配置</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-15" class="task-list-item-checkbox"  type="checkbox"> <strong>2.3.1</strong> 下载项目（放在主目录下）：</p>
+<pre><code class="language-bash">cd ~
+git clone --recurse-submodules https://github.com/SeekerRobot/seeker-robot.git
+cd seeker-robot
+cp docker/.env.example docker/.env
+cp mcu_ws/platformio/network_config.example.ini mcu_ws/platformio/network_config.ini
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-16" class="task-list-item-checkbox"  type="checkbox"> <strong>2.3.2</strong> 查电脑的 IP 和路由器地址，记下来：</p>
+<pre><code class="language-bash">hostname -I          # 第一个数字就是电脑 IP，比如 192.168.1.23
+ip route | head -1   # &quot;default via&quot; 后面就是路由器 IP，比如 192.168.1.1
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-17" class="task-list-item-checkbox"  type="checkbox"> <strong>2.3.3</strong> 用文本编辑器打开 <code>~/seeker-robot/mcu_ws/platformio/network_config.ini</code>（文件管理器里右键 → 用文本编辑器打开），改成你家的：</p>
+<ul>
+<li><code>wifi_ssid</code> / <code>wifi_password</code>：你家 <strong>2.4 GHz</strong> Wi-Fi 的名字和密码（5 GHz 的不行）；</li>
+<li><code>agent_ip</code>：电脑 IP，写成 <code>{ 192, 168, 1, 23 }</code> 这样逗号分开；</li>
+<li><code>static_ip</code>：给机器人选一个没人用的地址，比如 <code>{ 192, 168, 1, 50 }</code>；</li>
+<li><code>gateway</code>：路由器 IP；<code>ota_upload_port</code>：和 static_ip 一样，写成 <code>192.168.1.50</code>。</li>
+<li>详细说明见 <a href="#soft-7"><code>software-setup.md</code> §3.2</a>。</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-18" class="task-list-item-checkbox"  type="checkbox"> <strong>2.3.4</strong>（推荐）登录路由器后台，把<strong>电脑的 IP 绑定成固定的</strong>（一般在 “DHCP 静态分配 / IP 与 MAC 绑定”），这样以后电脑 IP 不会变。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-19" class="task-list-item-checkbox"  type="checkbox"> <strong>2.3.5</strong> 按本仓库的机身改 4 个参数（复制运行即可）：</p>
+<pre><code class="language-bash">cd ~/seeker-robot
+F=mcu_ws/lib/RobotConfig/HexapodConfig.h
+sed -i 's/constexpr float kL2 = 50.0f;/constexpr float kL2 = 65.0f;/' $F
+sed -i 's/constexpr float kNeutralKnee = 45.0f;/constexpr float kNeutralKnee = 60.0f;/' $F
+sed -i 's/constexpr float kHipMin = -60.0f;/constexpr float kHipMin = -25.0f;/' $F
+sed -i 's/constexpr float kHipMax = 60.0f;/constexpr float kHipMax = 25.0f;/' $F
+git diff --stat
+</code></pre>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：最后一行显示 <code>HexapodConfig.h | 8 ++++----</code>（改了 4 行）。
+<strong>❌ 卡住了</strong>：显示 0 行改动 → 原项目更新了写法，打开 <code>HexapodConfig.h</code> 手动找到 <code>kL2</code>、<code>kNeutralKnee</code>、<code>kHipMin</code>、<code>kHipMax</code> 改数字（<a href="#soft-8"><code>software-setup.md</code> §4</a>）。</p>
+<h4 id="start-11">2.4 编译 ROS 2 容器（最久的一步）</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-20" class="task-list-item-checkbox"  type="checkbox"> <strong>2.4.1</strong> 构建容器（<strong>第一次要 30–60 分钟</strong>，去喝杯茶）：</p>
+<pre><code class="language-bash">cd ~/seeker-robot/docker
+docker compose build --no-cache init-bootstrap
+docker compose build
+docker compose up init-bootstrap
+docker compose up -d ros2
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-21" class="task-list-item-checkbox"  type="checkbox"> <strong>2.4.2</strong> 进入容器，编译 ROS 2 程序：</p>
+<pre><code class="language-bash">docker compose exec ros2 bash
+# 下面这些在容器里运行（提示符会变）
+cd ~/ros2_workspaces
+source /opt/ros/jazzy/setup.bash
+colcon build
+echo 'source ~/ros2_workspaces/install/setup.bash' &gt;&gt; ~/.bashrc
+source ~/.bashrc
+ros2 pkg list | grep seeker
+</code></pre>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：<code>colcon build</code> 最后显示 <code>Summary: N packages finished</code>，最后一句列出 <code>seeker_description</code>、<code>seeker_navigation</code>、<code>seeker_web</code> 等。
+<strong>💡 以后每次开新终端</strong>：先 <code>cd ~/seeker-robot/docker &amp;&amp; docker compose exec ros2 bash</code> 进容器（下文简称 “<strong>进容器</strong>”）。</p>
+<hr />
+<h3 id="start-12">3. 第一次成功：用手机遥控<strong>仿真里的</strong>机器人（不需要任何硬件）</h3>
+<p><strong>目标</strong>：在电脑的 3D 仿真里看到六足机器人，用<strong>手机</strong>推摇杆让它走。这一步做通了，说明电脑、网络、手机网页全都没问题。<strong>时间</strong>：1 小时。</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-22" class="task-list-item-checkbox"  type="checkbox"> <strong>3.1</strong> 终端 1 进容器，启动仿真：</p>
+<pre><code class="language-bash">ros2 launch seeker_gazebo sim_teleop.launch.py
+</code></pre>
+<p>会弹出 Gazebo 窗口，里面有一只六足机器人。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-23" class="task-list-item-checkbox"  type="checkbox"> <strong>3.2</strong> 终端 2 进容器，启动网页控制台：</p>
+<pre><code class="language-bash">ros2 launch seeker_web web.launch.py
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-24" class="task-list-item-checkbox"  type="checkbox"> <strong>3.3</strong> 手机连<strong>同一个 Wi-Fi</strong>，浏览器打开 <code>http://电脑IP:8080</code>（比如 <code>http://192.168.1.23:8080</code>）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-25" class="task-list-item-checkbox"  type="checkbox"> <strong>3.4</strong> 先把网页上的速度滑块 <strong>lin max 调到 0.08</strong>、<strong>yaw max 调到 0.5</strong>，然后手指按住摇杆圆盘往上推。</p>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：Gazebo 里的六足迈腿往前走；摇杆往左它原地左转。🎉 <strong>你已经用手机遥控了一台（虚拟的）ROS 2 机器人！</strong>
+<strong>❌ 卡住了</strong>：</p>
+<ul>
+<li>Gazebo 窗口不出来 → 宿主机终端运行 <code>xhost +local:docker</code> 后重试；</li>
+<li>手机打不开网页 → 手机和电脑不在同一个 Wi-Fi，或者电脑防火墙：<code>sudo ufw allow 8080/tcp</code>；</li>
+<li>报 <code>No module named 'aiohttp'</code> → 容器里 <code>sudo apt install -y python3-aiohttp</code>。</li>
+<li>详见 <a href="#phone-5"><code>phone-control.md</code> §5</a>。</li>
+</ul>
+<hr />
+<h3 id="start-13">4. 打印结构件（第 2 周）</h3>
+<p><strong>目标</strong>：拿到 1 块底板、1 块甲板、3 个大腿 A、3 个大腿 B、6（+2）个小腿。<strong>时间</strong>：打印约 10–15 小时（代打就等快递）。</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-26" class="task-list-item-checkbox"  type="checkbox"> <strong>4.1</strong> 舵机到货后，用游标卡尺量一个 MG90S：机身长 / 宽、安装耳总长、两个孔的距离。和 <a href="#cad-2"><code>../cad/README.md</code> §2</a> 的默认值差超过 0.5 mm，就改 <a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/cad/params.scad" target="_blank" rel="noopener"><code>../cad/params.scad</code></a> 重新导出（没有差别就直接用现成 STL）。</li>
+<li class="task-list-item enabled"><input id="task-start-27" class="task-list-item-checkbox"  type="checkbox"> <strong>4.2</strong> <strong>先打 1 个大腿试装</strong>：PETG，层高 0.2 mm，4 圈壁，30 % 填充，<strong>有凹槽的一面贴热床</strong>，不用支撑（<a href="#cad-3"><code>../cad/README.md</code> §3</a>）。</li>
+<li class="task-list-item enabled"><input id="task-start-28" class="task-list-item-checkbox"  type="checkbox"> <strong>4.3</strong> 试装：舵机稍微用力能推进方孔；舵机自带的<strong>单边舵机臂</strong>能压进凹槽。太紧 / 太松就改 <code>clearance</code> 重打。</li>
+<li class="task-list-item enabled"><input id="task-start-29" class="task-list-item-checkbox"  type="checkbox"> <strong>4.4</strong> 打全套：底板、甲板（3 圈壁 20 % 填充）；大腿 A × 3、大腿 B × 3、小腿 × 8（4 圈壁 30 % 填充）。</li>
+<li class="task-list-item enabled"><input id="task-start-30" class="task-list-item-checkbox"  type="checkbox"> <strong>4.5</strong> 去毛刺，方孔用小锉刀修一下。</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：13 个零件都在，舵机能塞进底板和大腿的方孔。</p>
+<hr />
+<h3 id="start-14">5. 电子入门：焊排针、第一次刷固件（第 3 周）</h3>
+<p><strong>目标</strong>：学会用万用表和电烙铁，XIAO 焊好排针，刷进第一个程序让灯闪。<strong>时间</strong>：半天。</p>
+<h4 id="start-15">5.1 学两个基本功（各 10 分钟）</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-31" class="task-list-item-checkbox"  type="checkbox"> <strong>5.1.1 万用表</strong>：拨到 <strong>直流电压 20 V 档（V⎓）</strong>，红笔接 +、黑笔接 −，量一节 5 号电池应显示约 1.5 V。再拨到 <strong>蜂鸣档（🔊）</strong>，两支笔碰一起会响——以后 “查短路” 就用这个档：两点之间<strong>响了 = 通 / 短路</strong>。</li>
+<li class="task-list-item enabled"><input id="task-start-32" class="task-list-item-checkbox"  type="checkbox"> <strong>5.1.2 焊接</strong>：在元件包的一段排针和一块洞洞板上先练 5 个焊点：烙铁头同时贴住焊盘和针脚 2 秒 → 送锡丝 → 先撤锡丝再撤烙铁。<strong>好焊点是亮的小圆锥</strong>，不是一坨球。B 站搜 “焊接入门 排针” 看 5 分钟视频再练更快。</li>
+</ul>
+<h4 id="start-16">5.2 给 XIAO 焊排针</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-33" class="task-list-item-checkbox"  type="checkbox"> <strong>5.2.1</strong> 从元件包的 40Pin 排针上掰两段 <strong>7 针</strong>。</li>
+<li class="task-list-item enabled"><input id="task-start-34" class="task-list-item-checkbox"  type="checkbox"> <strong>5.2.2</strong> 把两段排针<strong>长的一头插进面包板</strong>，XIAO <strong>正面朝上</strong>（USB-C 朝外）放上去，这样排针保证是直的。</li>
+<li class="task-list-item enabled"><input id="task-start-35" class="task-list-item-checkbox"  type="checkbox"> <strong>5.2.3</strong> 焊 14 个点。<strong>背面那些 1.27 mm 的小焊盘不要碰</strong>（D11–D19，不用）。</li>
+<li class="task-list-item enabled"><input id="task-start-36" class="task-list-item-checkbox"  type="checkbox"> <strong>5.2.4</strong> <strong>插上棒状天线</strong>（背面小圆座，按下去 “咔” 一声）。</li>
+</ul>
+<h4 id="start-17">5.3 第一次刷固件：让灯闪</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-37" class="task-list-item-checkbox"  type="checkbox"> <strong>5.3.1</strong> XIAO 用 USB-C <strong>数据线</strong>插电脑（充电线不行）。宿主机终端运行 <code>ls /dev/ttyACM*</code>，应该看到 <code>/dev/ttyACM0</code>。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-38" class="task-list-item-checkbox"  type="checkbox"> <strong>5.3.2</strong> 重启一下容器让它认到 USB：<code>cd ~/seeker-robot/docker &amp;&amp; docker compose restart ros2</code>，然后进容器：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/test_threaded_blink
+pio run -e esp32s3sense -t upload
+</code></pre>
+<p>第一次会下载工具链，要 5–15 分钟。</p>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：显示 <code>SUCCESS</code>，XIAO 上的小灯开始闪。🎉
+<strong>❌ 卡住了</strong>：</p>
+<ul>
+<li>刷不进去 → <strong>按住 XIAO 上的 B（BOOT）键不放 → 插 USB → 松开</strong>，再运行一次上传；</li>
+<li>找不到 <code>/dev/ttyACM0</code> → 换一根 USB 线；</li>
+<li>为什么 Plus 用 <code>esp32s3sense</code> 环境：两块板引脚一样，放心用（<a href="#soft-9"><code>software-setup.md</code> §4.1</a>）。</li>
+</ul>
+<hr />
+<h3 id="start-18">6. 桌面上逐个测试模块（第 3–4 周）</h3>
+<p><strong>目标</strong>：机器人还没组装，先在桌子上把每个模块接到面包板上，一个一个测通。<strong>一次只加一个模块</strong>，前一个不通不要往下。<strong>时间</strong>：1–2 天。</p>
+<p>接线全部按 <a href="#wire"><code>wiring-guide.md</code></a>：<strong>第 1 节的接线总表</strong>是每根线的去向，图 1 是电源，图 2 是信号。</p>
+<div class="fig-row"><span class="fig fig-svg"><svg role="img" aria-label="XIAO 引脚接线" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 760" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="760" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 2  XIAO ESP32S3 Plus 引脚接线（D0–D10 和 Sense 相同，对应固件 ENV_ESP32S3SENSE）</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">每个引脚右边 / 左边的标签 = 这根线另一头接到哪里；I²C 三个模块并联在同一对 SDA / SCL 上</text>
+<rect x="465" y="110" width="170" height="330" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="550.0" y="132" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">XIAO ESP32S3 Plus</text>
+<text x="550.0" y="152" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">俯视，USB-C 朝上</text>
+<rect x="528.0" y="100" width="44" height="14" rx="4" fill="#B9C4C1"/>
+<text x="550.0" y="111" font-size="9.5" text-anchor="middle" font-weight="700" fill="#1B2A2F">USB-C</text>
+<circle cx="465" cy="190" r="4" fill="#2B3A3F"/>
+<text x="473" y="194" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D0</text>
+<circle cx="465" cy="228" r="4" fill="#2B3A3F"/>
+<text x="473" y="232" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D1</text>
+<circle cx="465" cy="266" r="4" fill="#2B3A3F"/>
+<text x="473" y="270" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D2</text>
+<circle cx="465" cy="304" r="4" fill="#2B3A3F"/>
+<text x="473" y="308" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D3</text>
+<circle cx="465" cy="342" r="4" fill="#2B3A3F"/>
+<text x="473" y="346" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D4</text>
+<circle cx="465" cy="380" r="4" fill="#2B3A3F"/>
+<text x="473" y="384" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D5</text>
+<circle cx="465" cy="418" r="4" fill="#2B3A3F"/>
+<text x="473" y="422" font-size="11.5" text-anchor="start" font-weight="600" fill="#1B2A2F">D6</text>
+<circle cx="635" cy="190" r="4" fill="#2B3A3F"/>
+<text x="627" y="194" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">5V</text>
+<circle cx="635" cy="228" r="4" fill="#2B3A3F"/>
+<text x="627" y="232" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">GND</text>
+<circle cx="635" cy="266" r="4" fill="#2B3A3F"/>
+<text x="627" y="270" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">3V3</text>
+<circle cx="635" cy="304" r="4" fill="#2B3A3F"/>
+<text x="627" y="308" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D10</text>
+<circle cx="635" cy="342" r="4" fill="#2B3A3F"/>
+<text x="627" y="346" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D9</text>
+<circle cx="635" cy="380" r="4" fill="#2B3A3F"/>
+<text x="627" y="384" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D8</text>
+<circle cx="635" cy="418" r="4" fill="#2B3A3F"/>
+<text x="627" y="422" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">D7</text>
+<path d="M465,190 L425,190" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="205.0" y="179" width="220.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="315.0" y="194.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">PCA9685 OE（10 kΩ 上拉到 3V3）</text>
+<path d="M465,228 L425,228" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="345.0" y="217" width="80.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="385.0" y="232.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">BNO085 INT</text>
+<path d="M465,266 L425,266" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="219.0" y="255" width="206.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="322.0" y="270.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">WS2812 DIN（串 330 Ω，可选）</text>
+<path d="M465,304 L425,304" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="163.0" y="293" width="262.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="294.0" y="308.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">电压检测模块 S 脚（30k / 7.5k 分压）</text>
+<path d="M465,342 L425,342" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="219.0" y="331" width="206.0" height="22" rx="11" fill="#1E8A5A"/>
+<text x="322.0" y="346.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">SDA：PCA9685 · BNO085 · OLED</text>
+<path d="M465,380 L425,380" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="219.0" y="369" width="206.0" height="22" rx="11" fill="#1E8A5A"/>
+<text x="322.0" y="384.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">SCL：PCA9685 · BNO085 · OLED</text>
+<path d="M465,418 L425,418" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="303.0" y="407" width="122.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="364.0" y="422.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">TX → LD14P 的 RX</text>
+<path d="M635,190 L675,190" fill="none" stroke="#E07B00" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="179" width="171.0" height="22" rx="11" fill="#E07B00"/>
+<text x="760.5" y="194.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">5V_SV 经 1N5819（图 1）</text>
+<path d="M635,228 L675,228" fill="none" stroke="#222222" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="217" width="52.0" height="22" rx="11" fill="#222222"/>
+<text x="701.0" y="232.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">公共地</text>
+<path d="M635,266 L675,266" fill="none" stroke="#7A4CC2" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="255" width="255.0" height="22" rx="11" fill="#7A4CC2"/>
+<text x="802.5" y="270.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">PCA9685 VCC · BNO085 VIN · OLED VCC</text>
+<path d="M635,304 L675,304" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="293" width="101.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="725.5" y="308.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">MAX98357A DIN</text>
+<path d="M635,342 L675,342" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="331" width="101.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="725.5" y="346.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">MAX98357A LRC</text>
+<path d="M635,380 L675,380" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="369" width="108.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="729.0" y="384.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">MAX98357A BCLK</text>
+<path d="M635,418 L675,418" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="675" y="407" width="122.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="736.0" y="422.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">RX ← LD14P 的 TX</text>
+<text x="550" y="470" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">背面 D11–D19 焊盘不接；BAT± 焊盘不接</text>
+<text x="550" y="488" font-size="11.5" text-anchor="middle" font-weight="700" fill="#D23B2F">棒状天线一定要插上（U.FL）</text>
+<rect x="40" y="540" width="190" height="160" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="135.0" y="562" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">PCA9685 模块</text>
+<text x="52" y="582" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">VCC → 3V3</text>
+<text x="52" y="599" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">GND → GND</text>
+<text x="52" y="616" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">SDA → D4 · SCL → D5</text>
+<text x="52" y="633" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">OE → D0（加 10 kΩ 到 3V3）</text>
+<text x="52" y="650" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">V+ → 5V_SV</text>
+<rect x="250" y="540" width="190" height="160" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="345.0" y="562" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">BNO085 模块</text>
+<text x="262" y="582" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">VIN → 3V3 · GND → GND</text>
+<text x="262" y="599" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">SDA → D4 · SCL → D5</text>
+<text x="262" y="616" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">INT → D1</text>
+<text x="262" y="633" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">DI(ADR) → 3V3 = 0x4B</text>
+<text x="262" y="650" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">RST 悬空（板上有上拉）</text>
+<rect x="460" y="540" width="190" height="160" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="555.0" y="562" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">LD14P 雷达</text>
+<text x="472" y="582" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">5V → 5V_SV · GND → GND</text>
+<text x="472" y="599" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">雷达 RX ← D6</text>
+<text x="472" y="616" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">雷达 TX → D7</text>
+<text x="472" y="633" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">线序看雷达丝印 / 手册</text>
+<rect x="670" y="540" width="190" height="160" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="765.0" y="562" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">MAX98357A</text>
+<text x="682" y="582" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">VIN → 5V_SV · GND</text>
+<text x="682" y="599" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">BCLK ← D8 · LRC ← D9</text>
+<text x="682" y="616" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">DIN ← D10</text>
+<text x="682" y="633" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">SD 悬空 = 左右混音</text>
+<text x="682" y="650" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">喇叭接 + / −</text>
+<rect x="880" y="540" width="190" height="160" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="975.0" y="562" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">OLED 0.96″</text>
+<text x="892" y="582" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">VCC → 3V3 · GND</text>
+<text x="892" y="599" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">SCL → D5</text>
+<text x="892" y="616" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">SDA → D4</text>
+<text x="892" y="633" font-size="11.5" text-anchor="start" font-weight="400" fill="#5E6E72">地址 0x3C</text>
+<path d="M40,735 L68,735" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="74" y="739" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">信号</text>
+<path d="M110,735 L138,735" fill="none" stroke="#1E8A5A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="144" y="739" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">I²C</text>
+<path d="M193,735 L221,735" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="227" y="739" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">5 V</text>
+<path d="M276,735 L304,735" fill="none" stroke="#7A4CC2" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="310" y="739" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">3.3 V</text>
+<path d="M385,735 L413,735" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="419" y="739" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">GND</text>
+</svg><span class="fig-cap">XIAO 引脚接线</span></span></div>
+<h4 id="start-19">6.1 Wi-Fi</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-39" class="task-list-item-checkbox"  type="checkbox"> 进容器刷 Wi-Fi 测试，打开串口看输出：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/test_sub_wifi
+pio run -e esp32s3sense -t upload
+pio device monitor -b 921600
+</code></pre>
+</li>
+</ul>
+<p><strong>✅</strong> 每隔几秒打印 <code>WiFi: CONNECTED | SSID: 你的WiFi | IP: 192.168.x.50 | RSSI: -xx</code>。按 <code>Ctrl + C</code> 退出。
+<strong>❌</strong> 一直 <code>CONNECTING</code> → Wi-Fi 名字密码写错，或者是 5 GHz；天线没插。</p>
+<h4 id="start-20">6.2 和电脑的 ROS 2 连起来（micro-ROS 心跳）</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-40" class="task-list-item-checkbox"  type="checkbox"> 终端 1 进容器，开 Agent（<strong>以后每次都要先开它</strong>）：</p>
+<pre><code class="language-bash">ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-41" class="task-list-item-checkbox"  type="checkbox"> 终端 2 进容器，刷心跳测试并查看：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/test_sub_heartbeat
+pio run -e esp32s3sense -t upload
+ros2 topic echo /mcu/heartbeat
+</code></pre>
+</li>
+</ul>
+<p><strong>✅</strong> 终端 1 出现 <code>create_session</code>；终端 2 每秒打印一个递增的数字 <code>data: 1</code>、<code>data: 2</code>……🎉 机器人和电脑的 ROS 2 连上了。
+<strong>❌</strong> 一直没有 <code>create_session</code> → <code>agent_ip</code> 不是电脑 IP；电脑防火墙 <code>sudo ufw allow 8888/udp</code>。</p>
+<h4 id="start-21">6.3 姿态传感器 BNO085</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-42" class="task-list-item-checkbox"  type="checkbox"> 拔掉 USB，按接线表接：BNO085 的 <strong>VIN → 3V3、GND → GND、SDA → D4、SCL → D5、INT → D1</strong>，如果是 Adafruit 版再把 <strong>DI → 3V3</strong>（<a href="#wire-7"><code>wiring-guide.md</code> §3.2</a>）。面包板两侧的长条孔当 3V3 和 GND 母线。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-43" class="task-list-item-checkbox"  type="checkbox"> 插 USB，刷测试：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/test_sub_gyro_nondma
+pio run -e esp32s3senseserial -t upload
+pio device monitor -b 921600
+</code></pre>
+</li>
+</ul>
+<p><strong>✅</strong> 打印 BNO085 初始化成功；转动传感器，输出的数字跟着变。
+<strong>❌</strong> <code>BNO08x not detected</code> → SDA / SCL 接反了；地址不对（<a href="#soft-16"><code>software-setup.md</code> §7.4</a>）。</p>
+<h4 id="start-22">6.4 电源链路（最重要，慢慢来）</h4>
+<p>先<strong>不接 XIAO、不接任何模块</strong>，只接电源这一串（<a href="#wire-2"><code>wiring-guide.md</code> §2</a>）：</p>
+<div class="fig-row"><span class="fig fig-svg"><svg role="img" aria-label="电源接线" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="800" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 1  电源：电池 → 保险丝 → 开关 → 5 V 降压 → 舵机 / 雷达 / 主控</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">彩色标签表示“接到同名的线”。舵机电流大，红线和黑线用 20 AWG 以上的硅胶线</text>
+<rect x="40" y="100" width="150" height="120" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="115.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">3S 锂电池</text>
+<text x="115.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">11.1 V 1000–1300 mAh</text>
+<text x="115.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">XT30 插头</text>
+<circle cx="190" cy="140" r="4" fill="#D23B2F"/>
+<text x="182" y="144" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="190" cy="190" r="4" fill="#222222"/>
+<text x="182" y="194" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">−</text>
+<rect x="215" y="128" width="60" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="245.0" y="144.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">XT30</text>
+<rect x="300" y="128" width="90" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="345.0" y="144.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">保险丝 5 A</text>
+<rect x="415" y="128" width="80" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="455.0" y="144.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">船型开关</text>
+<path d="M190,140 L215,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M275,140 L300,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M390,140 L415,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M495,140 L1060,140" fill="none" stroke="#D23B2F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="945.0" y="105" width="115.0" height="22" rx="11" fill="#D23B2F"/>
+<text x="1002.5" y="120.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">VIN 9.9–12.6 V</text>
+<path d="M190,190 L240,190 L240,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="240" cy="640" r="5" fill="#222222"/>
+<path d="M40,640 L1060,640" fill="none" stroke="#222222" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="917.0" y="653" width="143.0" height="22" rx="11" fill="#222222"/>
+<text x="988.5" y="668.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND（所有模块共地）</text>
+<circle cx="540" cy="140" r="5" fill="#D23B2F"/>
+<path d="M540,140 L540,170" fill="none" stroke="#D23B2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="500" y="170" width="80" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="540.0" y="186.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">30 kΩ</text>
+<path d="M540,194 L540,240" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="540" cy="215" r="5" fill="#1F6FB5"/>
+<path d="M540,215 L490,215" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="312.0" y="204" width="178.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="401.0" y="219.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">电压检测模块 S → XIAO D3</text>
+<rect x="500" y="240" width="80" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="540.0" y="256.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">7.5 kΩ</text>
+<path d="M540,264 L540,290" fill="none" stroke="#222222" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="499.0" y="279" width="31.0" height="22" rx="11" fill="#222222"/>
+<text x="514.5" y="294.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
+<rect x="640" y="190" width="220" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="750.0" y="212" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">5 V 降压模块</text>
+<text x="750.0" y="232" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">12 V → 5 V 5 A 固定输出</text>
+<text x="750.0" y="249" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">先量 5.0–5.2 V 再接！</text>
+<circle cx="680" cy="190" r="4" fill="#D23B2F"/>
+<text x="680" y="206" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">IN+</text>
+<circle cx="820" cy="190" r="4" fill="#222222"/>
+<text x="820" y="206" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">IN−</text>
+<circle cx="700" cy="300" r="4" fill="#E07B00"/>
+<text x="700" y="292" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">OUT+</text>
+<circle cx="820" cy="300" r="4" fill="#222222"/>
+<text x="820" y="292" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">OUT−</text>
+<path d="M680,190 L680,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="680" cy="140" r="5" fill="#D23B2F"/>
+<path d="M820,190 L820,170 L880,170 L880,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="880" cy="640" r="5" fill="#222222"/>
+<path d="M820,300 L820,330 L880,330" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="880" cy="330" r="5" fill="#222222"/>
+<path d="M700,300 L700,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M40,380 L1060,380" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="700" cy="380" r="5" fill="#E07B00"/>
+<rect x="40" y="345" width="185.0" height="22" rx="11" fill="#E07B00"/>
+<text x="132.5" y="360.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">5V_SV 舵机电源 5.0–5.2 V</text>
+<rect x="40" y="440" width="190" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="135.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">PCA9685 V+</text>
+<text x="135.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">舵机电源端子（绿色螺丝端子）</text>
+<text x="135.0" y="499" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">旁边并一个 1000 µF 电容</text>
+<circle cx="70" cy="440" r="4" fill="#E07B00"/>
+<text x="70" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="200" cy="540" r="4" fill="#222222"/>
+<text x="200" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M70,440 L70,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="70" cy="380" r="5" fill="#E07B00"/>
+<path d="M200,540 L200,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="200" cy="640" r="5" fill="#222222"/>
+<rect x="250" y="440" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="330.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">LD14P 雷达</text>
+<text x="330.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 脚（约 300 mA）</text>
+<circle cx="280" cy="440" r="4" fill="#E07B00"/>
+<text x="280" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="380" cy="540" r="4" fill="#222222"/>
+<text x="380" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M280,440 L280,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="280" cy="380" r="5" fill="#E07B00"/>
+<path d="M380,540 L380,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="380" cy="640" r="5" fill="#222222"/>
+<rect x="430" y="440" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="510.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">MAX98357A</text>
+<text x="510.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">VIN 脚</text>
+<circle cx="460" cy="440" r="4" fill="#E07B00"/>
+<text x="460" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="560" cy="540" r="4" fill="#222222"/>
+<text x="560" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M460,440 L460,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="460" cy="380" r="5" fill="#E07B00"/>
+<path d="M560,540 L560,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560" cy="640" r="5" fill="#222222"/>
+<rect x="610" y="440" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="690.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">WS2812 灯</text>
+<text x="690.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 脚（可选）</text>
+<circle cx="640" cy="440" r="4" fill="#E07B00"/>
+<text x="640" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="740" cy="540" r="4" fill="#222222"/>
+<text x="740" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M640,440 L640,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="640" cy="380" r="5" fill="#E07B00"/>
+<path d="M740,540 L740,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="740" cy="640" r="5" fill="#222222"/>
+<path d="M925,380 L925,405" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="925" cy="380" r="5" fill="#E07B00"/>
+<rect x="900" y="405" width="80" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="940.0" y="421.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">1N5819 ▶|</text>
+<text x="990" y="421" font-size="11" text-anchor="start" font-weight="400" fill="#5E6E72">条纹朝下</text>
+<path d="M925,429 L925,460" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="900" y="460" width="170" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="985.0" y="482" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<text x="1000" y="488" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">XIAO ESP32S3</text>
+<text x="1000" y="510" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 脚进电</text>
+<text x="1000" y="527" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">3V3 脚出电</text>
+<circle cx="925" cy="460" r="4" fill="#E07B00"/>
+<text x="925" y="476" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">5V</text>
+<circle cx="1040" cy="570" r="4" fill="#222222"/>
+<text x="1040" y="562" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">GND</text>
+<path d="M1040,570 L1040,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1040" cy="640" r="5" fill="#222222"/>
+<circle cx="920" cy="570" r="4" fill="#7A4CC2"/>
+<text x="920" y="562" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">3V3</text>
+<path d="M920,570 L920,600" fill="none" stroke="#7A4CC2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="618.0" y="589" width="297.0" height="22" rx="11" fill="#7A4CC2"/>
+<text x="766.5" y="604.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">3V3 → PCA9685 VCC · BNO085 VIN · OLED VCC</text>
+<circle cx="50" cy="696" r="10" fill="#1B2A2F"/>
+<text x="50" y="700.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="68" y="700" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">降压模块先单独通电，万用表确认 5.0–5.2 V，再接任何负载</text>
+<circle cx="50" cy="724" r="10" fill="#1B2A2F"/>
+<text x="50" y="728.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="68" y="728" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">1N5819 防止插着 USB 时电流倒灌进舵机电源（Seeker 原版 PCB 也是这样做的）</text>
+<circle cx="50" cy="752" r="10" fill="#1B2A2F"/>
+<text x="50" y="756.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="68" y="756" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">PCA9685 的 VCC 接 3V3（逻辑电），V+ 接 5V_SV（舵机电），两个不要接反</text>
+<circle cx="610" cy="696" r="10" fill="#1B2A2F"/>
+<text x="610" y="700.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">4</text>
+<text x="628" y="700" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">电压检测模块：VIN × 7.5 / 37.5 → 12.6 V 时 D3 = 2.52 V</text>
+<circle cx="610" cy="724" r="10" fill="#1B2A2F"/>
+<text x="610" y="728.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">5</text>
+<text x="628" y="728" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">通电前先量 VIN、5V_SV 和 GND 之间不短路</text>
+<path d="M600,758 L628,758" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="634" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">VIN</text>
+<path d="M683,758 L711,758" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="717" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">5 V</text>
+<path d="M766,758 L794,758" fill="none" stroke="#7A4CC2" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="800" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">3.3 V</text>
+<path d="M875,758 L903,758" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="909" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">GND</text>
+</svg><span class="fig-cap">电源接线</span></span></div>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-44" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.1</strong> 焊一根 XT30 母头线（接电池用）：红线 → 保险丝座 → 船型开关 → 这一端叫 <strong>VIN</strong>；黑线叫 <strong>GND</strong>。每个焊点套热缩管。</li>
+<li class="task-list-item enabled"><input id="task-start-45" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.2</strong> VIN、GND 接降压模块的<strong>输入</strong>（红进黑进）。</li>
+<li class="task-list-item enabled"><input id="task-start-46" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.3</strong> 电池开关<strong>关着</strong>，插上电池。万用表蜂鸣档确认降压模块<strong>输出</strong>红黑两根线<strong>不短路</strong>（不响）。</li>
+<li class="task-list-item enabled"><input id="task-start-47" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.4</strong> 打开开关，万用表直流电压档量降压模块输出。</li>
+</ul>
+<p><strong>✅</strong> 输出 <strong>5.0–5.2 V</strong>。关开关。
+<strong>❌</strong> 不在这个范围 → 不要往下接！换模块或者调（可调模块拧电位器到 5.1 V）。</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-48" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.5</strong> 接电压检测模块：输入端子接 VIN 和 GND；输出 <strong>S → XIAO D3</strong>、<strong>− → GND</strong>。</li>
+<li class="task-list-item enabled"><input id="task-start-49" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.6</strong> 焊防倒灌二极管：降压模块输出红线 → <strong>二极管（白色条纹那头朝 XIAO）</strong> → 杜邦线 → XIAO <strong>5V</strong> 脚；降压输出黑线 → XIAO <strong>GND</strong>。套热缩管。</li>
+<li class="task-list-item enabled"><input id="task-start-50" class="task-list-item-checkbox"  type="checkbox"> <strong>6.4.7</strong> <strong>拔掉 USB</strong>，只开电池开关：XIAO 电源灯亮；万用表量 XIAO 的 3V3 脚 ≈ 3.3 V。</li>
+</ul>
+<p><strong>✅</strong> XIAO 用电池也能开机。🎉</p>
+<h4 id="start-23">6.5 雷达 LD14P</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-51" class="task-list-item-checkbox"  type="checkbox"> 接线：雷达 <strong>5V → 降压输出 5 V</strong>、<strong>GND → GND</strong>、<strong>雷达 TX → XIAO D7</strong>、<strong>雷达 RX → XIAO D6</strong>（交叉接，线序看雷达板丝印，<a href="#wire-8"><code>wiring-guide.md</code> §3.3</a>）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-52" class="task-list-item-checkbox"  type="checkbox"> 开电池开关，刷测试：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/test_sub_lidar
+pio run -e esp32s3senseserial -t upload
+pio device monitor -b 921600      # 然后输入 scan 回车
+</code></pre>
+</li>
+</ul>
+<p><strong>✅</strong> 雷达转起来，每圈约 720 个点。
+<strong>❌</strong> 不转 → 雷达 5 V 没接好；转但没数据 → TX / RX 接反了。</p>
+<h4 id="start-24">6.6 舵机驱动板 PCA9685 + 第一个舵机</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-53" class="task-list-item-checkbox"  type="checkbox"> 接线：PCA9685 <strong>VCC → 3V3、GND → GND、SDA → D4、SCL → D5、OE → D0</strong>；降压模块 5 V 输出再接一路到 PCA9685 的<strong>绿色螺丝端子 V+ / GND</strong>；端子旁边并上 <strong>1000 µF 电容（长脚接 +）</strong>（<a href="#wire-6"><code>wiring-guide.md</code> §3.1</a>）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-54" class="task-list-item-checkbox"  type="checkbox"> 先插学习套件的 <strong>SG90</strong> 到 <strong>通道 0</strong>，<strong>棕线对 GND</strong>。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-55" class="task-list-item-checkbox"  type="checkbox"> 刷测试，按顺序输入命令：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/test_sub_servo
+pio run -e esp32s3senseserial -t upload
+pio device monitor -b 921600
+# 在串口里依次输入：
+#   arm
+#   attach 0
+#   angle 0 90
+#   angle 0 45
+#   disarm
+</code></pre>
+</li>
+</ul>
+<p><strong>✅</strong> SG90 跟着命令转。然后换一个 MG90S 再试，<strong>14 个 MG90S 都在通道 0 试一遍</strong>，挑出坏的（或者直接用舵机测试仪试）。🎉
+<strong>❌</strong> 不动 → 忘了 <code>arm</code>；PCA9685 的 V+ 没电；OE 线没接。</p>
+<h4 id="start-25">6.7 电池电压</h4>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input id="task-start-56" class="task-list-item-checkbox"  type="checkbox"> 刷 <code>test_sub_battery</code>（环境 <code>esp32s3sense</code>），串口输入 <code>read</code>，同时用万用表量电池。记下 “ADC 原始值 ↔ 实际电压” 两组（满电一组、快没电一组），填到固件里（<a href="#soft-20"><code>software-setup.md</code> §7.8</a>）。可以放到最后做，不影响走路。</li>
+</ul>
+<p><strong>✅ 阶段 6 完成的样子</strong>：Wi-Fi、心跳、IMU、雷达、舵机、电池都单独测通了。</p>
+<hr />
+<h3 id="start-26">7. 组装机器人 + 舵机标定（第 4–5 周）</h3>
+<p><strong>目标</strong>：把所有东西装到打印件上，让六条腿在 “站立” 姿势时左右对称、身体水平。<strong>时间</strong>：1–2 天，<strong>舵机标定最花时间</strong>。</p>
+<p>跟着 <a href="#wire-15"><code>wiring-guide.md</code> 第 6 节</a> 的 14 步做，这里列出关键的检查点：</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-57" class="task-list-item-checkbox"  type="checkbox"> <strong>7.1 舵机回中</strong>：12 个舵机<strong>在装舵机臂之前</strong>全部用舵机测试仪拨到 “中位”（<a href="#wire-17"><code>wiring-guide.md</code> §6.2</a>）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-58" class="task-list-item-checkbox"  type="checkbox"> <strong>7.2 装髋舵机</strong>：6 个舵机从上往下插进底板方孔，<strong>输出轴朝下、靠底板外边</strong>，每个 2 颗 M2 自攻螺丝。底板上刻着 FL、FR、ML、MR、RL、RR（左前、右前、左中、右中、左后、右后）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-59" class="task-list-item-checkbox"  type="checkbox"> <strong>7.3 装膝舵机</strong>：左边三条腿用<strong>大腿 A</strong>、右边用<strong>大腿 B</strong>，舵机从侧板外面插进去，输出轴在远离髋的那一头。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-60" class="task-list-item-checkbox"  type="checkbox"> <strong>7.4 舵机臂压进大腿和小腿的凹槽</strong>，各用 2 颗 M2 自攻螺丝固定。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-61" class="task-list-item-checkbox"  type="checkbox"> <strong>7.5 装腿</strong>：大腿<strong>沿方孔方向笔直朝外</strong>按到髋舵机上；小腿<strong>朝下斜 45°</strong> 按到膝舵机上；拧舵机臂中心螺丝。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-62" class="task-list-item-checkbox"  type="checkbox"> <strong>7.6 走线</strong>：膝舵机线沿大腿穿过底板走线槽，髋附近<strong>留 3–4 cm 余量</strong>，手动把大腿转到两头线都不绷紧。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-63" class="task-list-item-checkbox"  type="checkbox"> <strong>7.7 装铜柱、甲板、电池、雷达</strong>：电池用魔术贴绑在底板下面；降压模块、保险丝粘在底板上面；甲板上装 PCA9685、面包板、BNO085（<strong>X 箭头朝前</strong>）、开关；雷达用 4 根 M3 × 20 尼龙柱架在最上面。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-64" class="task-list-item-checkbox"  type="checkbox"> <strong>7.8 按通道插 12 个舵机</strong>（<a href="#wire-13"><code>wiring-guide.md</code> §4</a>）：</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>腿</th>
+<th>髋舵机 → 通道</th>
+<th>膝舵机 → 通道</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FL 左前</td>
+<td>6</td>
+<td>13</td>
+</tr>
+<tr>
+<td>FR 右前</td>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>ML 左中</td>
+<td>5</td>
+<td>12</td>
+</tr>
+<tr>
+<td>MR 右中</td>
+<td>2</td>
+<td>10</td>
+</tr>
+<tr>
+<td>RL 左后</td>
+<td>4</td>
+<td>11</td>
+</tr>
+<tr>
+<td>RR 右后</td>
+<td>3</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-65" class="task-list-item-checkbox"  type="checkbox"> <strong>7.9 通电检查</strong>：按 <a href="#wire-19"><code>wiring-guide.md</code> §7</a> 的 7 步做一遍（先查短路，再逐步通电）。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-66" class="task-list-item-checkbox"  type="checkbox"> <strong>7.10 舵机标定</strong>：刷 <code>test_sub_servo</code>，<strong>一个舵机一个舵机</strong>找到：髋 −25° / +25°、膝 0°（小腿水平）/ 90°（小腿竖直向下）对应的数值，填进 <code>HexapodConfig.h</code> 的 <code>kServoConfigs</code>，方向反了改 <code>inverted</code>（<a href="#soft-19"><code>software-setup.md</code> §7.7</a>）。</p>
+<ul>
+<li>💡 把机器人<strong>架空</strong>（垫个盒子，脚不着地）再标定，腿乱动也不会摔。</li>
+<li>💡 髋关节 0° 时，让<strong>脚尖</strong>对准腿的安装方向。</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-67" class="task-list-item-checkbox"  type="checkbox"> <strong>7.11 站起来试试</strong>：刷 <code>test_sub_gait</code>（环境 <code>esp32s3senseserial</code>），串口输入 <code>neutral</code>。</p>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：<code>neutral</code> 以后六条腿对称，机身水平，底板离地约 7 cm。</p>
+<hr />
+<h3 id="start-27">8. 🎯 最终目标：用手机遥控机器人走路</h3>
+<p><strong>目标</strong>：真机器人跟着手机摇杆走。<strong>时间</strong>：半天。</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input id="task-start-68" class="task-list-item-checkbox"  type="checkbox"> <strong>8.1 串口先走两步</strong>：还是 <code>test_sub_gait</code>，架空状态下输入 <code>start</code> → <code>vel 0.03</code> → <code>status</code> → <code>halt</code>。六条腿应该按三角步态交替迈步（三条腿一组），不打架。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-69" class="task-list-item-checkbox"  type="checkbox"> <strong>8.2 放到地上再试一次</strong> <code>start</code> → <code>vel 0.03</code> → <code>halt</code>，它应该往前慢慢走。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-70" class="task-list-item-checkbox"  type="checkbox"> <strong>8.3 刷主固件</strong>（带步态 + 雷达 + IMU + 电池，接收 <code>/cmd_vel</code>）：</p>
+<pre><code class="language-bash">cd ~/mcu_workspaces/seeker_mcu/src/main
+pio run -e esp32s3sense_offload -t upload
+</code></pre>
+<p>拔 USB，开电池开关。状态灯（如果接了灯环）：彩虹 → 红色追逐（连 Wi-Fi）→ 黄色呼吸（等 ROS）→ <strong>青色慢呼吸（就绪）</strong>。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-71" class="task-list-item-checkbox"  type="checkbox"> <strong>8.4 电脑开两个终端</strong>（都要进容器）：</p>
+<pre><code class="language-bash"># 终端 1：Agent
+ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888
+# 终端 2：手机网页（mcu_ip 填机器人的 static_ip）
+ros2 launch seeker_web web.launch.py mcu_ip:=192.168.1.50
+</code></pre>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-72" class="task-list-item-checkbox"  type="checkbox"> <strong>8.5 手机打开</strong> <code>http://电脑IP:8080</code>，网页上能看到电池电压、心跳在更新。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-73" class="task-list-item-checkbox"  type="checkbox"> <strong>8.6 滑块调小</strong>：lin max <strong>0.06</strong>、yaw max <strong>0.4</strong>。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-74" class="task-list-item-checkbox"  type="checkbox"> <strong>8.7 手指轻推摇杆往上</strong>，机器人往前走；往左推，原地左转；松手就停。</p>
+</li>
+<li class="task-list-item enabled">
+<p><input id="task-start-75" class="task-list-item-checkbox"  type="checkbox"> <strong>8.8 验收</strong>：连续前进 3 米不摔倒，能原地转一圈，走回起点。</p>
+</li>
+</ul>
+<p><strong>✅ 成功的样子</strong>：🎉🎉🎉 <strong>你从零做出了一台能用手机遥控的 ROS 2 六足机器人！</strong>
+<strong>❌ 卡住了</strong>：</p>
+<ul>
+<li>网页上数据不更新 → 终端 1 没有 <code>create_session</code>，机器人没连上（查 Wi-Fi 和 <code>agent_ip</code>）；</li>
+<li>推前进它后退 / 转反了 → 舵机标定的 <code>inverted</code> 反了，回阶段 7.10；</li>
+<li>走一下停一下 → Wi-Fi 信号差，靠近路由器；</li>
+<li>走着走着趴下 → 电池没电了（BB 响会叫），或者膝角太小；</li>
+<li>更多：<a href="#phone-5"><code>phone-control.md</code> §5</a>、<a href="#plan-21"><code>build-plan.md</code> §5</a>。</li>
+</ul>
+<hr />
+<h3 id="start-28">9. 以后可以继续玩的</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>进阶</th>
+<th>看哪里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用手机遥控它绕房间一圈，<strong>建出房间地图</strong></td>
+<td><a href="#phone-4"><code>phone-control.md</code> §4</a>、<a href="#soft-23"><code>software-setup.md</code> §8.2</a></td>
+</tr>
+<tr>
+<td>在地图上点一个位置，它<strong>自己走过去</strong>（Nav2）</td>
+<td><a href="#soft-24"><code>software-setup.md</code> §8.3</a></td>
+</tr>
+<tr>
+<td>加摄像头板，让它<strong>找泰迪熊</strong></td>
+<td><a href="#soft-25"><code>software-setup.md</code> §8.4</a></td>
+</tr>
+<tr>
+<td>加 OLED 显示表情、喇叭说话</td>
+<td><a href="#bom"><code>bom.md</code></a> 的 A7、A8</td>
+</tr>
+<tr>
+<td>把面包板换成焊好的洞洞板，更结实</td>
+<td><a href="#wire-14"><code>wiring-guide.md</code> §5</a></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="start-29">10. 时间表（参考）</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>周</th>
+<th>做什么</th>
+<th>阶段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 周</td>
+<td>下单；装 Ubuntu、Docker；下载 Seeker；编译容器</td>
+<td>1、2</td>
+</tr>
+<tr>
+<td>第 2 周</td>
+<td>手机遥控仿真；打印结构件</td>
+<td>3、4</td>
+</tr>
+<tr>
+<td>第 3 周</td>
+<td>练焊接、焊排针、刷第一个固件；测 Wi-Fi、心跳、IMU</td>
+<td>5、6.1–6.3</td>
+</tr>
+<tr>
+<td>第 4 周</td>
+<td>电源链路、雷达、舵机测试；开始组装</td>
+<td>6.4–6.7、7.1–7.9</td>
+</tr>
+<tr>
+<td>第 5 周</td>
+<td>舵机标定；串口步态</td>
+<td>7.10–7.11、8.1–8.2</td>
+</tr>
+<tr>
+<td>第 6 周</td>
+<td>刷主固件，<strong>手机遥控真机</strong> 🎯</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+<p>每一步卡住超过一个小时，就停下来看对应文档的 “常见问题”，或者把<strong>串口输出 / 报错截图</strong>发给我，我帮你看。</p>
 </section>
 <section class="doc" id="bom" aria-labelledby="bom-title">
 <header class="doc-head"><p class="eyebrow"><a href="https://github.com/ouhanjun-wq/ou/blob/claude/ros-esp32-s3-project-ypzx2b/hexapod/docs/bom.md" target="_blank" rel="noopener">hexapod/docs/bom.md</a></p><h2 class="sec-title" id="bom-title">详细材料清单</h2><p class="doc-sub">详细材料清单</p></header>
@@ -1454,7 +2475,8 @@ main{min-width:0;padding-block:28px 96px}
 <li>在地图上点一个目标点，Nav2 让它<strong>自己走过去</strong>（误差 ≤ 30 cm）；</li>
 <li>可选：加一块摄像头卫星板，对它说 / 输入 “find teddy bear”，它会在房间里找泰迪熊。</li>
 </ol>
-<p>这份计划是总入口，其他文档分工如下：</p>
+<p><strong>纯新手请直接看 <a href="#start"><code>beginner-plan.md</code></a></strong>：从 0 开始、每一步可以打勾的完整路线。这份总计划偏概览和设计校核。</p>
+<p>其他文档分工如下：</p>
 <ul>
 <li>开源项目调研和选型：<a href="#research"><code>project-research.md</code></a></li>
 <li><strong>接线、焊接、机械装配、舵机标定</strong>：<a href="#wire"><code>wiring-guide.md</code></a></li>
@@ -4583,11 +5605,14 @@ window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\
 
   /* step checklists */
   var tasks = Array.prototype.slice.call(document.querySelectorAll(".task-list-item-checkbox"));
+  var planTasks = Array.prototype.slice.call(document.querySelectorAll("#start .task-list-item-checkbox"));
+  if (!planTasks.length) planTasks = tasks;
   function taskUpdate() {
     var done = 0;
-    tasks.forEach(function (t) { if (t.checked) done++; t.parentElement.classList.toggle("done", t.checked); });
-    document.getElementById("prog-text").textContent = "步骤清单：" + done + " / " + tasks.length;
-    document.getElementById("prog-bar").style.width = (tasks.length ? 100 * done / tasks.length : 0) + "%";
+    tasks.forEach(function (t) { t.parentElement.classList.toggle("done", t.checked); });
+    planTasks.forEach(function (t) { if (t.checked) done++; });
+    document.getElementById("prog-text").textContent = "新手计划：" + done + " / " + planTasks.length + " 步";
+    document.getElementById("prog-bar").style.width = (planTasks.length ? 100 * done / planTasks.length : 0) + "%";
   }
   tasks.forEach(function (t) {
     t.checked = !!state[t.id];

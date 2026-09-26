@@ -6,7 +6,9 @@
 > 3. 在地图上点一个目标点，Nav2 让它**自己走过去**（误差 ≤ 30 cm）；
 > 4. 可选：加一块摄像头卫星板，对它说 / 输入 “find teddy bear”，它会在房间里找泰迪熊。
 >
-> 这份计划是总入口，其他文档分工如下：
+> **纯新手请直接看 [`beginner-plan.md`](beginner-plan.md)**：从 0 开始、每一步可以打勾的完整路线。这份总计划偏概览和设计校核。
+>
+> 其他文档分工如下：
 > - 开源项目调研和选型：[`project-research.md`](project-research.md)
 > - **接线、焊接、机械装配、舵机标定**：[`wiring-guide.md`](wiring-guide.md)
 > - **电脑软件安装、烧录、逐项测试**：[`software-setup.md`](software-setup.md)

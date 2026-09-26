@@ -33,6 +33,7 @@ BRANCH = "claude/ros-esp32-s3-project-ypzx2b"
 # (section id, source file relative to the repo root, navigation label)
 DOCS = [
     ("home", "hexapod/README.md", "总览"),
+    ("start", "hexapod/docs/beginner-plan.md", "新手计划"),
     ("bom", "hexapod/docs/bom.md", "详细材料清单"),
     ("plan", "hexapod/docs/build-plan.md", "总计划与步骤"),
     ("wire", "hexapod/docs/wiring-guide.md", "接线与装配"),
@@ -359,7 +360,7 @@ main{min-width:0;padding-block:28px 96px}
 %NAV%
   </ol>
   <div class="progress-mini" aria-live="polite">
-    <span id="prog-text">步骤清单：0 / 0</span>
+    <span id="prog-text">新手计划：0 / 0 步</span>
     <div class="bar"><i id="prog-bar"></i></div>
     <span id="buy-text">材料：还要花 —</span>
   </div>
@@ -369,7 +370,7 @@ main{min-width:0;padding-block:28px 96px}
 <div class="hero">
   <div>
     <h1>XIAO <span>六足</span>机器人</h1>
-    <p class="lede">XIAO ESP32S3 Plus 跑 micro-ROS，通过 Wi-Fi 连到电脑上的 ROS 2 Jazzy：12 个舵机三角步态行走，LD14P 雷达建图，Nav2 自主导航。材料、接线、装配、软件，全部在这一页。</p>
+    <p class="lede">XIAO ESP32S3 Plus 跑 micro-ROS，通过 Wi-Fi 连到电脑上的 ROS 2 Jazzy：12 个舵机三角步态行走，LD14P 雷达建图，手机浏览器遥控。材料、接线、装配、软件，全部在这一页。纯新手从 <a href="#start">新手计划</a> 开始，一步步打勾做到最后。</p>
     <div class="pins" aria-label="XIAO 引脚分配">
       <span><b>D0</b> OE</span><span><b>D1</b> INT</span><span><b>D2</b> LED</span><span><b>D3</b> 电池</span>
       <span><b>D4</b> SDA</span><span><b>D5</b> SCL</span><span><b>D6</b> 雷达 RX</span><span><b>D7</b> 雷达 TX</span>
@@ -404,11 +405,14 @@ window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\
 
   /* step checklists */
   var tasks = Array.prototype.slice.call(document.querySelectorAll(".task-list-item-checkbox"));
+  var planTasks = Array.prototype.slice.call(document.querySelectorAll("#start .task-list-item-checkbox"));
+  if (!planTasks.length) planTasks = tasks;
   function taskUpdate() {
     var done = 0;
-    tasks.forEach(function (t) { if (t.checked) done++; t.parentElement.classList.toggle("done", t.checked); });
-    document.getElementById("prog-text").textContent = "步骤清单：" + done + " / " + tasks.length;
-    document.getElementById("prog-bar").style.width = (tasks.length ? 100 * done / tasks.length : 0) + "%";
+    tasks.forEach(function (t) { t.parentElement.classList.toggle("done", t.checked); });
+    planTasks.forEach(function (t) { if (t.checked) done++; });
+    document.getElementById("prog-text").textContent = "新手计划：" + done + " / " + planTasks.length + " 步";
+    document.getElementById("prog-bar").style.width = (planTasks.length ? 100 * done / planTasks.length : 0) + "%";
   }
   tasks.forEach(function (t) {
     t.checked = !!state[t.id];

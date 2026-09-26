@@ -9,6 +9,7 @@ Seeed **XIAO ESP32S3 Plus**（或 Sense）做主控，跑 **micro-ROS**，通过
 
 | 从这里开始 | 内容 |
 |---|---|
+| 🚀 [`docs/beginner-plan.md`](docs/beginner-plan.md) | **新手计划**：纯新手从 0 开始，买东西 → 装电脑 → 手机遥控仿真 → 打印 → 焊接刷固件 → 逐个测模块 → 组装标定 → **手机遥控真机**，每一步有 “成功的样子” 和 “卡住了怎么办” |
 | 🖥️ [`web/index.html`](web/index.html) | **网页版**：下面所有文档合成一页，材料清单可勾选并实时算剩余花费，步骤清单记进度。由 [`web/build_site.py`](web/build_site.py) 从文档生成 |
 | 🧾 [`docs/bom.md`](docs/bom.md) | **详细材料清单**：每一项的型号、规格参数、数量、价格、淘宝搜索词、注意事项（现成模块优先） |
 | 📱 [`docs/phone-control.md`](docs/phone-control.md) | **手机控制**：手机浏览器通过 Wi-Fi 打开网页摇杆遥控，不用买手柄 |
