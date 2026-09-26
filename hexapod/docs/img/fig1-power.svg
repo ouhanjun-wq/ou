@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="800" viewBox="0 0 1100 800" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="800" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 1  电源：电池 → 保险丝 → 开关 → 5 V 降压 → 舵机 / 雷达 / 主控</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">彩色标签表示“接到同名的线”。舵机电流大，红线和黑线用 20 AWG 以上的硅胶线</text>
+<rect x="40" y="100" width="150" height="120" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="115.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">3S 锂电池</text>
+<text x="115.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">11.1 V 1000–1300 mAh</text>
+<text x="115.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">XT30 插头</text>
+<circle cx="190" cy="140" r="4" fill="#D23B2F"/>
+<text x="182" y="144" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="190" cy="190" r="4" fill="#222222"/>
+<text x="182" y="194" font-size="11.5" text-anchor="end" font-weight="600" fill="#1B2A2F">−</text>
+<rect x="215" y="128" width="60" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="245.0" y="144.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">XT30</text>
+<rect x="300" y="128" width="90" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="345.0" y="144.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">保险丝 5 A</text>
+<rect x="415" y="128" width="80" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="455.0" y="144.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">船型开关</text>
+<path d="M190,140 L215,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M275,140 L300,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M390,140 L415,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M495,140 L1060,140" fill="none" stroke="#D23B2F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="945.0" y="105" width="115.0" height="22" rx="11" fill="#D23B2F"/>
+<text x="1002.5" y="120.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">VIN 9.9–12.6 V</text>
+<path d="M190,190 L240,190 L240,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="240" cy="640" r="5" fill="#222222"/>
+<path d="M40,640 L1060,640" fill="none" stroke="#222222" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="917.0" y="653" width="143.0" height="22" rx="11" fill="#222222"/>
+<text x="988.5" y="668.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND（所有模块共地）</text>
+<circle cx="540" cy="140" r="5" fill="#D23B2F"/>
+<path d="M540,140 L540,170" fill="none" stroke="#D23B2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="510" y="170" width="60" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="540.0" y="186.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">100 kΩ</text>
+<path d="M540,194 L540,240" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="540" cy="215" r="5" fill="#1F6FB5"/>
+<path d="M540,215 L490,215" fill="none" stroke="#1F6FB5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="347.0" y="204" width="143.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="418.5" y="219.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">XIAO D3（电池电压）</text>
+<rect x="510" y="240" width="60" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="540.0" y="256.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">22 kΩ</text>
+<path d="M540,264 L540,290" fill="none" stroke="#222222" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="499.0" y="279" width="31.0" height="22" rx="11" fill="#222222"/>
+<text x="514.5" y="294.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">GND</text>
+<rect x="640" y="190" width="220" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="750.0" y="212" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">降压模块</text>
+<text x="750.0" y="232" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">输入 7–24 V → 输出 5.1 V</text>
+<text x="750.0" y="249" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">持续 ≥ 5 A（先调好再接！）</text>
+<circle cx="680" cy="190" r="4" fill="#D23B2F"/>
+<text x="680" y="206" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">IN+</text>
+<circle cx="820" cy="190" r="4" fill="#222222"/>
+<text x="820" y="206" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">IN−</text>
+<circle cx="700" cy="300" r="4" fill="#E07B00"/>
+<text x="700" y="292" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">OUT+</text>
+<circle cx="820" cy="300" r="4" fill="#222222"/>
+<text x="820" y="292" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">OUT−</text>
+<path d="M680,190 L680,140" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="680" cy="140" r="5" fill="#D23B2F"/>
+<path d="M820,190 L820,170 L880,170 L880,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="880" cy="640" r="5" fill="#222222"/>
+<path d="M820,300 L820,330 L880,330" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="880" cy="330" r="5" fill="#222222"/>
+<path d="M700,300 L700,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M40,380 L1060,380" fill="none" stroke="#E07B00" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="700" cy="380" r="5" fill="#E07B00"/>
+<rect x="40" y="345" width="150.0" height="22" rx="11" fill="#E07B00"/>
+<text x="115.0" y="360.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">5V_SV 舵机电源 5.1 V</text>
+<rect x="40" y="440" width="190" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="135.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">PCA9685 V+</text>
+<text x="135.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">舵机电源端子（绿色螺丝端子）</text>
+<text x="135.0" y="499" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">旁边并一个 1000 µF 电容</text>
+<circle cx="70" cy="440" r="4" fill="#E07B00"/>
+<text x="70" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="200" cy="540" r="4" fill="#222222"/>
+<text x="200" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M70,440 L70,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="70" cy="380" r="5" fill="#E07B00"/>
+<path d="M200,540 L200,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="200" cy="640" r="5" fill="#222222"/>
+<rect x="250" y="440" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="330.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">LD14P 雷达</text>
+<text x="330.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 脚（约 300 mA）</text>
+<circle cx="280" cy="440" r="4" fill="#E07B00"/>
+<text x="280" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="380" cy="540" r="4" fill="#222222"/>
+<text x="380" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M280,440 L280,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="280" cy="380" r="5" fill="#E07B00"/>
+<path d="M380,540 L380,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="380" cy="640" r="5" fill="#222222"/>
+<rect x="430" y="440" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="510.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">MAX98357A</text>
+<text x="510.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">VIN 脚</text>
+<circle cx="460" cy="440" r="4" fill="#E07B00"/>
+<text x="460" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="560" cy="540" r="4" fill="#222222"/>
+<text x="560" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M460,440 L460,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="460" cy="380" r="5" fill="#E07B00"/>
+<path d="M560,540 L560,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560" cy="640" r="5" fill="#222222"/>
+<rect x="610" y="440" width="160" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="690.0" y="462" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">WS2812 灯</text>
+<text x="690.0" y="482" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 脚（可选）</text>
+<circle cx="640" cy="440" r="4" fill="#E07B00"/>
+<text x="640" y="456" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">+</text>
+<circle cx="740" cy="540" r="4" fill="#222222"/>
+<text x="740" y="532" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">−</text>
+<path d="M640,440 L640,380" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="640" cy="380" r="5" fill="#E07B00"/>
+<path d="M740,540 L740,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="740" cy="640" r="5" fill="#222222"/>
+<path d="M925,380 L925,405" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="925" cy="380" r="5" fill="#E07B00"/>
+<rect x="900" y="405" width="80" height="24" rx="3" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="940.0" y="421.0" font-size="11" text-anchor="middle" font-weight="600" fill="#1B2A2F">1N5819 ▶|</text>
+<text x="990" y="421" font-size="11" text-anchor="start" font-weight="400" fill="#5E6E72">条纹朝下</text>
+<path d="M925,429 L925,460" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="900" y="460" width="170" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="985.0" y="482" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<text x="1000" y="488" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">XIAO ESP32S3</text>
+<text x="1000" y="510" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">5V 脚进电</text>
+<text x="1000" y="527" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">3V3 脚出电</text>
+<circle cx="925" cy="460" r="4" fill="#E07B00"/>
+<text x="925" y="476" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">5V</text>
+<circle cx="1040" cy="570" r="4" fill="#222222"/>
+<text x="1040" y="562" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">GND</text>
+<path d="M1040,570 L1040,640" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1040" cy="640" r="5" fill="#222222"/>
+<circle cx="920" cy="570" r="4" fill="#7A4CC2"/>
+<text x="920" y="562" font-size="11.5" text-anchor="middle" font-weight="600" fill="#1B2A2F">3V3</text>
+<path d="M920,570 L920,600" fill="none" stroke="#7A4CC2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="618.0" y="589" width="297.0" height="22" rx="11" fill="#7A4CC2"/>
+<text x="766.5" y="604.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">3V3 → PCA9685 VCC · BNO085 VIN · OLED VCC</text>
+<circle cx="50" cy="696" r="10" fill="#1B2A2F"/>
+<text x="50" y="700.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="68" y="700" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">降压模块先单独通电，用万用表调到 5.1 V，再接任何负载</text>
+<circle cx="50" cy="724" r="10" fill="#1B2A2F"/>
+<text x="50" y="728.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">2</text>
+<text x="68" y="728" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">1N5819 防止插着 USB 时电流倒灌进舵机电源（Seeker 原版 PCB 也是这样做的）</text>
+<circle cx="50" cy="752" r="10" fill="#1B2A2F"/>
+<text x="50" y="756.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">3</text>
+<text x="68" y="756" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">PCA9685 的 VCC 接 3V3（逻辑电），V+ 接 5V_SV（舵机电），两个不要接反</text>
+<circle cx="610" cy="696" r="10" fill="#1B2A2F"/>
+<text x="610" y="700.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">4</text>
+<text x="628" y="700" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">电池分压：VIN × 22 / 122 → 12.6 V 时 D3 只有 2.27 V</text>
+<circle cx="610" cy="724" r="10" fill="#1B2A2F"/>
+<text x="610" y="728.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">5</text>
+<text x="628" y="728" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">通电前先量 VIN、5V_SV 和 GND 之间不短路</text>
+<path d="M600,758 L628,758" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="634" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">VIN</text>
+<path d="M683,758 L711,758" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="717" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">5 V</text>
+<path d="M766,758 L794,758" fill="none" stroke="#7A4CC2" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="800" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">3.3 V</text>
+<path d="M875,758 L903,758" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="909" y="762" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">GND</text>
+</svg>

@@ -33,4 +33,8 @@
 
 [`butterfly/`](butterfly/README.md)：ESP32-S3 扑翼仿生蝴蝶（G7 Pro 手柄、陀螺仪增稳、Type-C 充电、GPS 返航）。翅膀用**仿生蝴蝶材料包**做。
 
+## 仓库里的第三个项目：ROS 2 六足机器人 🕷️
+
+[`hexapod/`](hexapod/README.md)：**XIAO ESP32S3 Sense** + micro-ROS + ROS 2 Jazzy 的六足机器人（基于开源项目 [SeekerRobot/seeker-robot](https://github.com/SeekerRobot/seeker-robot)）：12 舵机步态、BNO085 姿态、LD14P 激光雷达建图、Nav2 导航。包含材料清单、模块化接线图、可打印机身和分步骤安装流程。
+
 > 以前的版本：ESP32 无线版机械臂在提交 `fe0b446`（`git checkout fe0b446` 查看）。
