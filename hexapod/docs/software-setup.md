@@ -202,6 +202,8 @@ ros2 launch seeker_gazebo sim_teleop.launch.py
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
+想用手机遥控，看 [`phone-control.md`](phone-control.md)（真机和仿真都能用，只要 `/cmd_vel` 有人收）。
+
 在终端 2 里按 `i`（前进）、`,`（后退）、`j` / `l`（原地转）、`J` / `L`（平移）、`k`（停）。Gazebo 里的六足跟着走，就说明电脑端全部装好了。
 
 其他仿真：
@@ -345,7 +347,7 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist '{linear: {x: 0.05}}' --once   #
 
 ```bash
 ros2 launch seeker_navigation real_slam_ekf.launch.py                 # 终端 2：EKF + SLAM
-ros2 run teleop_twist_keyboard teleop_twist_keyboard                  # 终端 3：慢慢遥控绕房间一圈
+ros2 launch seeker_web web.launch.py mcu_ip:=192.168.8.50            # 终端 3：手机打开 http://电脑IP:8080 慢慢遥控绕房间一圈
 rviz2                                                                 # 终端 4：Fixed Frame = map，Add → Map /map、LaserScan /mcu/scan、TF
 ```
 

@@ -45,8 +45,8 @@
 <rect x="219.0" y="255" width="206.0" height="22" rx="11" fill="#1F6FB5"/>
 <text x="322.0" y="270.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">WS2812 DIN（串 330 Ω，可选）</text>
 <path d="M465,304 L425,304" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="247.0" y="293" width="178.0" height="22" rx="11" fill="#1F6FB5"/>
-<text x="336.0" y="308.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">电池分压 100k / 22k 中点</text>
+<rect x="163.0" y="293" width="262.0" height="22" rx="11" fill="#1F6FB5"/>
+<text x="294.0" y="308.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">电压检测模块 S 脚（30k / 7.5k 分压）</text>
 <path d="M465,342 L425,342" fill="none" stroke="#1E8A5A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <rect x="219.0" y="331" width="206.0" height="22" rx="11" fill="#1E8A5A"/>
 <text x="322.0" y="346.5" font-size="11.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">SDA：PCA9685 · BNO085 · OLED</text>

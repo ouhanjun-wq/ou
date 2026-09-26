@@ -44,7 +44,8 @@
 | ⭐ [micro-ROS 官网](https://micro.ros.org/) | ESP32 和 ROS 2 之间的桥梁 |
 | [micro-ROS Agent](https://github.com/micro-ROS/micro-ROS-Agent) | 电脑端的 Agent |
 | [micro_ros_platformio](https://github.com/micro-ROS/micro_ros_platformio) | PlatformIO 里编译 micro-ROS 库 |
-| [teleop_twist_keyboard](https://github.com/ros2/teleop_twist_keyboard) | 键盘遥控 |
+| ⭐ [seeker_web（手机网页遥控）](https://github.com/SeekerRobot/seeker-robot/tree/main/ros2_ws/src/seeker_web) | 手机浏览器打开电脑的 8080 端口，触屏摇杆发 `/cmd_vel` |
+| [teleop_twist_keyboard](https://github.com/ros2/teleop_twist_keyboard) | 键盘遥控（备用） |
 | ⭐ [Nav2 导航](https://docs.nav2.org/) | 自主导航 |
 | [Nav2 地图保存 map_server](https://docs.nav2.org/configuration/packages/configuring-map-server.html) | `map_saver_cli` 保存地图 |
 | ⭐ [SLAM Toolbox](https://github.com/SteveMacenski/slam_toolbox) | 建图 |

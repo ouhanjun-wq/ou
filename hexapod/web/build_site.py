@@ -33,9 +33,11 @@ BRANCH = "claude/ros-esp32-s3-project-ypzx2b"
 # (section id, source file relative to the repo root, navigation label)
 DOCS = [
     ("home", "hexapod/README.md", "总览"),
-    ("plan", "hexapod/docs/build-plan.md", "材料清单与步骤"),
+    ("bom", "hexapod/docs/bom.md", "详细材料清单"),
+    ("plan", "hexapod/docs/build-plan.md", "总计划与步骤"),
     ("wire", "hexapod/docs/wiring-guide.md", "接线与装配"),
     ("soft", "hexapod/docs/software-setup.md", "软件与烧录"),
+    ("phone", "hexapod/docs/phone-control.md", "手机控制"),
     ("cad", "hexapod/cad/README.md", "3D 打印件"),
     ("links", "hexapod/docs/links.md", "网站汇总"),
     ("research", "hexapod/docs/project-research.md", "项目调研"),
@@ -377,7 +379,7 @@ main{min-width:0;padding-block:28px 96px}
       <div><dt>舵机</dt><dd>12 × MG90S</dd></div>
       <div><dt>电脑端</dt><dd>ROS 2 Jazzy</dd></div>
       <div><dt>电池</dt><dd>3S 11.1 V</dd></div>
-      <div><dt>预算</dt><dd>¥500–1000</dd></div>
+      <div><dt>遥控</dt><dd>手机 Wi-Fi</dd></div>
     </dl>
   </div>
   %HERO_IMG%
@@ -429,7 +431,7 @@ window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\
     }
     return { lo: lo * mult, hi: hi * mult, optional: /可选/.test(txt), owned: /已有/.test(price) };
   }
-  document.querySelectorAll("#plan .tbl table").forEach(function (table) {
+  document.querySelectorAll("#bom .tbl table").forEach(function (table) {
     var ths = Array.prototype.map.call(table.querySelectorAll("thead th"), function (th) { return th.textContent.trim(); });
     var head = { price: ths.indexOf("参考价"), qty: ths.indexOf("数量") };
     if (head.price < 0) return;

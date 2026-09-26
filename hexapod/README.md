@@ -10,6 +10,8 @@ Seeed **XIAO ESP32S3 Plus**（或 Sense）做主控，跑 **micro-ROS**，通过
 | 从这里开始 | 内容 |
 |---|---|
 | 🖥️ [`web/index.html`](web/index.html) | **网页版**：下面所有文档合成一页，材料清单可勾选并实时算剩余花费，步骤清单记进度。由 [`web/build_site.py`](web/build_site.py) 从文档生成 |
+| 🧾 [`docs/bom.md`](docs/bom.md) | **详细材料清单**：每一项的型号、规格参数、数量、价格、淘宝搜索词、注意事项（现成模块优先） |
+| 📱 [`docs/phone-control.md`](docs/phone-control.md) | **手机控制**：手机浏览器通过 Wi-Fi 打开网页摇杆遥控，不用买手柄 |
 | 📋 [`docs/build-plan.md`](docs/build-plan.md) | **总计划**：材料清单（名称 / 规格 / 数量 / 价格 / 搜索词）、预算、分阶段步骤、验收标准、校核计算、故障排查 |
 | 🔌 [`docs/wiring-guide.md`](docs/wiring-guide.md) | **接线指南**：接线总表、电源图、XIAO 引脚图、12 个舵机的通道表、洞洞板布局、机械装配、通电检查 |
 | 💻 [`docs/software-setup.md`](docs/software-setup.md) | **软件安装**：Ubuntu + Docker + ROS 2 Jazzy、Wi-Fi 配置、改固件参数、仿真、逐项烧录测试、舵机标定、建图导航 |
@@ -30,7 +32,8 @@ Seeed **XIAO ESP32S3 Plus**（或 Sense）做主控，跑 **micro-ROS**，通过
 | 电源 | 3S 11.1 V 锂电 → 5 A 保险丝 → 开关 → 5.1 V ≥ 5 A 降压（舵机 / 雷达）→ 1N5819 → XIAO |
 | 结构 | 3D 打印底板 + 甲板 + 6 条腿（大腿 45 mm、小腿 65 mm），M3 × 25 铜柱 |
 | 电脑 | Ubuntu 24.04 + Docker（ROS 2 Jazzy、Gazebo、Nav2、SLAM Toolbox、PlatformIO 都在容器里） |
-| 预算 | 约 ¥500–1000（已有 XIAO ESP32S3 Plus；不含电脑、打印机、工具） |
+| 控制 | 手机浏览器（Wi-Fi）打开 `http://电脑IP:8080` 的触屏摇杆 |
+| 预算 | 约 ¥620–1130（已有 XIAO ESP32S3 Plus；含 2 块电池和充电器；不含电脑、打印机、工具） |
 
 | 电源接线 | XIAO 引脚接线 |
 |---|---|
