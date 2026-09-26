@@ -16,6 +16,16 @@ jobs:
           python3 hexapod/docs/img/make_diagrams.py
           git diff --exit-code -- hexapod/docs/img
 
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Website regenerates from the docs without changes
+        run: |
+          pip install markdown-it-py==3.0.0 mdit-py-plugins==0.4.2
+          python3 hexapod/web/build_site.py
+          git diff --exit-code -- hexapod/web
+
   export-cad:
     runs-on: ubuntu-latest
     steps:

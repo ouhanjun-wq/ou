@@ -9,6 +9,7 @@ Seeed **XIAO ESP32S3 Plus**（或 Sense）做主控，跑 **micro-ROS**，通过
 
 | 从这里开始 | 内容 |
 |---|---|
+| 🖥️ [`web/index.html`](web/index.html) | **网页版**：下面所有文档合成一页，材料清单可勾选并实时算剩余花费，步骤清单记进度。由 [`web/build_site.py`](web/build_site.py) 从文档生成 |
 | 📋 [`docs/build-plan.md`](docs/build-plan.md) | **总计划**：材料清单（名称 / 规格 / 数量 / 价格 / 搜索词）、预算、分阶段步骤、验收标准、校核计算、故障排查 |
 | 🔌 [`docs/wiring-guide.md`](docs/wiring-guide.md) | **接线指南**：接线总表、电源图、XIAO 引脚图、12 个舵机的通道表、洞洞板布局、机械装配、通电检查 |
 | 💻 [`docs/software-setup.md`](docs/software-setup.md) | **软件安装**：Ubuntu + Docker + ROS 2 Jazzy、Wi-Fi 配置、改固件参数、仿真、逐项烧录测试、舵机标定、建图导航 |
