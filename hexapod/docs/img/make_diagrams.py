@@ -112,7 +112,7 @@ class Svg:
             f.write("\n".join(self.parts))
 
 
-def xiao(s, x, y, title="XIAO ESP32S3 Sense", sub="俯视，USB-C 朝上"):
+def xiao(s, x, y, title="XIAO ESP32S3 Plus", sub="俯视，USB-C 朝上"):
     """Seeed XIAO ESP32S3 drawn with its real pin order.
     Left column top->bottom: D0..D6, right column: 5V, GND, 3V3, D10, D9, D8, D7."""
     w, h = 170, 330
@@ -136,12 +136,12 @@ def xiao(s, x, y, title="XIAO ESP32S3 Sense", sub="俯视，USB-C 朝上"):
 # ---------------------------------------------------------------------------
 def fig_overview():
     s = Svg(1100, 560, "图 0  系统总览",
-            "电脑上跑 ROS 2（建图、导航、识别），机器人上的 XIAO ESP32S3 Sense 通过 Wi-Fi 用 micro-ROS 连过来")
+            "电脑上跑 ROS 2（建图、导航、识别），机器人上的 XIAO ESP32S3 Plus 通过 Wi-Fi 用 micro-ROS 连过来")
     s.box(40, 100, 330, 130, "电脑：Ubuntu 24.04 + Docker",
           "ROS 2 Jazzy（Seeker 的 Docker 容器）\nmicro-ROS Agent  UDP 8888\nSLAM Toolbox 建图 · Nav2 导航\nYOLO 识别 · 语音指令（可选）")
     s.box(460, 120, 170, 90, "Wi-Fi 路由器", "2.4 GHz，同一网段")
-    s.box(720, 100, 340, 130, "XIAO ESP32S3 Sense（机器人上）",
-          "micro-ROS 客户端（Wi-Fi）\n步态：/cmd_vel → 12 个舵机角度\n摄像头 MJPEG · 麦克风 PCM\n（走 HTTP，不走 micro-ROS）", fill=C["hi"])
+    s.box(720, 100, 340, 130, "XIAO ESP32S3 Plus（机器人上）",
+          "micro-ROS 客户端（Wi-Fi）\n步态：/cmd_vel → 12 个舵机角度\n雷达 · IMU · 电池电压\n摄像头：可选卫星板（Sense / ESP32-CAM）", fill=C["hi"])
     s.wire([(370, 165), (460, 165)], C["rf"], 3, True)
     s.wire([(630, 165), (720, 165)], C["rf"], 3, True)
     s.text(545, 108, "micro-ROS UDP 8888 + HTTP", 12, "middle", "700")
@@ -257,7 +257,7 @@ def fig_power():
 
 
 def fig_signals():
-    s = Svg(1100, 760, "图 2  XIAO ESP32S3 Sense 引脚接线（和 Seeker 固件 RobotConfig.h 的 ENV_ESP32S3SENSE 一致）",
+    s = Svg(1100, 760, "图 2  XIAO ESP32S3 Plus 引脚接线（D0–D10 和 Sense 相同，对应固件 ENV_ESP32S3SENSE）",
             "每个引脚右边 / 左边的标签 = 这根线另一头接到哪里；I²C 三个模块并联在同一对 SDA / SCL 上")
     p = xiao(s, 465, 110)
     left = {
@@ -286,8 +286,8 @@ def fig_signals():
         x, y = p[n]
         s.wire([(x, y), (x + 40, y)], col, 2.5)
         s.tag(x + 40, y, lab, col)
-    s.text(550, 470, "板载：OV2640 摄像头、PDM 麦克风（GPIO 41 / 42）", 11.5, "middle", color=C["mute"])
-    s.text(550, 488, "不要插 microSD 卡：Sense 的卡槽也用 D8–D10", 11.5, "middle", "700", C["bat"])
+    s.text(550, 470, "背面 D11–D19 焊盘不接；BAT± 焊盘不接", 11.5, "middle", color=C["mute"])
+    s.text(550, 488, "棒状天线一定要插上（U.FL）", 11.5, "middle", "700", C["bat"])
     boxes = [
         (40, "PCA9685 模块", "VCC → 3V3\nGND → GND\nSDA → D4 · SCL → D5\nOE → D0（加 10 kΩ 到 3V3）\nV+ → 5V_SV"),
         (250, "BNO085 模块", "VIN → 3V3 · GND → GND\nSDA → D4 · SCL → D5\nINT → D1\nDI(ADR) → 3V3 = 0x4B\nRST 悬空（板上有上拉）"),

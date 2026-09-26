@@ -35,6 +35,6 @@
 
 ## 仓库里的第三个项目：ROS 2 六足机器人 🕷️
 
-[`hexapod/`](hexapod/README.md)：**XIAO ESP32S3 Sense** + micro-ROS + ROS 2 Jazzy 的六足机器人（基于开源项目 [SeekerRobot/seeker-robot](https://github.com/SeekerRobot/seeker-robot)）：12 舵机步态、BNO085 姿态、LD14P 激光雷达建图、Nav2 导航。包含材料清单、模块化接线图、可打印机身和分步骤安装流程。
+[`hexapod/`](hexapod/README.md)：**XIAO ESP32S3 Plus**（Sense 也行）+ micro-ROS + ROS 2 Jazzy 的六足机器人（基于开源项目 [SeekerRobot/seeker-robot](https://github.com/SeekerRobot/seeker-robot)）：12 舵机步态、BNO085 姿态、LD14P 激光雷达建图、Nav2 导航。包含材料清单、模块化接线图、可打印机身和分步骤安装流程。
 
 > 以前的版本：ESP32 无线版机械臂在提交 `fe0b446`（`git checkout fe0b446` 查看）。

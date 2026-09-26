@@ -134,6 +134,34 @@ git diff --stat                                                                 
 
 ---
 
+### 4.1 用 XIAO ESP32S3 Plus 做主板
+
+原项目是按 XIAO ESP32S3 **Sense** 写的，Plus 可以直接用：
+
+| 项目 | Sense | Plus | 影响 |
+|---|---|---|---|
+| D0–D10 引脚 | GPIO 1–6、43、44、7–9 | **完全一样** | 接线、`RobotConfig.h` 都不用改 |
+| PSRAM | 8 MB（OPI） | 8 MB（OPI） | 固件的 `memory_type = qio_opi` 照用 |
+| Flash | 8 MB | 16 MB | 用 `seeed_xiao_esp32s3` 板卡编译没问题（只用到前 8 MB） |
+| 摄像头 / 麦克风 | 有 | **没有** | 摄像头交给卫星板（§8.4）；麦克风没有也不影响行走、建图、导航 |
+| 板载 LED | GPIO21 | GPIO21 | `test_threaded_blink` 照用 |
+
+所以**所有测试固件和主固件都照常用 `esp32s3sense*` 环境刷**。唯一的小优化（可选）：主固件 `esp32s3sense_offload` 默认会开麦克风服务，Plus 上没有麦克风，只会读到静音，不报错。想关掉省点内存，在 `mcu_ws/src/main/platformio.ini` **末尾**加一个环境：
+
+```ini
+; XIAO ESP32S3 Plus：和 esp32s3sense_offload 一样，只是关掉麦克风
+[env:esp32s3plus_offload]
+extends = env:esp32s3sense_offload
+build_flags =
+    ${env:esp32s3sense_offload.build_flags}
+    -UENABLE_MIC
+    -DENABLE_MIC=0
+```
+
+以后刷主固件就用 `pio run -e esp32s3plus_offload -t upload`（`-U` 先取消原来的 `ENABLE_MIC=1`，再定义成 0，和原项目 `platformio.ini` 里的写法一致）。
+
+> ⚠️ Plus 一定要**插上棒状天线**再测 Wi-Fi。
+
 ## 5. 构建 Docker 容器和 ROS 2 工作空间
 
 ```bash
@@ -302,7 +330,7 @@ cd ~/mcu_workspaces/seeker_mcu/src/main
 pio run -e esp32s3sense_offload -t upload
 ```
 
-`esp32s3sense_offload` 是原项目的默认配置：**步态 + 雷达 + IMU + 电池 + 麦克风 + 喇叭**都在这块 XIAO 上，**摄像头交给第二块板**（§8.4）。只有一块板也用这个环境，只是没有摄像头画面，建图和导航不受影响。
+`esp32s3sense_offload` 是原项目的默认配置：**步态 + 雷达 + IMU + 电池 + 麦克风 + 喇叭**都在这块 XIAO 上，**摄像头交给第二块板**（§8.4）。XIAO ESP32S3 Plus 正好用这个环境（或 §4.1 的 `esp32s3plus_offload`）；没有摄像头板时建图和导航不受影响。
 
 启动时状态灯：彩虹 → 红色追逐（连 Wi-Fi）→ 黄色呼吸（等 micro-ROS）→ **青色慢呼吸（就绪）**。
 
@@ -337,7 +365,7 @@ RViz 工具栏里用 **2D Goal Pose** 在地图上点一个目标，机器人会
 
 ### 8.4 可选：摄像头卫星板 + 找东西
 
-1. 第二块 XIAO ESP32S3 Sense 插电脑：
+1. 一块 XIAO ESP32S3 Sense 插电脑（Plus 没有摄像头，不能当卫星板）：
 
    ```bash
    cd ~/mcu_workspaces/seeker_mcu/src/main_satellite

@@ -36,7 +36,11 @@
 5. **开源协议 Apache-2.0**，可以自由修改。
 6. 用 Docker 打包了全部开发环境，Ubuntu / Windows / macOS 都能用。
 
-## 4. 它缺什么、这个文件夹怎么补
+## 4. 用 XIAO ESP32S3 Plus 行不行
+
+行。Plus 和 Sense 是同一颗 ESP32-S3、同样 8 MB OPI PSRAM，**D0–D10 引脚到 GPIO 的对应完全一样**（对照 Arduino-ESP32 的 `variants/XIAO_ESP32S3/pins_arduino.h` 和 `variants/XIAO_ESP32S3_Plus/pins_arduino.h`，D0–D10 部分逐行相同）。区别只有：Plus 的 Flash 是 16 MB、背面多 D11–D19，**没有摄像头和麦克风**。所以固件引脚不用改，摄像头功能交给原项目本来就支持的 “卫星板”。具体见 [`software-setup.md` §4.1](software-setup.md#41-用-xiao-esp32s3-plus-做主板)。
+
+## 5. 它缺什么、这个文件夹怎么补
 
 | 缺口 | 影响 | 补法 |
 |---|---|---|

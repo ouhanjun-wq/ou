@@ -52,11 +52,13 @@
 | [Gazebo Harmonic](https://gazebosim.org/docs/harmonic/getstarted/) | 仿真 |
 | [Ultralytics YOLO](https://docs.ultralytics.com/) | 找东西用的目标识别 |
 
-## 4. 主控 XIAO ESP32S3 Sense
+## 4. 主控 XIAO ESP32S3 Plus / Sense
 
 | 网站 | 用途 |
 |---|---|
-| ⭐ [XIAO ESP32S3 Sense 产品页](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) | 购买、规格 |
+| ⭐ [XIAO ESP32S3 Plus 产品页](https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32S3-Plus-p-6361.html) | 你用的主板：16 MB Flash、8 MB PSRAM、背面多 9 个 GPIO |
+| [Arduino-ESP32 的 XIAO_ESP32S3_Plus 引脚定义](https://github.com/espressif/arduino-esp32/blob/master/variants/XIAO_ESP32S3_Plus/pins_arduino.h) | 核对 D0–D19 对应的 GPIO（D0–D10 和 Sense 相同） |
+| [XIAO ESP32S3 Sense 产品页](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) | 摄像头卫星板（可选）、原项目用的主板 |
 | ⭐ [XIAO ESP32S3 入门 Wiki](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) | **引脚图**、进下载模式（BOOT 键）、供电 |
 | [XIAO ESP32S3 引脚复用](https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/) | 每个引脚能做什么（I²C / UART / I²S） |
 | [XIAO ESP32S3 Sense 摄像头](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/) | 摄像头排线怎么插 |

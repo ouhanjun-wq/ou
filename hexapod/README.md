@@ -1,9 +1,9 @@
-# ROS 2 六足机器人（XIAO ESP32S3 Sense）
+# ROS 2 六足机器人（XIAO ESP32S3 Plus / Sense）
 
 > 这个文件夹是 ROS 2 六足机器人项目（仓库根目录是 6 自由度机械臂项目）。
 > 软件用开源项目 **[SeekerRobot/seeker-robot](https://github.com/SeekerRobot/seeker-robot)**（Apache-2.0），这里补上它没有的：**中文材料清单、模块化接线方案、可打印的机身、分步骤的安装和测试流程**。
 
-Seeed **XIAO ESP32S3 Sense** 做主控，跑 **micro-ROS**，通过 Wi-Fi 连到电脑上的 **ROS 2 Jazzy**：12 个舵机三角步态行走，BNO085 姿态 + LD14P 360° 雷达，用 SLAM Toolbox 建图、Nav2 自主导航；加一块摄像头板还能用 YOLO “找东西”。不接硬件也能先在 Gazebo 里仿真。
+Seeed **XIAO ESP32S3 Plus**（或 Sense）做主控，跑 **micro-ROS**，通过 Wi-Fi 连到电脑上的 **ROS 2 Jazzy**：12 个舵机三角步态行走，BNO085 姿态 + LD14P 360° 雷达，用 SLAM Toolbox 建图、Nav2 自主导航；加一块摄像头板还能用 YOLO “找东西”。不接硬件也能先在 Gazebo 里仿真。
 
 ![系统总览](docs/img/fig0-overview.svg)
 
@@ -22,14 +22,14 @@ Seeed **XIAO ESP32S3 Sense** 做主控，跑 **micro-ROS**，通过 Wi-Fi 连到
 
 | 部分 | 型号 |
 |---|---|
-| 主控 | Seeed XIAO ESP32S3 Sense（micro-ROS over Wi-Fi） |
+| 主控 | Seeed XIAO ESP32S3 **Plus**（D0–D10 引脚和 Sense 完全一样；Sense 也能用），micro-ROS over Wi-Fi |
 | 舵机 | 12 × MG90S 180°，PCA9685 16 路驱动（I²C 0x40） |
-| 传感器 | BNO085 姿态（I²C 0x4B）、LDROBOT LD14P 360° 激光雷达（UART 230400）、OV2640 摄像头、PDM 麦克风 |
+| 传感器 | BNO085 姿态（I²C 0x4B）、LDROBOT LD14P 360° 激光雷达（UART 230400）；摄像头（可选）用第二块 XIAO ESP32S3 Sense 或 ESP32-CAM |
 | 其他 | 0.96″ OLED、MAX98357A 功放 + 喇叭、WS2812 状态灯（都可选） |
 | 电源 | 3S 11.1 V 锂电 → 5 A 保险丝 → 开关 → 5.1 V ≥ 5 A 降压（舵机 / 雷达）→ 1N5819 → XIAO |
 | 结构 | 3D 打印底板 + 甲板 + 6 条腿（大腿 45 mm、小腿 65 mm），M3 × 25 铜柱 |
 | 电脑 | Ubuntu 24.04 + Docker（ROS 2 Jazzy、Gazebo、Nav2、SLAM Toolbox、PlatformIO 都在容器里） |
-| 预算 | 约 ¥600–1100（不含电脑、打印机、工具） |
+| 预算 | 约 ¥500–1000（已有 XIAO ESP32S3 Plus；不含电脑、打印机、工具） |
 
 | 电源接线 | XIAO 引脚接线 |
 |---|---|

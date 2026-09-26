@@ -1,4 +1,4 @@
-# ROS 2 六足机器人（XIAO ESP32S3 Sense）：总计划 + 材料清单
+# ROS 2 六足机器人（XIAO ESP32S3 Plus）：总计划 + 材料清单
 
 > **最终目标（验收标准）**：电脑上跑 ROS 2 Jazzy，六足机器人通过 Wi-Fi 连上来。
 > 1. 用键盘（`teleop_twist_keyboard`）遥控它**前进、后退、左右平移、原地转圈**，连续走 3 m 不摔倒；
@@ -22,7 +22,7 @@
 | 部分 | 内容 |
 |---|---|
 | 机器人 | 六足（hexapod），每条腿 2 个舵机（髋 hip 左右摆 + 膝 knee 上下抬），共 12 个 MG90S |
-| 主控 | Seeed Studio **XIAO ESP32S3 Sense**，跑 **micro-ROS**，Wi-Fi（UDP 8888）连到电脑 |
+| 主控 | 原项目用 Seeed Studio **XIAO ESP32S3 Sense**；**你的 XIAO ESP32S3 Plus 可以直接替换**（D0–D10 引脚、8 MB PSRAM 完全一样，见 [`software-setup.md` §4.1](software-setup.md#41-用-xiao-esp32s3-plus-做主板)），跑 **micro-ROS**，Wi-Fi（UDP 8888）连到电脑 |
 | 电脑端 | **ROS 2 Jazzy**（Docker 容器）：SLAM Toolbox 建图、Nav2 导航、EKF 姿态融合、YOLO 找东西、语音指令 |
 | 传感器 | BNO085 姿态（IMU）、LDROBOT LD14P 360° 激光雷达、OV2640 摄像头、PDM 麦克风 |
 | 仿真 | Gazebo Harmonic，**不接硬件也能先跑** |
@@ -78,7 +78,7 @@ flowchart LR
 
 | 编号 | 名称 | 规格 / 型号 | 数量 | 参考价 | 淘宝搜索词 / 购买 | 备注 |
 |---|---|---|---|---|---|---|
-| E1 | **主控** | Seeed Studio **XIAO ESP32S3 Sense**（带 OV2640 摄像头 + 麦克风扩展板，8 MB PSRAM） | 1 | ¥105–130 | `XIAO ESP32S3 Sense` · [Seeed 官网](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) | 买**带排针**或自己焊排针 |
+| E1 | **主控** | Seeed Studio **XIAO ESP32S3 Plus**（16 MB Flash + 8 MB PSRAM，自带棒状天线）。XIAO ESP32S3 Sense 也可以 | 1 | ✅ 已有（单买 ¥70–90） | `XIAO ESP32S3 Plus` · [Seeed 官网](https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32S3-Plus-p-6361.html) | 焊上两排 7 针排针；**天线一定要插上**；背面 D11–D19 焊盘不用 |
 | E2 | 舵机驱动板 | **PCA9685** 16 路 12 位 PWM，I²C（Adafruit 815 或同款兼容板） | 1 | ¥12–20 | `PCA9685 16路舵机驱动` · [Adafruit 815](https://www.adafruit.com/product/815) | 地址默认 0x40，不用改 |
 | E3 | 姿态传感器 | **BNO085** 9 轴 IMU（I²C 接口版） | 1 | ¥60–180 | `BNO085 模块` · [Adafruit 4754](https://www.adafruit.com/product/4754) | 固件用地址 **0x4B**：Adafruit 板要把 DI 脚接 3V3（见接线指南） |
 | E4 | 激光雷达 | **LDROBOT LD14P**，360°，0.1–8 m，UART 230400 | 1 | ¥180–260 | `LD14P 激光雷达` · [乐动官网](https://www.ldrobot.com/ProductDetails?sensor_name=LD14P) | 买**带 4 针线**的；约 100 g、5 V 300 mA |
@@ -93,7 +93,7 @@ flowchart LR
 | E13 | 电解电容 | **1000 µF 10–16 V** ×1（舵机电源）、100 µF ×1（XIAO 旁） | 2 | ¥2 | `1000uF 16V 电解电容` | 长脚为 + |
 | E14 | 导线 | 20 AWG 硅胶线红黑各 1 m（电源）、26 AWG 硅胶线 5 色（信号） | 1 套 | ¥15 | `20AWG 硅胶线` | |
 | E15 | 杜邦线 | 母对母 20 cm | 1 排 | ¥5 | `杜邦线 母对母` | 台架测试用 |
-| E16（可选） | **摄像头卫星板** | 第二块 **XIAO ESP32S3 Sense**（推荐，USB-C 直接刷），或 **ESP32-CAM + MB 下载底板** | 1 | ¥35–130 | `XIAO ESP32S3 Sense` / `ESP32-CAM MB` | 阶段 8 用：主板负责雷达 + IMU + 步态，摄像头交给这块板（原项目就是这么分的） |
+| E16（可选） | **摄像头卫星板** | **XIAO ESP32S3 Sense**（推荐，USB-C 直接刷），或 **ESP32-CAM + MB 下载底板** | 1 | ¥35–130 | `XIAO ESP32S3 Sense` / `ESP32-CAM MB` | **XIAO ESP32S3 Plus 没有摄像头和麦克风**，想用 “找东西” 功能就要加这块板。主板负责雷达 + IMU + 步态，摄像头交给卫星板（原项目就是这么分的）。只建图导航可以不买 |
 
 ### 2.2 电源部分
 
@@ -147,10 +147,10 @@ flowchart LR
 
 | 类别 | 约 |
 |---|---|
-| 电子 E1–E15 | ¥450–700 |
+| 电子 E2–E15（E1 XIAO ESP32S3 Plus 你已经有了） | ¥350–600 |
 | 电源 P1–P7 | ¥95–260 |
 | 机械 M1–M8 | ¥55–125 |
-| **合计（不含可选的 E16、电脑、打印机、工具）** | **¥600–1100** |
+| **合计（不含 E1、可选的 E16、电脑、打印机、工具）** | **¥500–1000** |
 | 可选：摄像头卫星板 E16 | + ¥35–130 |
 
 ---
@@ -301,7 +301,7 @@ $$
 
 ### 阶段 8（可选）：摄像头找东西
 
-1. 第二块 XIAO ESP32S3 Sense 刷 `main_satellite` 的 `esp32s3sense_satellite` 环境，绑在甲板前面的竖板上。
+1. 一块 XIAO ESP32S3 Sense 刷 `main_satellite` 的 `esp32s3sense_satellite` 环境（或 ESP32-CAM 刷 `esp32cam_satellite`），绑在甲板前面的竖板上。
 2. `real_object_seek.launch.py`，然后 `ros2 run seeker_navigation find teddy_bear`。
 
 ---
