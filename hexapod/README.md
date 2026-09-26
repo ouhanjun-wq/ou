@@ -33,7 +33,7 @@ Seeed **XIAO ESP32S3 Plus**（或 Sense）做主控，跑 **micro-ROS**，通过
 | 结构 | 3D 打印底板 + 甲板 + 6 条腿（大腿 45 mm、小腿 65 mm），M3 × 25 铜柱 |
 | 电脑 | Ubuntu 24.04 + Docker（ROS 2 Jazzy、Gazebo、Nav2、SLAM Toolbox、PlatformIO 都在容器里） |
 | 控制 | 手机浏览器（Wi-Fi）打开 `http://电脑IP:8080` 的触屏摇杆 |
-| 预算 | 约 ¥620–1130（已有 XIAO ESP32S3 Plus；含 2 块电池和充电器；不含电脑、打印机、工具） |
+| 预算 | 约 ¥600–1110（已有 XIAO ESP32S3 Plus 和 Arduino 学习套件 + 元件包；含 2 块电池和充电器；不含电脑、打印机、工具） |
 
 | 电源接线 | XIAO 引脚接线 |
 |---|---|

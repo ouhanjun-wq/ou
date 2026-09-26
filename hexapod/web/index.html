@@ -144,7 +144,7 @@ main{min-width:0;padding-block:28px 96px}
   <a class="brand" href="#top">XIAO 六足机器人<small>ESP32S3 · micro-ROS · ROS 2</small></a>
   <ol>
 <li><a class="nav-sec" href="#home">总览</a><ol class="nav-sub"><li><a href="#home-1">硬件一览</a></li></ol></li>
-<li><a class="nav-sec" href="#bom">详细材料清单</a><ol class="nav-sub"><li><a href="#bom-1">0. 一页总表</a></li><li><a href="#bom-2">A. 电子模块</a></li><li><a href="#bom-13">B. 电源</a></li><li><a href="#bom-23">C. 连接线材</a></li><li><a href="#bom-32">D. 结构件与紧固件</a></li><li><a href="#bom-41">E. 工具（已有就不用买）</a></li><li><a href="#bom-42">F. 电脑、手机、网络（一般都有）</a></li></ol></li>
+<li><a class="nav-sec" href="#bom">详细材料清单</a><ol class="nav-sub"><li><a href="#bom-1">0. 你已经有的：Arduino 学习套件（顶配豪华版）+ 电子元件包</a></li><li><a href="#bom-2">1. 一页总表</a></li><li><a href="#bom-3">A. 电子模块</a></li><li><a href="#bom-14">B. 电源</a></li><li><a href="#bom-24">C. 连接线材</a></li><li><a href="#bom-33">D. 结构件与紧固件</a></li><li><a href="#bom-42">E. 工具（已有就不用买）</a></li><li><a href="#bom-43">F. 电脑、手机、网络（一般都有）</a></li></ol></li>
 <li><a class="nav-sec" href="#plan">总计划与步骤</a><ol class="nav-sub"><li><a href="#plan-1">0. 用的是哪个开源项目</a></li><li><a href="#plan-2">1. 全局路线图</a></li><li><a href="#plan-3">2. 材料清单（BOM）</a></li><li><a href="#plan-5">3. 设计校核（为什么这样选）</a></li><li><a href="#plan-11">4. 分阶段步骤</a></li><li><a href="#plan-21">5. 故障排查</a></li><li><a href="#plan-22">6. 安全规则</a></li></ol></li>
 <li><a class="nav-sec" href="#wire">接线与装配</a><ol class="nav-sub"><li><a href="#wire-1">1. 接线总表（先看这张）</a></li><li><a href="#wire-2">2. 电源接线</a></li><li><a href="#wire-5">3. 信号接线</a></li><li><a href="#wire-13">4. 12 个舵机插哪个通道</a></li><li><a href="#wire-14">5. 面包板（免焊）/ 洞洞板布局</a></li><li><a href="#wire-15">6. 机械装配</a></li><li><a href="#wire-19">7. 第一次通电检查清单</a></li><li><a href="#wire-20">8. 另一种做法：做原版 Sesame V2 PCB（进阶）</a></li></ol></li>
 <li><a class="nav-sec" href="#soft">软件与烧录</a><ol class="nav-sub"><li><a href="#soft-1">1. 电脑准备</a></li><li><a href="#soft-2">2. 安装 Git、Git LFS、Docker、VS Code</a></li><li><a href="#soft-5">3. 下载 Seeker 并填配置</a></li><li><a href="#soft-8">4. 按本仓库的机身改固件参数</a></li><li><a href="#soft-10">5. 构建 Docker 容器和 ROS 2 工作空间</a></li><li><a href="#soft-11">6. 先在仿真里跑通（不接硬件）</a></li><li><a href="#soft-12">7. 烧录和逐项测试</a></li><li><a href="#soft-21">8. 最终固件 + 建图 + 导航</a></li><li><a href="#soft-26">9. 常见问题</a></li></ol></li>
@@ -340,7 +340,7 @@ main{min-width:0;padding-block:28px 96px}
 </tr>
 <tr>
 <td>预算</td>
-<td>约 ¥620–1130（已有 XIAO ESP32S3 Plus；含 2 块电池和充电器；不含电脑、打印机、工具）</td>
+<td>约 ¥600–1110（已有 XIAO ESP32S3 Plus 和 Arduino 学习套件 + 元件包；含 2 块电池和充电器；不含电脑、打印机、工具）</td>
 </tr>
 </tbody>
 </table></div>
@@ -649,7 +649,107 @@ main{min-width:0;padding-block:28px 96px}
 控制方式：<strong>手机浏览器通过 Wi-Fi 控制</strong>（见 <a href="#phone"><code>phone-control.md</code></a>），不需要买手柄。</p>
 </blockquote>
 <hr />
-<h3 id="bom-1">0. 一页总表</h3>
+<h3 id="bom-1">0. 你已经有的：Arduino 学习套件（顶配豪华版）+ 电子元件包</h3>
+<p>下面这些直接从两个套件里拿，<strong>不用再买</strong>（总表里标了 ✅ 已有）：</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>用在哪</th>
+<th>套件里的零件</th>
+<th>从哪个套件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A6 电池电压检测</td>
+<td><strong>电压检测模块</strong>（0–25 V，蓝色小板，一边 2 位螺丝端子，一边 <code>S</code> <code>+</code> <code>−</code>）</td>
+<td>学习套件</td>
+<td>内部 30 kΩ + 7.5 kΩ 分压，和机械臂项目用的是同一块</td>
+</tr>
+<tr>
+<td>A9 状态灯（可选）</td>
+<td><strong>8 位 RGB 灯环</strong>（黑色圆环）</td>
+<td>学习套件</td>
+<td>背面标着 <code>DIN</code> <code>5V</code> <code>GND</code> 的就是 WS2812，能用；如果标的是 R/G/B 三个脚就是普通 RGB，不能用</td>
+</tr>
+<tr>
+<td>B7 防倒灌二极管</td>
+<td><strong>二极管</strong>（5 个）</td>
+<td>元件包</td>
+<td>多半是 1N4007，压降约 0.8 V（1N5819 是 0.3 V），XIAO 5V 脚会是 4.2–4.4 V，板上稳压照样出 3.3 V，<strong>能用</strong></td>
+</tr>
+<tr>
+<td>C1 面包板</td>
+<td><strong>400 孔面包板</strong>（小的那块，约 83 × 55 mm）</td>
+<td>学习套件</td>
+<td>830 孔的大面包板 165 mm 长，比甲板还长，不用</td>
+</tr>
+<tr>
+<td>C3 杜邦线</td>
+<td>公对公、公对母、母对母杜邦线</td>
+<td>两个套件</td>
+<td>模块排针（公）接面包板用公对母，模块之间用母对母</td>
+</tr>
+<tr>
+<td>C4 排针</td>
+<td>40Pin 排针 × 2</td>
+<td>元件包</td>
+<td>掰两段 7 针焊到 XIAO 上</td>
+</tr>
+<tr>
+<td>C8 电阻</td>
+<td>10 kΩ（OE 上拉）、330 Ω（灯环数据线）</td>
+<td>元件包</td>
+<td></td>
+</tr>
+<tr>
+<td>工具</td>
+<td>小一字螺丝刀</td>
+<td>学习套件</td>
+<td>拧电压检测模块、PCA9685 的螺丝端子</td>
+</tr>
+<tr>
+<td>测试用</td>
+<td>SG90 小舵机</td>
+<td>学习套件</td>
+<td>先插 PCA9685 试一下通道能不能转；<strong>不能当腿用</strong>（塑料齿，扭矩不够）</td>
+</tr>
+</tbody>
+</table></div>
+<p>套件里这些<strong>不要用</strong>在六足上：</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>零件</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面包板电源模块（MB102，插在面包板上的那块）</td>
+<td>最大只有约 700 mA，12 个舵机要 4–5 A，会直接掉电</td>
+</tr>
+<tr>
+<td>1602 LCD 屏</td>
+<td>固件用的是 SSD1306 OLED（A7），LCD 驱动不了</td>
+</tr>
+<tr>
+<td>元件包的 100 µF 电容</td>
+<td>太小，舵机电源旁边要 1000 µF（B8，¥1–2）</td>
+</tr>
+<tr>
+<td>Arduino Uno</td>
+<td>六足用 XIAO ESP32S3 Plus，Uno 用不上</td>
+</tr>
+<tr>
+<td>9 V 电池扣</td>
+<td>9 V 方块电池带不动舵机</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="bom-2">1. 一页总表</h3>
 <p>在网页版里，下面这张表每行前面有 “已买” 勾选框，勾上以后会自动算还要花多少钱。</p>
 <div class="tbl"><table>
 <thead>
@@ -708,8 +808,8 @@ main{min-width:0;padding-block:28px 96px}
 <td>电池电压检测</td>
 <td>0–25 V 电压检测模块</td>
 <td>1</td>
-<td>¥2–4</td>
-<td></td>
+<td>✅ 已有（学习套件）</td>
+<td>蓝色小板，<code>S</code> <code>+</code> <code>−</code> 三针</td>
 </tr>
 <tr>
 <td>A7</td>
@@ -730,9 +830,9 @@ main{min-width:0;padding-block:28px 96px}
 <tr>
 <td>A9</td>
 <td>状态灯</td>
-<td>WS2812B 8 位 RGB 灯条模块</td>
+<td>WS2812 8 位 RGB 灯环 / 灯条</td>
 <td>1</td>
-<td>¥3–6</td>
+<td>✅ 已有（学习套件的 8 位灯环）</td>
 <td>可选</td>
 </tr>
 <tr>
@@ -794,10 +894,10 @@ main{min-width:0;padding-block:28px 96px}
 <tr>
 <td>B7</td>
 <td>二极管</td>
-<td>1N5819 肖特基</td>
-<td>5</td>
-<td>¥1–2</td>
-<td>一包</td>
+<td>1N5819 肖特基（元件包的二极管也能用）</td>
+<td>1</td>
+<td>✅ 已有（元件包）</td>
+<td>见 B7 说明</td>
 </tr>
 <tr>
 <td>B8</td>
@@ -818,9 +918,9 @@ main{min-width:0;padding-block:28px 96px}
 <tr>
 <td>C1</td>
 <td>免焊面包板</td>
-<td>170 孔迷你面包板</td>
-<td>2</td>
-<td>¥3–5</td>
+<td>400 孔面包板（学习套件里小的那块）</td>
+<td>1</td>
+<td>✅ 已有（学习套件）</td>
 <td>方案一（免焊）</td>
 </tr>
 <tr>
@@ -834,9 +934,9 @@ main{min-width:0;padding-block:28px 96px}
 <tr>
 <td>C3</td>
 <td>杜邦线</td>
-<td>母对母 + 公对母，20 cm，各 40 根</td>
-<td>2</td>
-<td>¥8–12</td>
+<td>公对公 / 公对母 / 母对母</td>
+<td>1</td>
+<td>✅ 已有（两个套件都有）</td>
 <td></td>
 </tr>
 <tr>
@@ -844,7 +944,7 @@ main{min-width:0;padding-block:28px 96px}
 <td>排针</td>
 <td>2.54 mm 单排 1×40</td>
 <td>2</td>
-<td>¥2–3</td>
+<td>✅ 已有（元件包 40Pin × 2）</td>
 <td>XIAO 要焊排针</td>
 </tr>
 <tr>
@@ -874,9 +974,9 @@ main{min-width:0;padding-block:28px 96px}
 <tr>
 <td>C8</td>
 <td>电阻</td>
-<td>10 kΩ、330 Ω 各一包</td>
+<td>10 kΩ、330 Ω</td>
 <td>1</td>
-<td>¥2–4</td>
+<td>✅ 已有（元件包）</td>
 <td>可选</td>
 </tr>
 <tr>
@@ -945,10 +1045,10 @@ main{min-width:0;padding-block:28px 96px}
 </tr>
 </tbody>
 </table></div>
-<p><strong>合计</strong>：必需部分约 <strong>¥620–1130</strong>（含 2 块电池和充电器，不含已有的主控板、可选项、电脑和工具；已经有航模充电器可以再省 ¥25–150）；可选部分约 ¥70–190。网页版里勾选以后会实时算。</p>
+<p><strong>合计</strong>：必需部分约 <strong>¥600–1110</strong>（含 2 块电池和充电器；不含已有的主控板和两个套件里的零件、可选项、电脑和工具；已经有航模充电器可以再省 ¥25–150）；可选部分约 ¥60–175。网页版里勾选以后会实时算。</p>
 <hr />
-<h3 id="bom-2">A. 电子模块</h3>
-<h4 id="bom-3">A1 主控板：Seeed Studio XIAO ESP32S3 Plus ✅ 已有</h4>
+<h3 id="bom-3">A. 电子模块</h3>
+<h4 id="bom-4">A1 主控板：Seeed Studio XIAO ESP32S3 Plus ✅ 已有</h4>
 <ul>
 <li><strong>型号</strong>：Seeed Studio XIAO ESP32S3 Plus（不带摄像头）</li>
 <li><strong>规格</strong>：ESP32-S3 双核 240 MHz；<strong>16 MB Flash + 8 MB PSRAM（OPI）</strong>；2.4 GHz Wi-Fi + BLE 5.0；外接棒状天线（U.FL）；3.3 V 逻辑，5 V 供电；21 × 17.8 mm；正面 D0–D10 引脚和 Sense 完全一样，背面多 9 个 1.27 mm 焊盘（D11–D19，本项目不用）</li>
@@ -962,7 +1062,7 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 </li>
 </ul>
-<h4 id="bom-4">A2 舵机驱动板：PCA9685 16 路 PWM 模块</h4>
+<h4 id="bom-5">A2 舵机驱动板：PCA9685 16 路 PWM 模块</h4>
 <ul>
 <li><strong>型号</strong>：PCA9685 16 路 12 位 PWM 舵机驱动板（Adafruit 815 或国产兼容版，蓝色 / 紫色板都一样）</li>
 <li><strong>规格</strong>：I²C 接口，默认地址 <strong>0x40</strong>；12 位分辨率，PWM 频率 24–1526 Hz（舵机用 50 Hz）；逻辑电源 VCC 3–5 V；舵机电源 V+ ≤ 6 V，从<strong>绿色螺丝端子</strong>进；16 组 3 针舵机排针（GND / V+ / PWM）；板上带 OE 使能脚和 I²C 上拉；约 62 × 25 mm，4 个 M2.5 安装孔</li>
@@ -971,7 +1071,7 @@ main{min-width:0;padding-block:28px 96px}
 <li><strong>怎么买</strong>：淘宝搜 <code>PCA9685 16路舵机驱动板</code></li>
 <li><strong>注意</strong>：选<strong>舵机排针已经焊好</strong>的版本；有的板子螺丝端子旁边有一个空的电容焊盘，把 B8 的 1000 µF 电容焊上去更好。</li>
 </ul>
-<h4 id="bom-5">A3 姿态传感器：BNO085 九轴模块</h4>
+<h4 id="bom-6">A3 姿态传感器：BNO085 九轴模块</h4>
 <ul>
 <li><strong>型号</strong>：BNO085 九轴姿态模块，<strong>I²C 接口</strong>（Adafruit 4754，或国产 <code>BNO085</code> / <code>BNO08X</code> 模块）</li>
 <li><strong>规格</strong>：CEVA BNO085 芯片，内置姿态融合（直接输出四元数）；加速度计 + 陀螺仪 + 磁力计；供电 3.3 V（模块多数带稳压，3–5 V 都行）；I²C 地址 <strong>0x4A 或 0x4B</strong>；引脚一般有 VIN、GND、SDA、SCL、INT、RST、DI（地址）、PS0/PS1</li>
@@ -986,7 +1086,7 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 </li>
 </ul>
-<h4 id="bom-6">A4 激光雷达：乐动 LDROBOT LD14P</h4>
+<h4 id="bom-7">A4 激光雷达：乐动 LDROBOT LD14P</h4>
 <ul>
 <li><strong>型号</strong>：LDROBOT LD14P 360° 三角测距激光雷达。<strong>推荐买带 USB 转接板的套装</strong>（如微雪 “D200 LiDAR 开发套件”，内含 LD14P + 转接板 + 线）</li>
 <li><strong>规格</strong>：测距 0.1–8 m；扫描频率 2–8 Hz（固件默认 6 Hz）；每秒 4000 个点；UART 230400 bps，3.3 V 电平；供电 5 V，约 300 mA；4 针接口（5V、GND、TX、RX），雷达端 JST GH 1.25 mm；约 100 g</li>
@@ -1000,7 +1100,7 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 </li>
 </ul>
-<h4 id="bom-7">A5 舵机：MG90S 金属齿 180°</h4>
+<h4 id="bom-8">A5 舵机：MG90S 金属齿 180°</h4>
 <ul>
 <li><strong>型号</strong>：MG90S 金属齿微型舵机，<strong>180° 版本</strong>（TowerPro 或国产同款）</li>
 <li><strong>规格</strong>：重量约 13.4 g；机身 22.8 × 12.2 × 28.5 mm；工作电压 4.8–6 V；堵转扭矩 1.8 kg·cm（4.8 V）/ 2.2 kg·cm（6 V）；速度 0.1 s / 60°；PWM 50 Hz、脉宽 500–2500 µs；3 线插头（棕 GND、红 V+、橙 信号），线长约 25 cm；附带单边 / 双边 / 十字舵机臂和螺丝</li>
@@ -1016,7 +1116,7 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 </li>
 </ul>
-<h4 id="bom-8">A6 电池电压检测：0–25 V 电压检测模块</h4>
+<h4 id="bom-9">A6 电池电压检测：0–25 V 电压检测模块 ✅ 已有（学习套件）</h4>
 <ul>
 <li><strong>型号</strong>：“电压检测模块 0–25V”（Arduino 常用的那种小红板 / 蓝板）</li>
 <li><strong>规格</strong>：内部是 <strong>30 kΩ + 7.5 kΩ 分压</strong>，输出 = 输入 × 0.2；输入 0–25 V；3 个输出针：S（信号）、+（空）、−（GND）；约 13 × 27 mm</li>
@@ -1026,28 +1126,28 @@ main{min-width:0;padding-block:28px 96px}
 <li><strong>接法</strong>：模块的 VCC / GND 端子接电池（开关后面的 VIN），<strong>S → XIAO D3</strong>，<strong>− → GND</strong>，<strong>+ 不接</strong>。3S 充满 12.6 V 时 D3 = 2.52 V，在 ESP32-S3 能测的范围内。</li>
 <li><strong>替代</strong>：自己用 100 kΩ + 22 kΩ 两个电阻分压（原版 PCB 的做法）。两种都行，固件是两点标定，比例不同也没关系。</li>
 </ul>
-<h4 id="bom-9">A7 显示屏：0.96″ OLED（可选）</h4>
+<h4 id="bom-10">A7 显示屏：0.96″ OLED（可选）</h4>
 <ul>
 <li><strong>型号</strong>：0.96 寸 OLED，<strong>SSD1306</strong> 驱动，128 × 64，<strong>I²C 4 针</strong>（VCC、GND、SCL、SDA）</li>
 <li><strong>规格</strong>：3.3–5 V；地址 0x3C；白色 / 蓝色 / 黄蓝双色都行</li>
 <li><strong>数量</strong>：1　<strong>参考价</strong>：¥8–12　<strong>搜索词</strong>：<code>0.96寸 OLED I2C 4针 SSD1306</code></li>
 <li><strong>注意</strong>：不要买 SPI 7 针版。不接也能跑，固件不会因为没有 OLED 停下。</li>
 </ul>
-<h4 id="bom-10">A8 功放 + 喇叭：MAX98357A（可选）</h4>
+<h4 id="bom-11">A8 功放 + 喇叭：MAX98357A（可选）</h4>
 <ul>
 <li><strong>型号</strong>：MAX98357A I²S 3 W D 类功放模块 + 8 Ω 2 W 小喇叭（Ø28–40 mm）</li>
 <li><strong>规格</strong>：I²S 数字输入（BCLK、LRC、DIN），供电 2.5–5.5 V，8 Ω 负载约 1.8 W（5 V）</li>
 <li><strong>数量</strong>：1 + 1　<strong>参考价</strong>：¥10–18（两样）　<strong>搜索词</strong>：<code>MAX98357A I2S 功放模块</code>、<code>8欧 2W 小喇叭 28mm</code></li>
 <li><strong>用途</strong>：语音播报（电脑上的 TTS 发到机器人播放）。不装也能走路建图。</li>
 </ul>
-<h4 id="bom-11">A9 状态灯：WS2812B 灯条（可选）</h4>
+<h4 id="bom-12">A9 状态灯：WS2812 灯环 / 灯条（可选）✅ 学习套件的 8 位灯环</h4>
 <ul>
 <li><strong>型号</strong>：WS2812B（或 SK6812）8 位 RGB 灯条模块，5 V</li>
 <li><strong>规格</strong>：单线数据（DIN），5 V 供电，每颗满亮约 60 mA</li>
 <li><strong>数量</strong>：1　<strong>参考价</strong>：¥3–6　<strong>搜索词</strong>：<code>WS2812B 8位 灯条 模块</code></li>
 <li><strong>用途</strong>：开机状态（彩虹 → 红 → 黄 → 青）、电量低红灯快闪。数据线串一个 330 Ω 电阻（C8）接 D2。</li>
 </ul>
-<h4 id="bom-12">A10 摄像头板（可选，“找东西” 功能才要）</h4>
+<h4 id="bom-13">A10 摄像头板（可选，“找东西” 功能才要）</h4>
 <ul>
 <li><strong>型号二选一</strong>：
 <ul>
@@ -1059,8 +1159,8 @@ main{min-width:0;padding-block:28px 96px}
 <li>只遥控走路、建图、导航的话<strong>不用买</strong>。</li>
 </ul>
 <hr />
-<h3 id="bom-13">B. 电源</h3>
-<h4 id="bom-14">B1 电池：3S 11.1 V 锂聚合物电池</h4>
+<h3 id="bom-14">B. 电源</h3>
+<h4 id="bom-15">B1 电池：3S 11.1 V 锂聚合物电池</h4>
 <ul>
 <li><strong>型号</strong>：3S 11.1 V <strong>1300 mAh</strong>，放电倍率 ≥ 25C，<strong>XT30 插头</strong>，带平衡头（JST-XH 4P）。品牌：格氏 ACE / 花牌 / 狂风 / 飞盈佳乐都行</li>
 <li><strong>规格</strong>：满电 12.6 V、标称 11.1 V、最低 9.9 V；外形约 72 × 35 × 26 mm；重约 105 g</li>
@@ -1075,14 +1175,14 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 </li>
 </ul>
-<h4 id="bom-15">B2 充电器：平衡充电器</h4>
+<h4 id="bom-16">B2 充电器：平衡充电器</h4>
 <ul>
 <li><strong>型号</strong>：能充 2S / 3S 锂电、带平衡口的充电器。便宜的 <strong>B3AC</strong>（¥25–35）够用；想要好一点的选 <strong>SkyRC B6neo / ISDT 608AC</strong>（¥150 以上）</li>
 <li><strong>数量</strong>：1</li>
 <li><strong>怎么买</strong>：淘宝搜 <code>B3AC 2S 3S 平衡充电器</code> 或 <code>B6neo 充电器</code></li>
 <li><strong>注意</strong>：充电电流设 <strong>1C</strong>（1300 mAh → 1.3 A）；有人看着充，不要过夜。</li>
 </ul>
-<h4 id="bom-16">B3 5 V 降压模块：12 V 转 5 V 5 A（固定输出）</h4>
+<h4 id="bom-17">B3 5 V 降压模块：12 V 转 5 V 5 A（固定输出）</h4>
 <ul>
 <li><strong>型号</strong>：“12V 转 5V 5A DC-DC 降压模块”，<strong>灌胶防水、固定输出</strong>那种（常见的车载降压电源），输入 8–22 V</li>
 <li><strong>规格</strong>：输出 <strong>5.0–5.2 V 固定</strong>、持续 <strong>≥ 5 A</strong>（25 W）；效率 ≥ 90 %；带输入反接 / 输出短路 / 过温保护更好；输入输出是 4 根引线（红黑进、红黑出）</li>
@@ -1098,138 +1198,147 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 </li>
 </ul>
-<h4 id="bom-17">B4 保险丝：迷你刀片保险丝座 + 5 A 保险丝</h4>
+<h4 id="bom-18">B4 保险丝：迷你刀片保险丝座 + 5 A 保险丝</h4>
 <ul>
 <li><strong>型号</strong>：迷你刀片（Mini ATM）保险丝座，<strong>带 18 AWG 引线</strong>，配 5 A 迷你刀片保险丝（送几个备用）</li>
 <li><strong>数量</strong>：1 座 + 5 A 保险丝若干</li>
 <li><strong>参考价</strong>：¥4–6　<strong>搜索词</strong>：<code>迷你刀片保险丝座 带线</code>、<code>迷你刀片保险丝 5A</code></li>
 <li><strong>用途</strong>：线短路时烧断，保护电池和电线不起火。</li>
 </ul>
-<h4 id="bom-18">B5 电源开关：KCD1 船型开关</h4>
+<h4 id="bom-19">B5 电源开关：KCD1 船型开关</h4>
 <ul>
 <li><strong>型号</strong>：KCD1-101 船型开关，<strong>2 脚、开孔 19 × 13 mm</strong>，6 A 250 V AC</li>
 <li><strong>数量</strong>：2（1 个备用）　<strong>参考价</strong>：¥1–2 / 个　<strong>搜索词</strong>：<code>KCD1 船型开关 2脚 小号</code></li>
 <li><strong>安装</strong>：卡进甲板后面的方孔（甲板就是按这个尺寸开的孔）。</li>
 <li><strong>替代</strong>：航模用的 “XT30 大电流电源开关”（带线，免焊）¥10–15。</li>
 </ul>
-<h4 id="bom-19">B6 XT30 插头线</h4>
+<h4 id="bom-20">B6 XT30 插头线</h4>
 <ul>
 <li><strong>型号</strong>：XT30 公头 + 母头，<strong>已焊好 16 AWG 硅胶线</strong>（10 cm）</li>
 <li><strong>数量</strong>：2 对　<strong>参考价</strong>：¥6–10　<strong>搜索词</strong>：<code>XT30 公母 带线 16AWG</code></li>
 <li><strong>用途</strong>：母头线接到机器人上，电池直接插；不用剪电池原装插头。</li>
 </ul>
-<h4 id="bom-20">B7 二极管：1N5819 肖特基二极管</h4>
+<h4 id="bom-21">B7 二极管：1N5819 肖特基二极管 ✅ 可以用元件包的二极管</h4>
 <ul>
-<li><strong>型号</strong>：1N5819（DO-41 直插，1 A 40 V，压降约 0.3 V）</li>
-<li><strong>数量</strong>：1 个用，买一包 10 个　<strong>参考价</strong>：¥1–2　<strong>搜索词</strong>：<code>1N5819 直插</code></li>
-<li><strong>用途</strong>：串在降压模块 5 V 和 XIAO 的 5V 脚之间，<strong>带白色条纹的一端朝 XIAO</strong>。防止插 USB 刷固件时电流倒灌进舵机。直接焊在线上、套热缩管就行，不用板子。</li>
+<li>
+<p><strong>已有替代</strong>：元件包里的二极管（多半是 1N4007）也能用，压降大一点（约 0.8 V），XIAO 5V 脚约 4.2–4.4 V，板上稳压照样出 3.3 V。想要余量大一点再买 1N5819。</p>
+</li>
+<li>
+<p><strong>型号</strong>：1N5819（DO-41 直插，1 A 40 V，压降约 0.3 V）</p>
+</li>
+<li>
+<p><strong>数量</strong>：1 个用，买一包 10 个　<strong>参考价</strong>：¥1–2　<strong>搜索词</strong>：<code>1N5819 直插</code></p>
+</li>
+<li>
+<p><strong>用途</strong>：串在降压模块 5 V 和 XIAO 的 5V 脚之间，<strong>带白色条纹的一端朝 XIAO</strong>。防止插 USB 刷固件时电流倒灌进舵机。直接焊在线上、套热缩管就行，不用板子。</p>
+</li>
 </ul>
-<h4 id="bom-21">B8 电解电容：1000 µF 16 V</h4>
+<h4 id="bom-22">B8 电解电容：1000 µF 16 V</h4>
 <ul>
 <li><strong>型号</strong>：铝电解电容 1000 µF 16 V（10 × 20 mm 左右）</li>
 <li><strong>数量</strong>：1 个用，买 2 个　<strong>参考价</strong>：¥1–2　<strong>搜索词</strong>：<code>1000uF 16V 电解电容</code></li>
 <li><strong>用途</strong>：并在 PCA9685 的舵机电源端子上，12 个舵机同时启动时稳住电压。<strong>长脚是 +</strong>。</li>
 </ul>
-<h4 id="bom-22">B9 锂电低压报警器（BB 响）</h4>
+<h4 id="bom-23">B9 锂电低压报警器（BB 响）</h4>
 <ul>
 <li><strong>型号</strong>：1–8S 锂电池电压显示报警器（带数码管）</li>
 <li><strong>数量</strong>：1　<strong>参考价</strong>：¥3–5　<strong>搜索词</strong>：<code>锂电池 电压显示 低压报警器 BB响</code></li>
 <li><strong>用途</strong>：插在电池平衡头上，低于设定电压会叫，防止过放。</li>
 </ul>
 <hr />
-<h3 id="bom-23">C. 连接线材</h3>
-<h4 id="bom-24">C1 免焊方案：170 孔迷你面包板</h4>
+<h3 id="bom-24">C. 连接线材</h3>
+<h4 id="bom-25">C1 免焊方案：面包板 ✅ 已有（学习套件）</h4>
 <ul>
-<li><strong>型号</strong>：SYB-170 迷你面包板（47 × 35 mm，背面带双面胶）</li>
-<li><strong>数量</strong>：2　<strong>参考价</strong>：¥3–5　<strong>搜索词</strong>：<code>170孔 迷你面包板</code></li>
+<li><strong>用哪块</strong>：学习套件里<strong>小的 400 孔面包板</strong>（约 83 × 55 mm，背面有双面胶），放得下甲板。830 孔的大面包板 165 mm 长，比甲板还长，不用。</li>
+<li>没有的话：淘宝搜 <code>400孔 面包板</code>，¥3–5。</li>
 <li><strong>用法</strong>：XIAO 插在面包板中间，其他模块用杜邦线连过来，<strong>完全不用焊</strong>，适合先把功能跑通。</li>
 <li><strong>注意</strong>：机器人走路会震，跑通以后建议杜邦线接头点一点热熔胶，或者换成方案二焊接。</li>
 </ul>
-<h4 id="bom-25">C2 焊接方案：5 × 7 cm 双面洞洞板（可选）</h4>
+<h4 id="bom-26">C2 焊接方案：5 × 7 cm 双面洞洞板（可选）</h4>
 <ul>
 <li><strong>型号</strong>：双面喷锡洞洞板 5 × 7 cm，2.54 mm 孔距</li>
 <li><strong>数量</strong>：2　<strong>参考价</strong>：¥3–5　<strong>搜索词</strong>：<code>洞洞板 5x7 双面</code></li>
 <li><strong>用途</strong>：长期使用更可靠，布局见接线指南 §5。</li>
 </ul>
-<h4 id="bom-26">C3 杜邦线</h4>
+<h4 id="bom-27">C3 杜邦线 ✅ 已有（两个套件）</h4>
 <ul>
 <li><strong>型号</strong>：母对母 + 公对母，20 cm，各一排（40 根）</li>
 <li><strong>数量</strong>：2 排　<strong>参考价</strong>：¥8–12　<strong>搜索词</strong>：<code>杜邦线 母对母 20cm 40P</code></li>
 </ul>
-<h4 id="bom-27">C4 排针</h4>
+<h4 id="bom-28">C4 排针 ✅ 已有（元件包 40Pin × 2）</h4>
 <ul>
 <li><strong>型号</strong>：2.54 mm 单排排针 1×40（可掰断）</li>
 <li><strong>数量</strong>：2　<strong>参考价</strong>：¥2–3　<strong>用途</strong>：焊到 XIAO 上（两排 7 针），其余备用。</li>
 </ul>
-<h4 id="bom-28">C5 电源线：20 AWG 硅胶线</h4>
+<h4 id="bom-29">C5 电源线：20 AWG 硅胶线</h4>
 <ul>
 <li><strong>型号</strong>：20 AWG 硅胶软线，红、黑各 2 m</li>
 <li><strong>数量</strong>：1 套　<strong>参考价</strong>：¥8–12　<strong>搜索词</strong>：<code>20AWG 硅胶线 红黑</code></li>
 <li><strong>用途</strong>：电池 → 保险丝 → 开关 → 降压模块 → PCA9685 端子这一路大电流线。信号线用杜邦线就行。</li>
 </ul>
-<h4 id="bom-29">C6 舵机延长线（可选）</h4>
+<h4 id="bom-30">C6 舵机延长线（可选）</h4>
 <ul>
 <li><strong>型号</strong>：3P 舵机延长线（JR / Futaba 头），15 cm</li>
 <li><strong>数量</strong>：6　<strong>参考价</strong>：¥6–10　<strong>用途</strong>：膝舵机的线够不到甲板时接长。</li>
 </ul>
-<h4 id="bom-30">C7 热缩管套装</h4>
+<h4 id="bom-31">C7 热缩管套装</h4>
 <ul>
 <li><strong>型号</strong>：热缩管套装（Ø2–10 mm 各种规格）　<strong>参考价</strong>：¥5–8</li>
 <li><strong>用途</strong>：包焊点、二极管、保险丝接头。</li>
 </ul>
-<h4 id="bom-31">C8 电阻（可选）</h4>
+<h4 id="bom-32">C8 电阻（可选）✅ 已有（元件包）</h4>
 <ul>
 <li>10 kΩ（PCA9685 的 OE 上拉，让上电瞬间舵机不乱动，可选）、330 Ω（灯条数据线），1/4 W 金属膜，买小包就行。¥2–4。</li>
 </ul>
 <hr />
-<h3 id="bom-32">D. 结构件与紧固件</h3>
-<h4 id="bom-33">D1 3D 打印件</h4>
+<h3 id="bom-33">D. 结构件与紧固件</h3>
+<h4 id="bom-34">D1 3D 打印件</h4>
 <ul>
 <li><strong>文件</strong>：本仓库 <a href="https://github.com/ouhanjun-wq/ou/tree/claude/ros-esp32-s3-project-ypzx2b/hexapod/cad/stl" target="_blank" rel="noopener"><code>../cad/stl/</code></a>：底板 × 1、甲板 × 1、大腿 A × 3、大腿 B × 3、小腿 × 6（+ 2 备用）</li>
 <li><strong>材料</strong>：<strong>PETG</strong>（推荐，韧），PLA+ 也行；一套约 130 g</li>
 <li><strong>参考价</strong>：自己打约 ¥15（1 kg 耗材 ¥50–70）；淘宝代打 ¥40–80（搜 <code>3D打印代打 PETG</code>，把 STL 发给店家）</li>
 <li><strong>注意</strong>：底板 145 × 111 mm，220 × 220 mm 以上的打印机都能打；先打一个大腿试装（CAD 文档 §2）。</li>
 </ul>
-<h4 id="bom-34">D2 铜柱 + 螺丝</h4>
+<h4 id="bom-35">D2 铜柱 + 螺丝</h4>
 <ul>
 <li><strong>型号</strong>：<strong>M3 × 25 mm 母母铜柱</strong> 4 根 + <strong>M3 × 6 mm 圆头螺丝</strong> 8 颗</li>
 <li><strong>参考价</strong>：¥4–6　<strong>搜索词</strong>：<code>M3x25 铜柱 双通</code></li>
 <li><strong>用途</strong>：撑起甲板。</li>
 </ul>
-<h4 id="bom-35">D3 M2 自攻螺丝</h4>
+<h4 id="bom-36">D3 M2 自攻螺丝</h4>
 <ul>
 <li><strong>型号</strong>：<strong>M2 × 6 mm 盘头十字自攻螺丝</strong>（PA 尖尾）</li>
 <li><strong>数量</strong>：约 50 颗（舵机安装耳 24 颗 + 舵机臂固定 24 颗），买 100 颗一包</li>
 <li><strong>参考价</strong>：¥4–6　<strong>搜索词</strong>：<code>M2x6 自攻螺丝 盘头</code></li>
 </ul>
-<h4 id="bom-36">D4 M3 尼龙柱套装</h4>
+<h4 id="bom-37">D4 M3 尼龙柱套装</h4>
 <ul>
 <li><strong>型号</strong>：M3 尼龙柱 + 尼龙螺丝螺母套装（含 M3 × 20 柱）</li>
 <li><strong>参考价</strong>：¥12–18　<strong>搜索词</strong>：<code>M3 尼龙柱 套装</code></li>
 <li><strong>用途</strong>：PCA9685、面包板、降压模块固定在甲板孔阵上；4 根 <strong>M3 × 20</strong> 把雷达架高。</li>
 </ul>
-<h4 id="bom-37">D5 魔术贴扎带</h4>
+<h4 id="bom-38">D5 魔术贴扎带</h4>
 <ul>
 <li><strong>型号</strong>：20 mm 宽 × 200 mm 长，背靠背魔术贴扎带　<strong>数量</strong>：2　<strong>参考价</strong>：¥3–5</li>
 <li><strong>用途</strong>：把电池绑在底板下面（底板上有 4 个穿扎带的长槽）。</li>
 </ul>
-<h4 id="bom-38">D6 尼龙扎带</h4>
+<h4 id="bom-39">D6 尼龙扎带</h4>
 <ul>
 <li><strong>型号</strong>：3 × 100 mm 白色 / 黑色扎带，一包　<strong>参考价</strong>：¥3–5</li>
 <li><strong>用途</strong>：绑线、把摄像头板绑在甲板前面的竖板上。</li>
 </ul>
-<h4 id="bom-39">D7 脚套</h4>
+<h4 id="bom-40">D7 脚套</h4>
 <ul>
 <li><strong>型号</strong>：Ø6 mm 硅胶脚套或 Ø6 mm 热缩管　<strong>数量</strong>：6　<strong>参考价</strong>：¥2–5</li>
 <li><strong>用途</strong>：套在小腿脚尖，走地板不打滑。</li>
 </ul>
-<h4 id="bom-40">D8 双面泡棉胶</h4>
+<h4 id="bom-41">D8 双面泡棉胶</h4>
 <ul>
 <li><strong>型号</strong>：3M VHB 或同类强力双面泡棉胶，10–20 mm 宽　<strong>参考价</strong>：¥5–8</li>
 <li><strong>用途</strong>：粘降压模块、电压检测模块、雷达底座。</li>
 </ul>
 <hr />
-<h3 id="bom-41">E. 工具（已有就不用买）</h3>
+<h3 id="bom-42">E. 工具（已有就不用买）</h3>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -1307,7 +1416,7 @@ main{min-width:0;padding-block:28px 96px}
 </tbody>
 </table></div>
 <hr />
-<h3 id="bom-42">F. 电脑、手机、网络（一般都有）</h3>
+<h3 id="bom-43">F. 电脑、手机、网络（一般都有）</h3>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -1599,12 +1708,12 @@ main{min-width:0;padding-block:28px 96px}
 </tr>
 <tr>
 <td>电池检测</td>
-<td><strong>0–25 V 电压检测模块</strong></td>
+<td><strong>0–25 V 电压检测模块</strong>（学习套件里有）</td>
 <td>现成分压小板，免得自己搭电阻</td>
 </tr>
 <tr>
 <td>连接</td>
-<td><strong>170 孔面包板 + 杜邦线</strong>（免焊），跑通后可换洞洞板</td>
+<td><strong>学习套件的面包板 + 杜邦线</strong>（免焊），跑通后可换洞洞板</td>
 <td>只有电源线和 1 个二极管需要焊</td>
 </tr>
 <tr>
@@ -1629,28 +1738,28 @@ main{min-width:0;padding-block:28px 96px}
 </thead>
 <tbody>
 <tr>
-<td>电子模块（A2–A6，主控已有）</td>
-<td>¥380–600</td>
+<td>电子模块（A2–A5；主控、电压检测模块已有）</td>
+<td>¥380–590</td>
 </tr>
 <tr>
-<td>电源（B1–B9，含 2 块电池和充电器）</td>
-<td>¥165–365</td>
+<td>电源（B1–B9，含 2 块电池和充电器；二极管用元件包的）</td>
+<td>¥165–360</td>
 </tr>
 <tr>
-<td>连接线材（C1、C3–C5、C7）</td>
-<td>¥25–40</td>
+<td>连接线材（C5 电源线、C7 热缩管；面包板、杜邦线、排针、电阻用套件的）</td>
+<td>¥15–20</td>
 </tr>
 <tr>
 <td>结构件（D1–D8）</td>
 <td>¥50–135</td>
 </tr>
 <tr>
-<td><strong>合计（不含已有主控、可选项、电脑、工具）</strong></td>
-<td><strong>约 ¥620–1130</strong></td>
+<td><strong>合计（不含已有的主控和两个套件、可选项、电脑、工具）</strong></td>
+<td><strong>约 ¥600–1110</strong></td>
 </tr>
 <tr>
-<td>可选：OLED、功放、灯条、摄像头板等</td>
-<td>+ ¥70–190</td>
+<td>可选：OLED、功放、摄像头板等</td>
+<td>+ ¥60–175</td>
 </tr>
 </tbody>
 </table></div>
@@ -2695,7 +2804,7 @@ main{min-width:0;padding-block:28px 96px}
 </ul>
 <hr />
 <h3 id="wire-14">5. 面包板（免焊）/ 洞洞板布局</h3>
-<p><strong>方案一：免焊面包板（推荐先用这个跑通）</strong>。XIAO（焊好排针）插在 170 孔迷你面包板中间，面包板两侧的孔当 3V3 和 GND 母线；PCA9685、BNO085、电压检测模块、雷达、OLED、功放都用<strong>杜邦线</strong>连到对应的孔。唯一要焊的是 1N5819：直接焊在 5V_SV 线和一根到 XIAO 5V 的杜邦线之间，套热缩管。走路会震，跑通以后在杜邦线接头上点一点热熔胶。</p>
+<p><strong>方案一：免焊面包板（推荐先用这个跑通）</strong>。XIAO（焊好排针）插在学习套件的 400 孔面包板中间，面包板两侧的孔当 3V3 和 GND 母线；PCA9685、BNO085、电压检测模块、雷达、OLED、功放都用<strong>杜邦线</strong>连到对应的孔。唯一要焊的是 1N5819：直接焊在 5V_SV 线和一根到 XIAO 5V 的杜邦线之间，套热缩管。走路会震，跑通以后在杜邦线接头上点一点热熔胶。</p>
 <p><strong>方案二：洞洞板（长期用更可靠）</strong>。一块 5 × 7 cm 洞洞板装：XIAO（插在排母上）、BNO085（插在排母上，保证水平）、1N5819、10 kΩ OE 上拉、330 Ω、100 µF，再引出几组排针：</p>
 <pre><code>            ┌──────────────── 5 × 7 cm 洞洞板（俯视，上方 = 机头）────────────────┐
             │  [5V_SV 2P]   [VIN 2P]            [雷达 4P: 5V GND D6 D7]            │
