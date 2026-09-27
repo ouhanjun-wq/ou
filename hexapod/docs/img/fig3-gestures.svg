@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="600" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 3  手势表（右手，手背朝上看）</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">手指只分“直”和“弯”。走 / 横移 / 机身三种要保持 0.15 秒才生效；握拳立刻停</text>
+<rect x="40" y="100" width="330" height="220" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="205.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<rect x="40" y="100" width="8" height="220" rx="4" fill="#E07B00"/>
+<rect x="114" y="158" width="15" height="62" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="132" y="150" width="15" height="70" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="150" y="156" width="15" height="64" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="168" y="168" width="15" height="52" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="110" y="210" width="76" height="70" rx="12" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="70" y="226" width="48" height="15" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4" transform="rotate(-35 114 234)"/>
+<text x="220" y="150" font-size="16" text-anchor="start" font-weight="700" fill="#1B2A2F">张开手</text>
+<text x="220" y="178" font-size="15" text-anchor="start" font-weight="700" fill="#E07B00">行走 WALK</text>
+<text x="220" y="208" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">前倾 = 前进 · 后仰 = 后退</text>
+<text x="220" y="228" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">左右翻 = 左转 / 右转</text>
+<rect x="390" y="100" width="330" height="220" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="555.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<rect x="390" y="100" width="8" height="220" rx="4" fill="#E07B00"/>
+<rect x="464" y="158" width="15" height="62" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="482" y="196" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="500" y="196" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="518" y="196" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="460" y="210" width="76" height="70" rx="12" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="452" y="240" width="30" height="15" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="570" y="150" font-size="16" text-anchor="start" font-weight="700" fill="#1B2A2F">伸食指</text>
+<text x="570" y="178" font-size="15" text-anchor="start" font-weight="700" fill="#E07B00">横移 CRAB</text>
+<text x="570" y="208" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">前倾 = 前进 · 后仰 = 后退</text>
+<text x="570" y="228" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">左右翻 = 向左 / 向右平移</text>
+<rect x="740" y="100" width="330" height="220" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="905.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<rect x="740" y="100" width="8" height="220" rx="4" fill="#E07B00"/>
+<rect x="814" y="158" width="15" height="62" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="832" y="150" width="15" height="70" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="850" y="196" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="868" y="196" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="810" y="210" width="76" height="70" rx="12" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="802" y="240" width="30" height="15" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="920" y="150" font-size="16" text-anchor="start" font-weight="700" fill="#1B2A2F">剪刀手</text>
+<text x="920" y="178" font-size="15" text-anchor="start" font-weight="700" fill="#E07B00">机身 BODY</text>
+<text x="920" y="208" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">脚不动，机身跟着手掌</text>
+<text x="920" y="228" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">前后、左右倾斜</text>
+<text x="920" y="248" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">（最多 10°）</text>
+<rect x="40" y="340" width="330" height="220" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="205.0" y="362" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<rect x="40" y="340" width="8" height="220" rx="4" fill="#D23B2F"/>
+<rect x="114" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="132" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="150" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="168" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="110" y="450" width="76" height="70" rx="12" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="102" y="480" width="30" height="15" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="220" y="390" font-size="16" text-anchor="start" font-weight="700" fill="#1B2A2F">握拳</text>
+<text x="220" y="418" font-size="15" text-anchor="start" font-weight="700" fill="#D23B2F">停 STOP</text>
+<text x="220" y="448" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">立刻停下站好</text>
+<text x="220" y="468" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">（手套锁定时也一样）</text>
+<rect x="390" y="340" width="330" height="220" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="555.0" y="362" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<rect x="390" y="340" width="8" height="220" rx="4" fill="#1F6FB5"/>
+<rect x="464" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="482" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="500" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="518" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="460" y="450" width="76" height="70" rx="12" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="420" y="466" width="48" height="15" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4" transform="rotate(-35 464 474)"/>
+<text x="570" y="390" font-size="16" text-anchor="start" font-weight="700" fill="#1B2A2F">竖大拇指 1 秒</text>
+<text x="570" y="418" font-size="15" text-anchor="start" font-weight="700" fill="#1F6FB5">起立 / 趴下</text>
+<text x="570" y="448" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">趴着 → 站起来</text>
+<text x="570" y="468" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">站着 → 趴下、舵机断电</text>
+<text x="570" y="488" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">不装拇指传感器时：</text>
+<text x="570" y="508" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">改成只伸小指</text>
+<rect x="740" y="340" width="330" height="220" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="905.0" y="362" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F"></text>
+<rect x="740" y="340" width="8" height="220" rx="4" fill="#1F6FB5"/>
+<rect x="814" y="398" width="15" height="62" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="832" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="850" y="436" width="15" height="24" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="868" y="408" width="15" height="52" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="810" y="450" width="76" height="70" rx="12" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<rect x="802" y="480" width="30" height="15" rx="7" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/>
+<text x="920" y="390" font-size="16" text-anchor="start" font-weight="700" fill="#1B2A2F">摇滚手势 0.6 秒</text>
+<text x="920" y="418" font-size="15" text-anchor="start" font-weight="700" fill="#1F6FB5">换步态</text>
+<text x="920" y="448" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">三角 → 涟漪 → 波浪</text>
+<text x="920" y="468" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">→ 三角 …</text>
+<text x="920" y="488" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">（停下来以后才换）</text>
+</svg>
