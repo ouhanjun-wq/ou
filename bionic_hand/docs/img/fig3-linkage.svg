@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="600" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 3  一根手指的两个四连杆（食指，MCP 弯 40°）</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">驱动连杆：舵盘 H 推 / 拉近节上的 D 点 → 近节绕 MCP 转；联动杆 GC：近节一转，远节自动跟着弯</text>
+<rect x="320.0" y="229.6" width="220.79999999999995" height="140.79999999999998" rx="8" fill="#E8EEF2" stroke="#2B3A3F" stroke-width="1.2"/>
+<text x="332.0" y="358.4" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">手掌（侧视，手背朝上）</text>
+<path d="M560.0,300.0 L662.9563731551907,386.3906547418709" fill="none" stroke="#9AA5A8" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M662.9563731551907,386.3906547418709 L702.4905588594934,528.1823616950552" fill="none" stroke="#C8CDD0" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M550.4,325.6 L675.4348718897338,359.6570229397381" fill="none" stroke="#E07B00" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M433.2018007096523,242.4225755406368 L558.3250155251711,261.63654829125664" fill="none" stroke="#D23B2F" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M432.0,274.4 L433.2018007096523,242.4225755406368" fill="none" stroke="#555555" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="560.0" cy="300.0" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="570.0" y="290.0" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">O  MCP</text>
+<circle cx="662.9563731551907" cy="386.3906547418709" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="674.9563731551907" y="378.3906547418709" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">B  PIP</text>
+<circle cx="675.4348718897338" cy="359.6570229397381" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="685.4348718897338" y="351.6570229397381" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">C</text>
+<circle cx="550.4" cy="325.6" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="524.4" y="343.6" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">G</text>
+<circle cx="558.3250155251711" cy="261.63654829125664" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="568.3250155251711" y="251.63654829125664" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">D</text>
+<circle cx="433.2018007096523" cy="242.4225755406368" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="373.2018007096523" y="232.4225755406368" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">H 舵盘</text>
+<circle cx="432.0" cy="274.4" r="5" fill="#FFFFFF" stroke="#1B2A2F" stroke-width="2"/>
+<text x="392.0" y="304.4" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">S 舵机轴</text>
+<text x="710.4905588594934" y="546.1823616950552" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">指尖</text>
+<text x="40" y="110" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">近节 P = OB（L₁ = 42 mm）</text>
+<text x="40" y="132" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">远节 M = B → 指尖（L₂ = 46 mm）</text>
+<text x="40" y="154" font-size="13" text-anchor="start" font-weight="400" fill="#E07B00">联动杆 GC = 40.5 mm（橙）</text>
+<text x="40" y="176" font-size="13" text-anchor="start" font-weight="400" fill="#D23B2F">驱动连杆 HD = 39.6 mm（红）</text>
+<text x="40" y="198" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">舵盘 SH = 10 mm（灰）</text>
+<text x="40" y="230" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">此时 θ₁ = 40°，PIP 相对弯曲 θ_M − θ₁ = 34°</text>
+<text x="40" y="252" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">舵机从伸直转过 48°</text>
+<text x="40" y="470" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">全行程（tools/finger_linkage.py 算出并校核）：</text>
+<text x="40" y="494" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">θ₁ 0° → PIP 0°   θ₁ 30° → PIP 25°   θ₁ 60° → PIP 54°   θ₁ 85° → PIP 78°</text>
+<text x="40" y="520" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">传动角全程 ≥ 34°，舵机行程 107°，指尖 1 N 需要 ≤ 1.16 kg·cm（MG90S 堵转 2.0 kg·cm）</text>
+</svg>

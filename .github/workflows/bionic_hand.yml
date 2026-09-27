@@ -1,0 +1,48 @@
+name: bionic_hand
+
+on:
+  push:
+    paths: ["bionic_hand/**", ".github/workflows/bionic_hand.yml"]
+  pull_request:
+    paths: ["bionic_hand/**", ".github/workflows/bionic_hand.yml"]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Host unit tests (calibration, filter, limits, slew, unplug failsafe, settings CRC)
+        run: |
+          g++ -std=gnu++11 -O1 -Wall -Wextra -Werror -I bionic_hand/firmware/bionic_hand_uno \
+              bionic_hand/firmware/tests/test_core.cpp -o test_core
+          ./test_core
+      - name: Linkage design check (fingers + glove)
+        run: python3 bionic_hand/tools/finger_linkage.py
+      - name: linkage_params.scad is up to date
+        run: |
+          python3 bionic_hand/tools/finger_linkage.py --scad > /dev/null
+          git diff --exit-code bionic_hand/cad/linkage_params.scad
+      - name: Diagram script runs
+        run: python3 bionic_hand/docs/img/make_diagrams.py
+
+  compile-uno:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: arduino/compile-sketches@v1
+        with:
+          fqbn: arduino:avr:uno
+          sketch-paths: |
+            - bionic_hand/firmware/bionic_hand_uno
+          libraries: |
+            - name: Servo
+          enable-warnings-report: true
+
+  export-cad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Export every part (fails on any OpenSCAD warning)
+        run: bionic_hand/cad/export_all.sh out

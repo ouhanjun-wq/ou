@@ -29,7 +29,13 @@
 | 手柄 | 盖世小鸡 G7 Pro（PC / XInput 模式，USB 线） |
 | 结构 | 6 自由度铝合金机械臂支架套件 + 400 × 300 mm 底板 |
 
-## 仓库里的另一个项目：仿生蝴蝶 🦋
+## 仓库里的其他项目
+
+### 手套操控仿生手 🖐️
+
+[`bionic_hand/`](bionic_hand/README.md)：戴上外骨骼手套，机械手跟着你的手指动（6 自由度，全部 3D 打印）。同样用一块 **Arduino Uno R3**，加 Sensor Shield，网线有线连接，不用焊。
+
+### 仿生蝴蝶 🦋
 
 [`butterfly/`](butterfly/README.md)：ESP32-S3 扑翼仿生蝴蝶（G7 Pro 手柄、陀螺仪增稳、Type-C 充电、GPS 返航）。翅膀用**仿生蝴蝶材料包**做。
 
