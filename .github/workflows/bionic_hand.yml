@@ -24,6 +24,8 @@ jobs:
           git diff --exit-code bionic_hand/cad/linkage_params.scad
       - name: Diagram script runs
         run: python3 bionic_hand/docs/img/make_diagrams.py
+      - name: Print pack builds (closed meshes, names with quantities)
+        run: python3 bionic_hand/print/make_print_pack.py
 
   compile-uno:
     runs-on: ubuntu-latest

@@ -20,7 +20,8 @@
 | 📋 [`docs/build-plan.md`](docs/build-plan.md) | **总计划**：材料清单（名称 / 规格 / 型号 / 价格）、分阶段步骤、验收标准、故障排查、安全 |
 | 🔌 [`docs/assembly-guide.md`](docs/assembly-guide.md) | **组装指南**：接线图、手指和手掌装配、舵盘对中、限位、手套标定，每步都有检查点 |
 | 🧮 [`docs/principles.md`](docs/principles.md) | 原理：电位器读数、标定、滤波、四连杆、扭矩校核、延迟和电源预算（带公式） |
-| 🧩 [`cad/README.md`](cad/README.md) | 3D 打印件：31 个 STL、打印方向、螺丝清单 |
+| 🖨️ [`print/下单清单.md`](print/下单清单.md) | **直接下单打印**：29 个 STL（文件名带数量）+ 材料建议，[一键打包下载](print/bionic_hand_print_files.zip)，可以直接发给嘉立创 |
+| 🧩 [`cad/README.md`](cad/README.md) | 3D 打印件：参数化模型、打印方向、螺丝清单 |
 | 🔧 [`firmware/README.md`](firmware/README.md) | 固件：引脚、模式、串口命令、单元测试 |
 | 📐 [`tools/finger_linkage.py`](tools/finger_linkage.py) | 四连杆设计 / 校核工具，生成 `cad/linkage_params.scad` |
 

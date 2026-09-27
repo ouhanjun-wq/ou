@@ -1,5 +1,7 @@
 # 3D 打印件：机械手 + 操控手套
 
+> 🖨️ **只想下单打印？** 直接用 [`../print/`](../print/下单清单.md)：已经整理好的 29 个 STL（文件名带数量）、材料建议和打包下载，可以直接发给嘉立创。
+
 全部零件都是 **OpenSCAD 参数化模型**。连杆长度、销孔位置不是手画的，由 [`../tools/finger_linkage.py`](../tools/finger_linkage.py) 解四连杆、校核之后写进 [`linkage_params.scad`](linkage_params.scad)。所以**不要手改这个文件**：改脚本里的参数，再运行 `python3 tools/finger_linkage.py --scad`。
 
 | 总装：张开 | 总装：握拳 + 拇指对掌 | 侧视（半握） |
