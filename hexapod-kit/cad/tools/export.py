@@ -14,13 +14,15 @@ import sys
 import tempfile
 
 CAD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PARTS = ["coxa", "femur", "tibia", "body_plate", "deck"]
+PARTS = ["coxa", "femur", "tibia", "body_plate", "deck", "lidar_mount"]
 
 
 def ascii_to_binary(src, dst):
     text = open(src).read()
     tris = re.findall(r"facet normal\s+(\S+) (\S+) (\S+)\s+outer loop\s+"
                       r"vertex\s+(\S+) (\S+) (\S+)\s+vertex\s+(\S+) (\S+) (\S+)\s+vertex\s+(\S+) (\S+) (\S+)", text)
+    # CGAL's triangle order changes from run to run: sort so the files only change when the shape does
+    tris = sorted(tris, key=lambda t: [float(x) for x in t[3:]])
     vol = 0.0
     lo, hi = [1e9] * 3, [-1e9] * 3
     with open(dst, "wb") as f:

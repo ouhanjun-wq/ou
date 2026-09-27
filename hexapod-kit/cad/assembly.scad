@@ -36,6 +36,10 @@ module frame_fixed() {
   for (l = legs) coxa_servo_frame(l) servo_body();
   for (p = standoffs) translate([p[0], p[1], plate_top_z]) color("Gold") cylinder(d = 5, h = standoff_h, $fn = 6);
   color("Wheat") deck();
+  for (p = standoffs) translate([p[0], p[1], deck_z + plate_t]) color("Gold") cylinder(d = 5, h = lidar_standoff_h, $fn = 6);
+  color("Wheat") lidar_mount();
+  // 雷达占位（外形只是示意）
+  color("DimGray") translate([0, 0, lidar_z + plate_t]) cylinder(d = 70, h = 30, $fn = 48);
 }
 
 if (show == "all") {

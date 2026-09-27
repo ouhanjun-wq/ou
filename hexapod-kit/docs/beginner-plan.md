@@ -279,4 +279,6 @@
 - [ ] **调手感**：`set max_vx 150`（最高速度）、`set cycle_s 0.6`（步子快慢）、`set step_h 35`（抬腿高度），调完 `save`。参数说明见 [固件与命令](firmware.md#参数表)。
 - [ ] **ESP32-CAM 看画面**：用 Arduino 自带例子 `CameraWebServer`，手机连它的 Wi-Fi 看实时画面。可以用双面胶把它贴在机头。
 - [ ] **超声波避障**：把超声波模块接到主板的空闲引脚，前方太近就自动停下。需要改固件，想做的时候告诉我。
+- [ ] **亚博摄像头模块**：装到 [3D 打印机身](../cad/README.md) 前面板的托架里，接 5 V 和 GND，用亚博 App 看画面。
+- [ ] **🗺️ 雷达建图**：M1C1-Mini 雷达 + XIAO ESP32S3 + Windows 电脑，边走边画房间地图。见 [雷达建图](lidar-mapping.md)。
 - [ ] **学 ROS 2**：看仓库里的 [`hexapod/`](../../hexapod/README.md) 路线（XIAO ESP32S3 + micro-ROS + 雷达建图）。

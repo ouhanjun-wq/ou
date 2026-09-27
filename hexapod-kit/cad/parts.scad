@@ -5,16 +5,17 @@ include <params.scad>
 $fn = 48;
 
 // ---------------- 前方传感器 ----------------
-/* [超声波 HC-SR04] */
-us_hole_d = 16.6;         // 探头孔直径 (mm)
-us_spacing = 26;          // 两个探头中心距 (mm)
-us_center_h = 14;         // 探头中心离甲板上表面 (mm)
 /* [摄像头模块：亚博 ESP32-S3 WiFi 图传模块 Lite（YB-MEV04），量你自己的] */
 cam_w = 35;               // 板子宽度（左右）(mm)
 cam_h = 46;               // 板子高度（上下）(mm)
 cam_d = 12;               // 板子厚度，含背面排针 / 排母 (mm)
 cam_gap = 0.6;            // 托架比板子大多少 (mm)
-cam_base_h = 30;          // 托架底面离甲板上表面 (mm)
+cam_base_h = 3;           // 托架底面离甲板上表面 (mm)
+/* [激光雷达 M1C1-Mini 平台] */
+lidar_standoff_h = 50;    // 甲板到雷达平台的 M3 铜柱长度 (mm)
+lidar_holes = [];         // 雷达底座安装孔 [[x, y], ...]（平台中心为原点，X+ = 机头）；量好再填，空 = 只用扎带
+lidar_hole_d = 2.7;       // M2.5 螺丝过孔 (mm)
+lidar_cable_d = 16;       // 平台中间的走线孔 (mm)
 
 // ---------------- 基节支架 coxa ----------------
 // 装在基节舵机的舵机臂上（在舵机上面），侧面的竖板夹住大腿舵机。
@@ -176,18 +177,37 @@ module front_mount() {
         translate([x1 - 0.01, s > 0 ? (cam_w + cam_gap) / 2 : -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
           cube([cam_d + cam_gap + 2.5, 2, 14]);
     }
-    // 超声波探头孔
-    for (s = [-1, 1]) translate([x0 - 1, s * us_spacing / 2, z0 + us_center_h]) rotate([0, 90, 0])
-      cylinder(d = us_hole_d, h = front_plate_t + 2, $fn = 64);
     // 摄像头板背后的窗口：排针和杜邦线从这里穿到后面
     translate([x0 - 1, -(cam_w - 8) / 2, z0 + cam_base_h + 5]) cube([front_plate_t + 2, cam_w - 8, cam_h - 12]);
     // 扎带槽：两道扎带把摄像头板绑在面板上
     for (s = [-1, 1], h = [0.3, 0.75])
       translate([x0 - 1, s * ((cam_w + cam_gap) / 2 + 4.5) - 1.5, z0 + cam_base_h + h * cam_h - 2])
         cube([front_plate_t + 2, 3, 4]);
-    // 超声波板背后的扎带孔
-    for (s = [-1, 1]) translate([x0 - 1, s * (us_spacing / 2 + 12) - 1.5, z0 + us_center_h - 2])
-      cube([front_plate_t + 2, 3, 4]);
+  }
+}
+
+// ---------------- 激光雷达平台（装在甲板上方的 4 根铜柱上） ----------------
+// 雷达要在整机最高处，360° 都看得见：平台底面比甲板高 lidar_standoff_h，雷达的激光平面在前面板以上。
+// 雷达底座的孔位还不知道：默认只开扎带槽（两道扎带横着绑住雷达底座）；量好孔位填 lidar_holes 再导出。
+// XIAO ESP32S3 用扎带绑在平台下面（中间两个小槽），雷达线从中间的孔穿下来。
+lidar_z = deck_z + plate_t + lidar_standoff_h;    // 平台底面高度
+
+module lidar_mount_2d() {
+  difference() {
+    offset(r = 6) square([2 * standoffs[0][0], 2 * standoffs[0][1]], center = true);
+    for (p = standoffs) translate(p) circle(d = m3_hole);
+    circle(d = lidar_cable_d);
+    for (h = lidar_holes) translate(h) circle(d = lidar_hole_d);
+    for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 16, sy * 26]) square([6, 3], center = true);   // 雷达扎带
+    for (sy = [-1, 1]) translate([-14, sy * 10]) square([3, 5], center = true);                       // XIAO 扎带
+  }
+}
+
+module lidar_mount() {
+  difference() {
+    translate([0, 0, lidar_z]) linear_extrude(plate_t) lidar_mount_2d();
+    // 朝前的箭头：雷达的“零度方向”标记对准它（见 docs/lidar-mapping.md）
+    translate([24, 0, lidar_z + plate_t - 0.6]) linear_extrude(1) polygon([[6, 0], [-3, 4], [-3, -4]]);
   }
 }
 

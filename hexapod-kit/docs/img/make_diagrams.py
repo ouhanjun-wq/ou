@@ -190,9 +190,36 @@ def fig_leg_measure():
     s.save("fig4-leg-measure.svg")
 
 
+def fig_lidar():
+    s = Svg(900, 520, "雷达建图的数据流", "走路和建图各用一块板：套件 ESP32 管走路，XIAO 只管把雷达数据送上 Wi-Fi")
+    s.box(30, 100, 190, 100, "M1C1-Mini 雷达", "串口 115200\n顺时针旋转，量程 8 m")
+    s.box(300, 100, 210, 100, "XIAO ESP32S3", "lidar_bridge 固件\n串口 ⇄ TCP 3333（原样转发）", fill=C["hi"])
+    s.box(600, 80, 270, 250, "Windows 电脑（WSL2 · Ubuntu）", "", dashed=True)
+    s.box(620, 120, 230, 56, "m1c1_lidar 节点", "解析数据包 → /scan")
+    s.box(620, 196, 230, 56, "slam_toolbox", "/scan → /map（边走边建图）")
+    s.box(620, 264, 230, 50, "RViz", "看地图和雷达点")
+    s.arrow(220, 130, 298, 130, C["sig"])
+    s.text(259, 120, "TX → D7", 12, "middle", "700", C["sig"])
+    s.arrow(298, 170, 222, 170, C["sig"])
+    s.text(259, 190, "D6 → RX", 12, "middle", "700", C["sig"])
+    s.wire([(510, 148), (618, 148)], C["rf"], 3, dashed=True)
+    s.text(564, 138, "Wi-Fi TCP", 12, "middle", "700", C["mute"])
+    s.arrow(735, 176, 735, 194, C["ink"], 2)
+    s.arrow(735, 252, 735, 262, C["ink"], 2)
+    s.box(30, 330, 190, 100, "盖世小鸡 G7 Pro", "遥控走路（慢速档）")
+    s.box(300, 330, 210, 100, "套件 ESP32 + 扩展板", "hexapod_g7pro 固件\n18 个舵机、步态")
+    s.wire([(220, 380), (298, 380)], C["rf"], 3, dashed=True)
+    s.text(259, 370, "蓝牙", 12, "middle", "700", C["mute"])
+    s.wire([(405, 330), (405, 202)], C["v5"], 3)
+    s.text(413, 270, "5 V / GND", 12, "start", "700", C["v5"])
+    s.note(30, 480, 1, "两块板之间只接电源（5 V、GND）；数据互不相连，走路固件完全不用改")
+    s.save("fig5-lidar.svg")
+
+
 if __name__ == "__main__":
     fig_system()
     fig_gamepad()
     fig_servo_numbers()
     fig_leg_measure()
+    fig_lidar()
     print("diagrams written to", HERE)

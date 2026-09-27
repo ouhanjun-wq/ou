@@ -64,3 +64,26 @@ jobs:
         run: python3 hexapod-kit/cad/tools/export.py
       - name: Interference check over the joint ranges
         run: python3 hexapod-kit/cad/tools/check_clearance.py
+
+  lidar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: M1C1 protocol parser + fake bridge end-to-end test (no ROS needed)
+        run: python3 hexapod-kit/ros2/m1c1_lidar/test/test_protocol.py -v
+      - name: ROS 2 package files compile
+        run: python3 -m py_compile hexapod-kit/ros2/m1c1_lidar/m1c1_lidar/*.py hexapod-kit/ros2/m1c1_lidar/launch/*.py hexapod-kit/ros2/m1c1_lidar/setup.py
+
+  compile-lidar-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: arduino/compile-sketches@v1
+        with:
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          fqbn: esp32:esp32:XIAO_ESP32S3
+          sketch-paths: |
+            - hexapod-kit/firmware/lidar_bridge
+          enable-warnings-report: true
