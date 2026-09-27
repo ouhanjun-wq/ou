@@ -1,0 +1,197 @@
+// 18 舵机六足 · 3D 打印机身 · 所有零件的模块（装配坐标）
+// 各个 *.scad 包装文件调用这里的模块，并把零件转成适合打印 / 下单的姿态。
+include <params.scad>
+
+$fn = 48;
+
+// ---------------- 前方传感器 ----------------
+/* [超声波 HC-SR04] */
+us_hole_d = 16.6;         // 探头孔直径 (mm)
+us_spacing = 26;          // 两个探头中心距 (mm)
+us_center_h = 14;         // 探头中心离甲板上表面 (mm)
+/* [摄像头模块：亚博 ESP32-S3 WiFi 图传模块 Lite（YB-MEV04），量你自己的] */
+cam_w = 35;               // 板子宽度（左右）(mm)
+cam_h = 46;               // 板子高度（上下）(mm)
+cam_d = 12;               // 板子厚度，含背面排针 / 排母 (mm)
+cam_gap = 0.6;            // 托架比板子大多少 (mm)
+cam_base_h = 30;          // 托架底面离甲板上表面 (mm)
+
+// ---------------- 基节支架 coxa ----------------
+// 装在基节舵机的舵机臂上（在舵机上面），侧面的竖板夹住大腿舵机。
+top_t = 4.0;              // 顶板厚度 (mm)
+hub_r = 10;               // 转轴处圆盘半径 (mm)
+coxa_horn_angle = -45;    // 舵机臂在顶板下面的朝向（腿坐标，°）
+
+femur_servo_y = -bar_t / 2;                      // 大腿舵机臂贴合面的 Y
+wall_y1 = femur_servo_y + ear_low;               // 竖板贴安装耳的一面
+wall_y0 = wall_y1 - mount_t;
+wall_x0 = coxa_len + shaft_off - ear_span / 2 - 3;
+wall_x1 = coxa_len + shaft_off + ear_span / 2 + 3;
+wall_z0 = -pocket_w / 2 - 3;
+top_y_max = -7;           // 顶板在竖板一侧最多伸到的 Y（再往 +Y 会碰到抬起的大腿）
+
+module femur_servo_frame() translate([coxa_len, femur_servo_y, 0]) rotate([-90, 0, 0]) children();
+
+// 顶板 = 转轴处的圆盘（连到竖板的起点）+ 竖板上方的一条窄板。
+// 不能整体 hull：那样顶板会伸到 y = 0 附近，大腿抬起来时会撞上。
+module coxa_top_2d() {
+  hull() {
+    circle(r = hub_r);
+    rotate(coxa_horn_angle) translate([horn_len - 2, 0]) circle(r = 4.5);
+    translate([wall_x0, wall_y0]) square([2, top_y_max - wall_y0]);
+  }
+  translate([wall_x0, wall_y0]) square([wall_x1 - wall_x0, top_y_max - wall_y0]);
+}
+
+module coxa_bracket() {
+  difference() {
+    union() {
+      translate([0, 0, coxa_horn_z]) linear_extrude(top_t) coxa_top_2d();
+      translate([wall_x0, wall_y0, wall_z0]) cube([wall_x1 - wall_x0, mount_t, coxa_horn_z + top_t - wall_z0]);
+      // 竖板和顶板之间的三角加强筋（在大腿舵机上方）
+      for (x = [wall_x0, wall_x1 - 2.5])
+        translate([x, wall_y1 - 0.01, coxa_horn_z + 0.01]) rotate([90, 0, 90]) linear_extrude(2.5)
+          polygon([[0, 0], [top_y_max - wall_y1 + 0.01, 0], [0, -(coxa_horn_z - pocket_w / 2 - 0.8)]]);
+    }
+    translate([0, 0, coxa_horn_z]) rotate(coxa_horn_angle) horn_cut(top_t);
+    femur_servo_frame() servo_mount_cut();
+  }
+}
+
+// ---------------- 大腿 femur ----------------
+// 一块平板：一头压大腿舵机的舵机臂（-Y 面），另一头压小腿舵机的舵机臂（+Y 面）。
+femur_hub_r = 8.5;
+
+module femur_bar() {
+  difference() {
+    translate([0, bar_t / 2, 0]) rotate([90, 0, 0]) linear_extrude(bar_t)
+      hull() { circle(r = femur_hub_r); translate([femur_len, 0]) circle(r = femur_hub_r); }
+    translate([0, -bar_t / 2, 0]) rotate([-90, 0, 0]) horn_cut(bar_t);
+    translate([femur_len, bar_t / 2, 0]) rotate([90, 0, 0]) rotate([0, 0, 180]) horn_cut(bar_t);
+  }
+}
+
+// ---------------- 小腿 tibia ----------------
+// 小腿舵机装在上半截的安装板里，输出轴朝 -Y 压在大腿板上；下半截斜着收回到腿的中心平面，脚尖在 y = 0。
+tib_plate_y0 = bar_t / 2 - ear_low;              // 安装板贴安装耳的一面
+tib_x0 = shaft_off - ear_span / 2 - 3;
+tib_x1 = shaft_off + ear_span / 2 + 3;
+tib_half_w = pocket_w / 2 + 3;
+foot_r = 3.5;
+foot_t = 3.0;
+
+module tibia_servo_frame() translate([0, bar_t / 2, 0]) rotate([90, 0, 0]) children();
+
+module tibia_part() {
+  difference() {
+    union() {
+      translate([tib_x0, tib_plate_y0, -tib_half_w]) cube([tib_x1 - tib_x0, mount_t, 2 * tib_half_w]);
+      hull() {
+        translate([tib_x1 - 1, tib_plate_y0, -tib_half_w]) cube([1, mount_t, 2 * tib_half_w]);
+        translate([44, -foot_t / 2, -6]) cube([1, foot_t, 12]);
+      }
+      hull() {
+        translate([44, -foot_t / 2, -6]) cube([1, foot_t, 12]);
+        translate([tibia_len - foot_r, foot_t / 2, 0]) rotate([90, 0, 0]) cylinder(r = foot_r, h = foot_t);
+      }
+    }
+    tibia_servo_frame() servo_mount_cut();
+  }
+}
+
+// ---------------- 机身底板 ----------------
+// 6 个基节舵机从上往下插进方孔，安装耳压在底板上表面；输出轴朝上，基节支架装在上面。
+standoffs = [[30, 28], [30, -28], [-30, 28], [-30, -28]];
+inner_inset = 14;         // 内六边形顶点：髋轴往里多少 (mm)
+pad_r = 13;               // 每个髋轴周围的圆盘半径 (mm)
+
+module coxa_servo_frame(l) translate([l[0], l[1], coxa_horn_z]) rotate(l[2]) rotate(180) children();
+
+module inner_hex_2d(inset) {
+  hull() for (l = legs) at_leg(l) translate([-inset, 0]) circle(r = 0.01);
+}
+
+module body_plate_2d() {
+  union() {
+    inner_hex_2d(inner_inset);
+    for (l = legs) at_leg(l) {
+      circle(r = pad_r);
+      translate([-(shaft_off + ear_span / 2 + 3), -(pocket_w / 2 + 3)])
+        square([shaft_off + ear_span / 2 + 3, pocket_w + 6]);
+    }
+  }
+}
+
+module body_plate() {
+  difference() {
+    translate([0, 0, plate_top_z - plate_t]) linear_extrude(plate_t) difference() {
+      body_plate_2d();
+      for (p = standoffs) translate(p) circle(d = m3_hole);
+      for (s = [-1, 1]) translate([0, s * 24]) square([20, 3], center = true);        // 电池魔术贴扎带槽
+      for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 34]) square([12, 6], center = true);  // 走线孔
+      for (s = [-1, 1]) translate([s * 44, 0]) square([6, 20], center = true);         // 走线孔
+    }
+    for (l = legs) coxa_servo_frame(l) servo_mount_cut();
+    // 上表面刻一个朝前的箭头
+    translate([12, 0, plate_top_z - 0.6]) linear_extrude(1) polygon([[8, 0], [-4, 5], [-4, -5]]);
+  }
+}
+
+// ---------------- 甲板（上层）+ 前面的传感器支架 ----------------
+deck_inset = 16;
+front_x_deck = front_x - deck_inset * cos(front_angle);   // 甲板前缘 X
+front_plate_t = 3;
+front_plate_w = 52;
+front_plate_h = cam_base_h + cam_h + 4;
+
+module deck_2d() {
+  difference() {
+    inner_hex_2d(deck_inset);
+    for (p = standoffs) translate(p) circle(d = m3_hole);
+    // 10 mm 间距 M3 孔阵：固定 ESP32 扩展板（用 M3 尼龙柱，孔位不对就用最近的孔 + 扎带）
+    for (x = [-30 : 10 : 20], y = [-20 : 10 : 20])
+      if (min([for (p = standoffs) norm([x, y] - p)]) > 7) translate([x, y]) circle(d = m3_hole);
+    for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 30]) square([12, 5], center = true);  // 走线孔
+  }
+}
+
+module front_mount() {
+  x1 = front_x_deck;          // 前面板外表面
+  x0 = x1 - front_plate_t;
+  z0 = deck_z + plate_t;      // 甲板上表面
+  difference() {
+    union() {
+      translate([x0, -front_plate_w / 2, z0 - 0.01]) cube([front_plate_t, front_plate_w, front_plate_h]);
+      // 背后的两块三角加强筋
+      for (y = [-front_plate_w / 2, front_plate_w / 2 - 3])
+        translate([x0 + 0.01, y, z0 - 0.01]) rotate([90, 0, 0]) translate([0, 0, -3])
+          linear_extrude(3) polygon([[0, 0], [-22, 0], [0, 40]]);
+      // 摄像头托架：底板 + 前挡边
+      translate([x1 - 0.01, -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
+        cube([cam_d + cam_gap + 2.5, cam_w + cam_gap + 4, 3]);
+      translate([x1 + cam_d + cam_gap, -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
+        cube([2.5, cam_w + cam_gap + 4, 6]);
+      // 托架两边的侧挡
+      for (s = [-1, 1])
+        translate([x1 - 0.01, s > 0 ? (cam_w + cam_gap) / 2 : -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
+          cube([cam_d + cam_gap + 2.5, 2, 14]);
+    }
+    // 超声波探头孔
+    for (s = [-1, 1]) translate([x0 - 1, s * us_spacing / 2, z0 + us_center_h]) rotate([0, 90, 0])
+      cylinder(d = us_hole_d, h = front_plate_t + 2, $fn = 64);
+    // 摄像头板背后的窗口：排针和杜邦线从这里穿到后面
+    translate([x0 - 1, -(cam_w - 8) / 2, z0 + cam_base_h + 5]) cube([front_plate_t + 2, cam_w - 8, cam_h - 12]);
+    // 扎带槽：两道扎带把摄像头板绑在面板上
+    for (s = [-1, 1], h = [0.3, 0.75])
+      translate([x0 - 1, s * ((cam_w + cam_gap) / 2 + 4.5) - 1.5, z0 + cam_base_h + h * cam_h - 2])
+        cube([front_plate_t + 2, 3, 4]);
+    // 超声波板背后的扎带孔
+    for (s = [-1, 1]) translate([x0 - 1, s * (us_spacing / 2 + 12) - 1.5, z0 + us_center_h - 2])
+      cube([front_plate_t + 2, 3, 4]);
+  }
+}
+
+module deck() {
+  translate([0, 0, deck_z]) linear_extrude(plate_t) deck_2d();
+  front_mount();
+}

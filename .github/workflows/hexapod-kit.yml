@@ -53,3 +53,14 @@ jobs:
           pip install markdown-it-py==3.0.0 mdit-py-plugins==0.4.2
           python3 hexapod/web/build_site.py hexapod-kit
           git diff --exit-code -- hexapod-kit/web
+
+  cad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Export the printed body (fails on any OpenSCAD warning)
+        run: python3 hexapod-kit/cad/tools/export.py
+      - name: Interference check over the joint ranges
+        run: python3 hexapod-kit/cad/tools/check_clearance.py

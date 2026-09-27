@@ -92,7 +92,7 @@ g++ -std=c++17 -O1 -Wall -Wextra -Werror -I../hexapod_g7pro test_core.cpp \
 | `us_per_deg` | 11.11 | µs/° | 舵机每度对应的脉宽（MG90S：2000 µs / 180°） |
 | `coxa_lim` | 60 | ° | 基节最大转角 ± |
 | `femur_min` / `femur_max` | −70 / 80 | ° | 大腿限位 |
-| `tibia_min` / `tibia_max` | −80 / 70 | ° | 小腿限位 |
+| `tibia_min` / `tibia_max` | −80 / 70 | ° | 小腿限位（用 [3D 打印机身](../cad/README.md) 时改成 `set tibia_min -60`） |
 | `i2c_sda` / `i2c_scl` | 21 / 22 | — | PCA9685 板的 I²C 引脚（改完要 `save` 并重启） |
 
 ## 原理

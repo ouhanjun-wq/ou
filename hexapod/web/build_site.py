@@ -66,6 +66,7 @@ SITES = {
             ("servo", "hexapod-kit/docs/servo-setup.md", "舵机接线与标定"),
             ("pad", "hexapod-kit/docs/gamepad.md", "G7 Pro 手柄"),
             ("fw", "hexapod-kit/docs/firmware.md", "固件与命令"),
+            ("cad", "hexapod-kit/cad/README.md", "3D 打印机身"),
             ("links", "hexapod-kit/docs/links.md", "网站汇总"),
         ],
         "title": "G7 Pro 六足机器人",

@@ -48,6 +48,7 @@
 | [docs/gamepad.md](docs/gamepad.md) | G7 Pro 配对、按键、常见问题 |
 | [docs/firmware.md](docs/firmware.md) | 串口命令、参数表、原理（逆运动学、步态公式） |
 | [docs/links.md](docs/links.md) | 所有用到的网站和下载链接 |
+| [cad/](cad/README.md) | **3D 打印机身**：可以直接上传嘉立创的 STL（代替碳板，带摄像头支架），材料推荐、下单和装配步骤 |
 | [firmware/hexapod_g7pro/](firmware/hexapod_g7pro) | Arduino 固件（打开 `hexapod_g7pro.ino` 上传） |
 | [firmware/tests/](firmware/tests) | 电脑上跑的单元测试（逆运动学、步态、手柄逻辑） |
 | [web/index.html](web/index.html) | 这些文档生成的网页 |
