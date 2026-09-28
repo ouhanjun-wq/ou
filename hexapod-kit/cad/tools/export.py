@@ -22,7 +22,7 @@ import tempfile
 CAD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WELD = 0.01
 NEEDLE = 0.001
-PARTS = ["coxa", "femur", "tibia", "body_front_left", "body_front_right", "body_rear_left", "body_rear_right", "splice_long", "splice_short", "deck", "lidar_mount"]
+PARTS = ["coxa", "hip_cradle", "pivot_bushing", "femur", "tibia", "body_front_left", "body_front_right", "body_rear_left", "body_rear_right", "splice_long", "splice_short", "deck", "lidar_mount"]
 
 
 def weld(tris):

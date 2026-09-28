@@ -28,6 +28,7 @@ CAD = os.path.dirname(HERE)
 # Lightening holes only remove material, so the check uses the solid parts: same answer, much faster.
 HEADER = """include <%s/assembly.scad>
 lighten = false;
+servo_label = false;
 """ % CAD.replace("\\", "/")
 
 LEG_TMPL = """

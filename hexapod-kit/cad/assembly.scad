@@ -7,6 +7,10 @@ pose = "stand";
 coxa_deg = 0; femur_deg = 0; tibia_deg = 0;
 leg_only = -1;            // >= 0：只画这一条腿（干涉检查用）
 show = "all";
+kit_look = true;          // 效果图配色：照套件，黑色打印件 + 带粉色标签的舵机
+servo_label = kit_look;
+servo_color = kit_look ? [0.2, 0.2, 0.22] : "DimGray";
+function pc(c) = kit_look ? [0.1, 0.1, 0.11] : c;   // 打印件颜色
 
 stand_h = 60; stand_r = 80;     // 和固件 height / stance 一致
 sit_h = 18; sit_r = 95;
@@ -22,23 +26,23 @@ echo(str("pose ", pose, ": coxa ", angles[0], "  femur ", angles[1], "  tibia ",
 
 module leg_moving(a, part) {
   rotate(a[0]) {
-    if (part == "all" || part == "coxa") { color("SteelBlue") coxa_bracket(); femur_servo_frame() servo_body(); }
+    if (part == "all" || part == "coxa") { color(pc("SteelBlue")) coxa_bracket(); femur_servo_frame() servo_body(); }
     translate([coxa_len, 0, 0]) rotate([0, -a[1], 0]) {
-      if (part == "all" || part == "femur") color("Orange") femur_bar();
+      if (part == "all" || part == "femur") color(pc("Orange")) femur_bar();
       translate([femur_len, 0, 0]) rotate([0, 90 - a[2], 0])
-        if (part == "all" || part == "tibia") { color("SeaGreen") tibia_part(); tibia_servo_frame() servo_body(); }
+        if (part == "all" || part == "tibia") { color(pc("SeaGreen")) tibia_part(); tibia_servo_frame() servo_body(); }
     }
   }
 }
 
 module frame_fixed() {
-  color("Wheat") body_plate();
-  color("Tan") { splice_long(); splice_short(1); splice_short(-1); }
-  for (l = legs) coxa_servo_frame(l) servo_body();
+  color(pc("Wheat")) body_plate();
+  color(pc("Tan")) { splice_long(); splice_short(1); splice_short(-1); }
+  for (l = legs) coxa_servo_frame(l) { servo_body(); color(pc("Wheat")) { hip_cradle_local(); pivot_bushing_local(); } }
   for (p = standoffs) translate([p[0], p[1], plate_top_z]) color("Gold") cylinder(d = 5, h = standoff_h, $fn = 6);
-  color("Wheat") deck();
+  color(pc("Wheat")) deck();
   for (p = standoffs) translate([p[0], p[1], deck_z + plate_t]) color("Gold") cylinder(d = 5, h = lidar_standoff_h, $fn = 6);
-  color("Wheat") lidar_mount();
+  color(pc("Wheat")) lidar_mount();
   // 雷达占位（外形只是示意）
   color("DimGray") translate([0, 0, lidar_z + plate_t]) cylinder(d = 70, h = 30, $fn = 48);
 }

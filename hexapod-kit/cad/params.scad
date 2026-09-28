@@ -73,8 +73,12 @@ deck_z = plate_top_z + standoff_h;           // 甲板下表面高度
 module at_leg(l) translate([l[0], l[1]]) rotate(l[2]) children();
 
 // 舵机实体（装配预览 / 干涉检查用）
+servo_color = "DimGray";
+servo_label = false;      // 装配效果图里给舵机两侧画套件那样的粉色标签（干涉检查时关掉）
 module servo_body() {
-  color("DimGray") {
+  if (servo_label) color([0.85, 0.2, 0.65])
+    for (s = [-1, 1]) translate([shaft_off - 7, s > 0 ? servo_w / 2 + 0.02 : -servo_w / 2 - 0.32, -shaft_gap - case_h + 6]) cube([14, 0.3, 9]);
+  color(servo_color) {
     translate([shaft_off - servo_l / 2, -servo_w / 2, -shaft_gap - case_h]) cube([servo_l, servo_w, case_h]);
     // 耳朵和输出轴都留 0.05 mm，避免“刚好贴着”被干涉检查当成碰撞
     translate([shaft_off - ear_span / 2, -servo_w / 2, ear_low + 0.05]) cube([ear_span, servo_w, ear_t - 0.05]);

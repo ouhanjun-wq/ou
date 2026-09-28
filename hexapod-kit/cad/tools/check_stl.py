@@ -26,10 +26,11 @@ MAX_ORDER_CM3 = 70.0
 
 # file -> quantity, grouped into orders that each stay under 70 cm3
 ORDERS = {
-    "order 1 (legs)": {"coxa.stl": 6, "femur.stl": 6, "tibia.stl": 6},
-    "order 2 (plates)": {"body_front_left.stl": 1, "body_front_right.stl": 1, "body_rear_left.stl": 1,
-                         "body_rear_right.stl": 1, "splice_long.stl": 1, "splice_short.stl": 2,
-                         "deck.stl": 1, "lidar_mount.stl": 1},
+    "order 1 (hips)": {"coxa.stl": 6, "hip_cradle.stl": 6, "pivot_bushing.stl": 6},
+    "order 2 (legs + small plates)": {"femur.stl": 6, "tibia.stl": 6, "splice_long.stl": 1, "splice_short.stl": 2,
+                                      "lidar_mount.stl": 1},
+    "order 3 (body + deck)": {"body_front_left.stl": 1, "body_front_right.stl": 1, "body_rear_left.stl": 1,
+                              "body_rear_right.stl": 1, "deck.stl": 1},
 }
 
 
