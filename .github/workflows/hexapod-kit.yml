@@ -62,6 +62,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y openscad
       - name: Export the printed body (fails on any OpenSCAD warning)
         run: python3 hexapod-kit/cad/tools/export.py
+      - name: JLC free-print rules (size, closed mesh, no reversed faces, 70 cm3 per order)
+        run: python3 hexapod-kit/cad/tools/check_stl.py
       - name: Interference check over the joint ranges
         run: python3 hexapod-kit/cad/tools/check_clearance.py
 

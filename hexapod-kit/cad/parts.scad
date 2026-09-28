@@ -150,8 +150,9 @@ pad_r = 13;               // 每个髋轴周围的圆盘半径 (mm)
 
 module coxa_servo_frame(l) translate([l[0], l[1], coxa_horn_z]) rotate(l[2]) rotate(180) children();
 
+// 内六边形：每条腿的髋轴往里 inset 的 6 个点围成（直接用顶点，不用小圆 hull，免得网格出碎边）
 module inner_hex_2d(inset) {
-  hull() for (l = legs) at_leg(l) translate([-inset, 0]) circle(r = 0.01);
+  hull() polygon([for (l = legs) [l[0] - inset * cos(l[2]), l[1] - inset * sin(l[2])]]);
 }
 
 module body_plate_2d() {
@@ -165,14 +166,37 @@ module body_plate_2d() {
   }
 }
 
+// 嘉立创免费打印：单个模型不能超过 100 × 100 × 100 mm，所以底板拆成 4 块（前左、前右、后左、后右），
+// 下面用 3 根拼接条和 M3 沉头螺丝 + 螺母拼起来。拼缝：x = split_x 和 y = 0。
+// 螺丝孔在底板上表面有沉头孔，螺丝头和板面齐平（电池压在上面不会晃）。
+split_x = 20;             // 前块 / 后块的分界 (mm)
+seam_gap = 0.3;           // 两块之间留的缝 (mm)
+splice_t = 3;             // 拼接条厚度 (mm)
+splice_long_holes = [for (x = [-34, -8, 34], s = [-1, 1]) [x, s * 4]];        // 长拼接条（沿 y = 0）
+splice_short_holes = [for (x = [split_x - 4, split_x + 4], y = [13, 21]) [x, y]]; // 短拼接条（沿 x = split_x，左边；右边镜像）
+body_wire_slots = [for (sy = [-1, 1]) [-20, sy * 34, 12, 6]];                  // [x, y, 长, 宽]
+body_wire_slots2 = [for (sx = [-1, 1], sy = [-1, 1]) [sx * 44, sy * 11, 6, 8]];
+
+function splice_holes() = concat(splice_long_holes, [for (p = splice_short_holes, s = [-1, 1]) [p[0], s * p[1]]]);
+
+module body_holes_2d(splice = true) {
+  for (p = standoffs) translate(p) circle(d = m3_hole);
+  for (s = [-1, 1]) translate([0, s * 24]) square([22, 3], center = true);        // 电池魔术贴扎带槽（20 mm 宽）
+  for (w = concat(body_wire_slots, body_wire_slots2)) translate([w[0], w[1]]) square([w[2], w[3]], center = true);  // 走线孔
+  if (splice) for (h = splice_holes()) translate(h) circle(d = m3_hole);
+}
+
+// 沉头孔（M3 沉头螺丝）：直孔 + 顶部 90° 锥，用一个旋转体做成一整块，网格没有接缝（不出碎三角形）。
+module countersunk_hole(depth, cs_h) {
+  rotate_extrude($fn = 48) polygon([[0, -1], [m3_hole / 2, -1], [m3_hole / 2, depth - cs_h],
+                                    [m3_hole / 2 + cs_h + 1, depth + 1], [0, depth + 1]]);
+}
+
 module body_plate() {
   difference() {
     translate([0, 0, plate_top_z - plate_t]) linear_extrude(plate_t) difference() {
       body_plate_2d();
-      for (p = standoffs) translate(p) circle(d = m3_hole);
-      for (s = [-1, 1]) translate([0, s * 24]) square([20, 3], center = true);        // 电池魔术贴扎带槽
-      for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 34]) square([12, 6], center = true);  // 走线孔
-      for (s = [-1, 1]) translate([s * 44, 0]) square([6, 20], center = true);         // 走线孔
+      body_holes_2d(splice = false);
       lighten_holes_2d() {
         body_plate_2d();
         union() {
@@ -181,26 +205,54 @@ module body_plate() {
             translate([-(shaft_off + ear_span / 2 + 3), -(pocket_w / 2 + 3)])
               square([shaft_off + ear_span / 2 + 3, pocket_w + 6]);
           }
-          for (p = standoffs) translate(p) circle(r = 4);
-          for (s = [-1, 1]) translate([0, s * 24]) square([20, 3], center = true);
-          for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 34]) square([12, 6], center = true);
-          for (s = [-1, 1]) translate([s * 44, 0]) square([6, 20], center = true);
-          translate([12, 0]) circle(r = 9);                                            // 箭头
+          body_holes_2d();
+          square([200, 12], center = true);                                           // 拼缝 y = 0 两边留实心
+          translate([split_x - 7, -100]) square([14, 200]);                           // 拼缝 x = split_x
         }
       }
     }
     for (l = legs) coxa_servo_frame(l) servo_mount_cut();
-    // 上表面刻一个朝前的箭头
-    translate([12, 0, plate_top_z - 0.6]) linear_extrude(1) polygon([[8, 0], [-4, 5], [-4, -5]]);
+    // 拼接螺丝的沉头孔（M3 沉头螺丝，头部直径约 6 mm）
+    for (h = splice_holes()) translate([h[0], h[1], plate_top_z - plate_t]) countersunk_hole(plate_t, countersink_h);
+  }
+}
+countersink_h = 1.6;
+
+// 底板的一块：front = 前块（x > split_x），left = 左块（y > 0）
+module body_plate_piece(front, left) {
+  g = seam_gap / 2;
+  intersection() {
+    body_plate();
+    translate([front ? split_x + g : -200, left ? g : -200, -100])
+      cube([front ? 200 : 200 + split_x - g, left ? 200 : 200 - g, 200]);
+  }
+}
+
+// 拼接条：装在底板下面，M3 螺丝从上往下穿，下面上螺母
+splice_z = plate_top_z - plate_t - splice_t;
+module splice_long() {
+  translate([0, 0, splice_z]) linear_extrude(splice_t) difference() {
+    offset(r = 3) square([80 - 6, 16 - 6], center = true);
+    for (h = splice_long_holes) translate(h) circle(d = m3_hole);
+  }
+}
+module splice_short(side = 1) {
+  mirror([0, side > 0 ? 0 : 1, 0]) translate([0, 0, splice_z]) linear_extrude(splice_t) difference() {
+    translate([split_x - 8, 9]) offset(r = 3) translate([3, 3]) square([16 - 6, 16 - 6]);
+    for (h = splice_short_holes) translate(h) circle(d = m3_hole);
   }
 }
 
 // ---------------- 甲板（上层）+ 前面的传感器支架 ----------------
 deck_inset = 16;
 front_x_deck = front_x - deck_inset * cos(front_angle);   // 甲板前缘 X
-front_plate_t = 3;
-front_plate_w = 52;
-front_plate_h = cam_base_h + cam_h + 4;
+// 免费打印限 100 mm：前面板往里收到 x = front_plate_x，托架前端不超出甲板太多（整块 < 100 mm）。
+// 面板只到摄像头板高度的 80%（上面两道扎带够用），这样顶端低于雷达平台。
+front_plate_x = 36;       // 前面板外表面 X
+front_plate_t = 4;
+front_plate_w = 48;
+front_plate_h = cam_base_h + 0.8 * cam_h;
+tray_lip = 2;             // 托架前挡边厚度
 
 module deck_2d() {
   difference() {
@@ -216,42 +268,34 @@ module deck_2d() {
         for (p = standoffs) translate(p) circle(r = 4);
         for (x = [-30 : 10 : 20], y = [-20 : 10 : 20]) translate([x, y]) circle(d = m3_hole);
         for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 30]) square([12, 5], center = true);
-        // 前面板和加强筋站在这里，保持实心
-        translate([front_x_deck - front_plate_t - 22, -front_plate_w / 2]) square([22 + front_plate_t + 1, front_plate_w]);
+        // 前面板和摄像头托架站在这里，保持实心
+        translate([front_plate_x - front_plate_t, -front_plate_w / 2]) square([40, front_plate_w]);
       }
     }
   }
 }
 
 module front_mount() {
-  x1 = front_x_deck;          // 前面板外表面
+  x1 = front_plate_x;         // 前面板外表面
   x0 = x1 - front_plate_t;
   z0 = deck_z + plate_t;      // 甲板上表面
   difference() {
     union() {
       translate([x0, -front_plate_w / 2, z0 - 0.01]) cube([front_plate_t, front_plate_w, front_plate_h]);
-      // 背后的两块三角加强筋
-      for (y = [-front_plate_w / 2, front_plate_w / 2 - 3])
-        translate([x0 + 0.01, y, z0 - 0.01]) rotate([90, 0, 0]) translate([0, 0, -3])
-          linear_extrude(3) difference() {
-            polygon([[0, 0], [-22, 0], [0, 40]]);
-            if (lighten) offset(r = 1) offset(delta = -5) polygon([[0, 0], [-22, 0], [0, 40]]);
-          }
-      // 摄像头托架：底板 + 前挡边
+      // 摄像头托架：底板 + 前挡边 + 两边侧挡（托架同时从前面撑住面板，不用三角加强筋）
       translate([x1 - 0.01, -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
-        cube([cam_d + cam_gap + 2.5, cam_w + cam_gap + 4, 3]);
+        cube([cam_d + cam_gap + tray_lip, cam_w + cam_gap + 4, 3]);
       translate([x1 + cam_d + cam_gap, -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
-        cube([2.5, cam_w + cam_gap + 4, 6]);
-      // 托架两边的侧挡
+        cube([tray_lip, cam_w + cam_gap + 4, 6]);
       for (s = [-1, 1])
         translate([x1 - 0.01, s > 0 ? (cam_w + cam_gap) / 2 : -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
-          cube([cam_d + cam_gap + 2.5, 2, 14]);
+          cube([cam_d + cam_gap + tray_lip, 2, 14]);
     }
     // 摄像头板背后的窗口：排针和杜邦线从这里穿到后面
-    translate([x0 - 1, -(cam_w - 8) / 2, z0 + cam_base_h + 5]) cube([front_plate_t + 2, cam_w - 8, cam_h - 12]);
+    translate([x0 - 1, -(cam_w - 8) / 2, z0 + cam_base_h + 5]) cube([front_plate_t + 2, cam_w - 8, front_plate_h - cam_base_h - 10]);
     // 扎带槽：两道扎带把摄像头板绑在面板上
-    for (s = [-1, 1], h = [0.3, 0.75])
-      translate([x0 - 1, s * ((cam_w + cam_gap) / 2 + 4.5) - 1.5, z0 + cam_base_h + h * cam_h - 2])
+    for (s = [-1, 1], h = [0.3, 0.7])
+      translate([x0 - 1, s * ((cam_w + cam_gap) / 2 + 2.5) - 1.5, z0 + cam_base_h + h * cam_h - 2])
         cube([front_plate_t + 2, 3, 4]);
   }
 }

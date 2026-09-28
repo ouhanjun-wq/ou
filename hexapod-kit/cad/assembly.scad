@@ -33,6 +33,7 @@ module leg_moving(a, part) {
 
 module frame_fixed() {
   color("Wheat") body_plate();
+  color("Tan") { splice_long(); splice_short(1); splice_short(-1); }
   for (l = legs) coxa_servo_frame(l) servo_body();
   for (p = standoffs) translate([p[0], p[1], plate_top_z]) color("Gold") cylinder(d = 5, h = standoff_h, $fn = 6);
   color("Wheat") deck();
