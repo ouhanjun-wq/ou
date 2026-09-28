@@ -25,7 +25,9 @@ from concurrent.futures import ThreadPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 
+# Lightening holes only remove material, so the check uses the solid parts: same answer, much faster.
 HEADER = """include <%s/assembly.scad>
+lighten = false;
 """ % CAD.replace("\\", "/")
 
 LEG_TMPL = """

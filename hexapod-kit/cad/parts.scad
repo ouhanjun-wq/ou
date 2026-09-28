@@ -4,6 +4,35 @@ include <params.scad>
 
 $fn = 48;
 
+// ---------------- 减重镂空（省打印费） ----------------
+// 零件只有 3–4 mm 厚，做不了内部空心（壁会薄到打不出来，还会困住树脂 / 粉末），
+// 所以在不受力的地方打六边形通孔：嘉立创树脂 / 尼龙按体积计价，镂空多少就省多少。
+/* [减重镂空] */
+lighten = true;           // false = 全部实心（更结实，也更贵）
+lighten_d = 10;           // 六边形孔的外接圆直径 (mm)
+lighten_pitch = 12;       // 孔中心距，三角形排布 (mm)；筋宽约 pitch - 0.87 * d
+lighten_rim = 3.5;         // 外边框宽度 (mm)
+lighten_keep = 2.5;        // 孔离其他孔位、槽口至少留多少材料 (mm)
+
+module hex_lattice_2d(r = 80) {
+  dy = lighten_pitch * sqrt(3) / 2;
+  for (j = [-ceil(r / dy) : ceil(r / dy)], i = [-ceil(r / lighten_pitch) - 1 : ceil(r / lighten_pitch) + 1])
+    translate([(i + (j % 2 == 0 ? 0 : 0.5)) * lighten_pitch, j * dy]) rotate(30) circle(d = lighten_d, $fn = 6);
+}
+
+// 减重孔：六边形阵列 ∩（外形往里缩 lighten_rim）−（要保留实心的区域，往外扩 lighten_keep）。
+// 第一个子对象 = 零件外形，第二个 = 要保留实心的区域。最后去掉 1.6 mm 以下的碎孔。
+module lighten_holes_2d() {
+  if (lighten)
+    offset(r = 0.8) offset(r = -0.8) intersection() {
+      hex_lattice_2d();
+      difference() {
+        offset(delta = -lighten_rim) children(0);
+        offset(r = lighten_keep) children(1);
+      }
+    }
+}
+
 // ---------------- 前方传感器 ----------------
 /* [摄像头模块：亚博 ESP32-S3 WiFi 图传模块 Lite（YB-MEV04），量你自己的] */
 cam_w = 35;               // 板子宽度（左右）(mm)
@@ -69,6 +98,19 @@ module femur_bar() {
       hull() { circle(r = femur_hub_r); translate([femur_len, 0]) circle(r = femur_hub_r); }
     translate([0, -bar_t / 2, 0]) rotate([-90, 0, 0]) horn_cut(bar_t);
     translate([femur_len, bar_t / 2, 0]) rotate([90, 0, 0]) rotate([0, 0, 180]) horn_cut(bar_t);
+    // 减重：两面各挖一个 1 mm 深的浅槽，中间留 2 mm。
+    // +Y 面避开大腿端的舵机臂螺丝孔和小腿端的舵机臂凹槽，-Y 面反过来。
+    if (lighten) {
+      pocket_d = (bar_t - 2) / 2;
+      a0 = horn_holes[1] + 3;                    // 大腿端螺丝孔之后
+      a1 = femur_len - horn_len - 2;             // 小腿端舵机臂凹槽之前（+Y 面）
+      b0 = horn_len + 2;                         // 大腿端舵机臂凹槽之后（-Y 面）
+      b1 = femur_len - horn_holes[1] - 3;        // 小腿端螺丝孔之前
+      translate([0, bar_t / 2 - pocket_d, 0]) rotate([-90, 0, 0]) linear_extrude(pocket_d + 0.01)
+        hull() { translate([a0 + 4, 0]) circle(r = 4); translate([a1 - 4, 0]) circle(r = 4); }
+      translate([0, -bar_t / 2 - 0.01, 0]) rotate([-90, 0, 0]) linear_extrude(pocket_d + 0.01)
+        hull() { translate([b0 + 4, 0]) circle(r = 4); translate([b1 - 4, 0]) circle(r = 4); }
+    }
   }
 }
 
@@ -131,6 +173,21 @@ module body_plate() {
       for (s = [-1, 1]) translate([0, s * 24]) square([20, 3], center = true);        // 电池魔术贴扎带槽
       for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 34]) square([12, 6], center = true);  // 走线孔
       for (s = [-1, 1]) translate([s * 44, 0]) square([6, 20], center = true);         // 走线孔
+      lighten_holes_2d() {
+        body_plate_2d();
+        union() {
+          for (l = legs) at_leg(l) {
+            circle(r = pad_r);
+            translate([-(shaft_off + ear_span / 2 + 3), -(pocket_w / 2 + 3)])
+              square([shaft_off + ear_span / 2 + 3, pocket_w + 6]);
+          }
+          for (p = standoffs) translate(p) circle(r = 4);
+          for (s = [-1, 1]) translate([0, s * 24]) square([20, 3], center = true);
+          for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 34]) square([12, 6], center = true);
+          for (s = [-1, 1]) translate([s * 44, 0]) square([6, 20], center = true);
+          translate([12, 0]) circle(r = 9);                                            // 箭头
+        }
+      }
     }
     for (l = legs) coxa_servo_frame(l) servo_mount_cut();
     // 上表面刻一个朝前的箭头
@@ -153,6 +210,16 @@ module deck_2d() {
     for (x = [-30 : 10 : 20], y = [-20 : 10 : 20])
       if (min([for (p = standoffs) norm([x, y] - p)]) > 7) translate([x, y]) circle(d = m3_hole);
     for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 30]) square([12, 5], center = true);  // 走线孔
+    lighten_holes_2d() {
+      inner_hex_2d(deck_inset);
+      union() {
+        for (p = standoffs) translate(p) circle(r = 4);
+        for (x = [-30 : 10 : 20], y = [-20 : 10 : 20]) translate([x, y]) circle(d = m3_hole);
+        for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 20, sy * 30]) square([12, 5], center = true);
+        // 前面板和加强筋站在这里，保持实心
+        translate([front_x_deck - front_plate_t - 22, -front_plate_w / 2]) square([22 + front_plate_t + 1, front_plate_w]);
+      }
+    }
   }
 }
 
@@ -166,7 +233,10 @@ module front_mount() {
       // 背后的两块三角加强筋
       for (y = [-front_plate_w / 2, front_plate_w / 2 - 3])
         translate([x0 + 0.01, y, z0 - 0.01]) rotate([90, 0, 0]) translate([0, 0, -3])
-          linear_extrude(3) polygon([[0, 0], [-22, 0], [0, 40]]);
+          linear_extrude(3) difference() {
+            polygon([[0, 0], [-22, 0], [0, 40]]);
+            if (lighten) offset(r = 1) offset(delta = -5) polygon([[0, 0], [-22, 0], [0, 40]]);
+          }
       // 摄像头托架：底板 + 前挡边
       translate([x1 - 0.01, -(cam_w + cam_gap) / 2 - 2, z0 + cam_base_h - 3])
         cube([cam_d + cam_gap + 2.5, cam_w + cam_gap + 4, 3]);
@@ -200,6 +270,17 @@ module lidar_mount_2d() {
     for (h = lidar_holes) translate(h) circle(d = lidar_hole_d);
     for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 16, sy * 26]) square([6, 3], center = true);   // 雷达扎带
     for (sy = [-1, 1]) translate([-14, sy * 10]) square([3, 5], center = true);                       // XIAO 扎带
+    lighten_holes_2d() {
+      offset(r = 6) square([2 * standoffs[0][0], 2 * standoffs[0][1]], center = true);
+      union() {
+        for (p = standoffs) translate(p) circle(r = 4);
+        circle(d = lidar_cable_d);
+        for (h = lidar_holes) translate(h) circle(d = lidar_hole_d);
+        for (sx = [-1, 1], sy = [-1, 1]) translate([sx * 16, sy * 26]) square([6, 3], center = true);
+        for (sy = [-1, 1]) translate([-14, sy * 10]) square([3, 5], center = true);
+        translate([24, 0]) circle(r = 7);                                              // 箭头
+      }
+    }
   }
 }
 
