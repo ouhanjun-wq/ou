@@ -75,8 +75,8 @@ g++ -std=c++17 -O1 -Wall -Wextra -Werror -I../hexapod_g7pro test_core.cpp \
 | `front_x` / `front_y` / `front_angle` | 60 / 40 / 45 | mm, mm, ° | 左前腿转轴位置和朝向（右边镜像） |
 | `mid_y` | 55 | mm | 中腿转轴离中线的距离（朝向 ±90°） |
 | `rear_x` / `rear_y` / `rear_angle` | 60 / 40 / 135 | mm, mm, ° | 左后腿转轴位置和朝向 |
-| `stance` | 80 | mm | 站立时脚离基节转轴多远 |
-| `height` | 60 | mm | 站立时机身离地高度 |
+| `stance` | 75 | mm | 站立时脚离基节转轴多远 |
+| `height` | 52 | mm | 站立时机身离地高度（75 / 52 是套件那样的站姿：膝盖拱起，小腿竖直） |
 | `height_min` / `height_max` | 35 / 90 | mm | 十字键能调的高度范围 |
 | `sit_height` / `sit_stance` | 15 / 95 | mm | 趴下姿势 |
 | `gait` | 0 | — | 开机步态：0 三角，1 涟漪，2 波浪 |
@@ -87,7 +87,7 @@ g++ -std=c++17 -O1 -Wall -Wextra -Werror -I../hexapod_g7pro test_core.cpp \
 | `accel` / `yaw_accel` | 250 / 180 | mm/s², °/s² | 加速度上限（越小越柔和） |
 | `move_rate` / `tilt_rate` | 60 / 45 | mm/s, °/s | 高度、姿态变化的速度 |
 | `max_vx` / `max_vy` / `max_wz` | 120 / 80 / 60 | mm/s, mm/s, °/s | 第 3 档满杆速度 |
-| `tilt_max` / `twist_max` / `shift_max` | 12 / 15 / 20 | °, °, mm | 扭身模式的最大幅度 |
+| `tilt_max` / `twist_max` / `shift_max` | 10 / 15 / 20 | °, °, mm | 扭身模式的最大幅度 |
 | `deadband` | 0.1 | — | 摇杆死区 |
 | `us_per_deg` | 11.11 | µs/° | 舵机每度对应的脉宽（MG90S：2000 µs / 180°） |
 | `coxa_lim` | 60 | ° | 基节最大转角 ± |

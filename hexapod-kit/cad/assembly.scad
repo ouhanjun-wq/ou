@@ -12,7 +12,7 @@ servo_label = kit_look;
 servo_color = kit_look ? [0.2, 0.2, 0.22] : "DimGray";
 function pc(c) = kit_look ? [0.1, 0.1, 0.11] : c;   // 打印件颜色
 
-stand_h = 60; stand_r = 80;     // 和固件 height / stance 一致
+stand_h = 52; stand_r = 75;     // 和固件 height / stance 一致（套件那样膝盖拱高、小腿竖直）
 sit_h = 18; sit_r = 95;
 
 function ik(h, r) = let(

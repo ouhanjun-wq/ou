@@ -199,7 +199,7 @@ python3 hexapod-kit/cad/tools/check_stl.py
    - XIAO 用扎带绑在平台下面，雷达线从中间的圆孔穿下来。
    - 雷达底座的孔位量出来以后，可以在 `parts.scad` 的 `lidar_holes` 里填上，重新导出，改用螺丝固定。
 
-侧视（站立姿态：机身离地约 60 mm）：
+侧视（站立姿态：机身离地约 52 mm，膝盖拱起、小腿竖直，和套件一样）：
 
 ![侧视](img/assembly_side.png)
 
@@ -209,6 +209,15 @@ python3 hexapod-kit/cad/tools/check_stl.py
 
 ```text
 set tibia_min -60
+save
+```
+
+默认站姿是套件那样的“膝盖拱高”：`stance` 75、`height` 52，大腿抬起约 27°，小腿竖直。以前 `save` 过参数的话，串口再输入一次：
+
+```text
+set stance 75
+set height 52
+set tilt_max 10
 save
 ```
 

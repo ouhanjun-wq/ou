@@ -46,7 +46,7 @@ def case(name, a, b):
 
 
 FRAME = "frame_fixed();"
-STAND_F, STAND_T = 17.3119, -14.0519
+STAND_F, STAND_T = 27.3298, -25.3576   # stand pose: height 52, stance 75 (knee up, tibia vertical)
 
 cases = []
 for i, c in itertools.product(range(6), (-60, 0, 60)):

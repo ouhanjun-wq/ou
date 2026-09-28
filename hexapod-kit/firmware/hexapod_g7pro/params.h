@@ -42,7 +42,8 @@ inline void paramsDefaults(Params& p) {
   p.mid_y = 55;
   p.rear_x = 60; p.rear_y = 40; p.rear_angle = 135;
 
-  p.stance = 80; p.height = 60; p.height_min = 35; p.height_max = 90;
+  // Kit-style stand: knee raised (femur ~30 deg up), tibia vertical under it.
+  p.stance = 75; p.height = 52; p.height_min = 35; p.height_max = 90;
   p.sit_height = 15; p.sit_stance = 95;
 
   p.gait = 0; p.cycle_s = 0.8f;
@@ -51,7 +52,7 @@ inline void paramsDefaults(Params& p) {
   p.accel = 250; p.yaw_accel = 180; p.move_rate = 60; p.tilt_rate = 45;
 
   p.max_vx = 120; p.max_vy = 80; p.max_wz = 60;
-  p.tilt_max = 12; p.twist_max = 15; p.shift_max = 20;
+  p.tilt_max = 10; p.twist_max = 15; p.shift_max = 20;
   p.deadband = 0.1f;
 
   p.us_per_deg = 11.11f;
