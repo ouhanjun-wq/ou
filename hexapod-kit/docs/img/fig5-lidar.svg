@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="900" height="520" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">雷达建图的数据流</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">走路和建图各用一块板：套件 ESP32 管走路，XIAO 只管把雷达数据送上 Wi-Fi</text>
+<rect x="30" y="100" width="190" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="125.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">M1C1-Mini 雷达</text>
+<text x="125.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">串口 115200</text>
+<text x="125.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">顺时针旋转，量程 8 m</text>
+<rect x="300" y="100" width="210" height="100" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="405.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">XIAO ESP32S3</text>
+<text x="405.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">lidar_bridge 固件</text>
+<text x="405.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">串口 ⇄ TCP 3333（原样转发）</text>
+<rect x="600" y="80" width="270" height="250" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="735.0" y="102" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">Windows 电脑（WSL2 · Ubuntu）</text>
+<rect x="620" y="120" width="230" height="56" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="735.0" y="142" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">m1c1_lidar 节点</text>
+<text x="735.0" y="162" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">解析数据包 → /scan</text>
+<rect x="620" y="196" width="230" height="56" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="735.0" y="218" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">slam_toolbox</text>
+<text x="735.0" y="238" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">/scan → /map（边走边建图）</text>
+<rect x="620" y="264" width="230" height="50" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="735.0" y="286" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">RViz</text>
+<text x="735.0" y="306" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">看地图和雷达点</text>
+<path d="M220,130 L298,130" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M298,130 L289.0,134.3 L289.0,125.7 Z" fill="#1F6FB5"/>
+<text x="259" y="120" font-size="12" text-anchor="middle" font-weight="700" fill="#1F6FB5">TX → D7</text>
+<path d="M298,170 L222,170" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M222,170 L231.0,165.7 L231.0,174.3 Z" fill="#1F6FB5"/>
+<text x="259" y="190" font-size="12" text-anchor="middle" font-weight="700" fill="#1F6FB5">D6 → RX</text>
+<path d="M510,148 L618,148" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="564" y="138" font-size="12" text-anchor="middle" font-weight="700" fill="#5E6E72">Wi-Fi TCP</text>
+<path d="M735,176 L735,194" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M735,194 L730.7,185.0 L739.3,185.0 Z" fill="#1B2A2F"/>
+<path d="M735,252 L735,262" fill="none" stroke="#1B2A2F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M735,262 L730.7,253.0 L739.3,253.0 Z" fill="#1B2A2F"/>
+<rect x="30" y="330" width="190" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="125.0" y="352" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">盖世小鸡 G7 Pro</text>
+<text x="125.0" y="372" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">遥控走路（慢速档）</text>
+<rect x="300" y="330" width="210" height="100" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="405.0" y="352" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">套件 ESP32 + 扩展板</text>
+<text x="405.0" y="372" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">hexapod_g7pro 固件</text>
+<text x="405.0" y="389" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">18 个舵机、步态</text>
+<path d="M220,380 L298,380" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="259" y="370" font-size="12" text-anchor="middle" font-weight="700" fill="#5E6E72">蓝牙</text>
+<path d="M405,330 L405,202" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="413" y="270" font-size="12" text-anchor="start" font-weight="700" fill="#E07B00">5 V / GND</text>
+<circle cx="40" cy="476" r="10" fill="#1B2A2F"/>
+<text x="40" y="480.5" font-size="12" text-anchor="middle" font-weight="700" fill="#FFFFFF">1</text>
+<text x="58" y="480" font-size="13" text-anchor="start" font-weight="400" fill="#1B2A2F">两块板之间只接电源（5 V、GND）；数据互不相连，走路固件完全不用改</text>
+</svg>

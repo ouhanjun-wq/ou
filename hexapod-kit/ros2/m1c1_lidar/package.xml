@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>m1c1_lidar</name>
+  <version>0.1.0</version>
+  <description>M1C1-Mini lidar over TCP (XIAO ESP32S3 bridge) to sensor_msgs/LaserScan, and a slam_toolbox mapping launch for the hexapod kit.</description>
+  <maintainer email="hexapod-kit@example.com">hexapod-kit</maintainer>
+  <license>MIT</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

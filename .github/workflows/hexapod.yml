@@ -1,0 +1,45 @@
+name: hexapod
+
+on:
+  push:
+    paths: ["hexapod/**", ".github/workflows/hexapod.yml"]
+  pull_request:
+    paths: ["hexapod/**", ".github/workflows/hexapod.yml"]
+
+jobs:
+  diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Diagrams regenerate without changes
+        run: |
+          python3 hexapod/docs/img/make_diagrams.py
+          git diff --exit-code -- hexapod/docs/img
+
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Website regenerates from the docs without changes
+        run: |
+          pip install markdown-it-py==3.0.0 mdit-py-plugins==0.4.2
+          python3 hexapod/web/build_site.py
+          git diff --exit-code -- hexapod/web
+
+  export-cad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Export hexapod parts (fails on any OpenSCAD warning)
+        working-directory: hexapod/cad
+        run: |
+          mkdir -p out
+          openscad --hardwarnings -o out/body_plate.stl body_plate.scad
+          openscad --hardwarnings -o out/deck.stl deck.scad
+          openscad --hardwarnings -o out/femur_a.stl -D 'side="a"' femur.scad
+          openscad --hardwarnings -o out/femur_b.stl -D 'side="b"' femur.scad
+          openscad --hardwarnings -o out/tibia.stl tibia.scad
+          for f in out/*.stl; do test -s "$f" || { echo "empty: $f"; exit 1; }; done
+          ls -l out

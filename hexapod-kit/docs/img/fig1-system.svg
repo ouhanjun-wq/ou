@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="900" height="540" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">系统连接图</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">手柄用蓝牙直接连主板：走路时不需要电脑，也不需要手机</text>
+<rect x="30" y="100" width="200" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="130.0" y="122" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">盖世小鸡 G7 Pro</text>
+<text x="130.0" y="142" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">背面开关拨到「蓝牙」</text>
+<text x="130.0" y="159" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">长按配对键</text>
+<rect x="340" y="90" width="230" height="140" rx="8" fill="#FFF3D6" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="455.0" y="112" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">ESP32 主板（WROOM）</text>
+<text x="455.0" y="132" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">本项目固件 hexapod_g7pro</text>
+<text x="455.0" y="149" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">Bluepad32：经典蓝牙连手柄</text>
+<text x="455.0" y="166" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">50 Hz 逆运动学 + 步态</text>
+<rect x="650" y="90" width="220" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="760.0" y="112" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">电脑（只在设置时用）</text>
+<text x="760.0" y="132" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">USB-C 刷固件</text>
+<text x="760.0" y="149" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">串口命令：找插口 / 标定 / 调参</text>
+<rect x="340" y="320" width="230" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="455.0" y="342" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">18 路舵机扩展板</text>
+<text x="455.0" y="362" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">PCA9685（I²C）或 GPIO 直连</text>
+<text x="455.0" y="379" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">板上稳压，给舵机供电</text>
+<rect x="650" y="320" width="220" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="760.0" y="342" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">18 × MG90S 舵机</text>
+<text x="760.0" y="362" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">6 条腿 × 3 个关节</text>
+<text x="760.0" y="379" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">基节 / 大腿 / 小腿</text>
+<rect x="30" y="320" width="200" height="110" rx="8" fill="#F3F6F5" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="130.0" y="342" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">2 × 18650 电池盒</text>
+<text x="130.0" y="362" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">7.4 V（充满 8.4 V）</text>
+<text x="130.0" y="379" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">套件自带充电线</text>
+<rect x="650" y="450" width="220" height="64" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="760.0" y="472" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">ESP32-CAM / 超声波</text>
+<text x="760.0" y="492" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">以后再玩（第 8 步）</text>
+<path d="M230,150 L340,150" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="285" y="138" font-size="12" text-anchor="middle" font-weight="700" fill="#5E6E72">经典蓝牙</text>
+<path d="M570,145 L650,145" fill="none" stroke="#222222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="610" y="133" font-size="12" text-anchor="middle" font-weight="700" fill="#5E6E72">USB-C</text>
+<path d="M455,230 L455,318" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M455,318 L450.7,309.0 L459.3,309.0 Z" fill="#1F6FB5"/>
+<text x="465" y="280" font-size="12" text-anchor="start" font-weight="700" fill="#1F6FB5">I²C 或 18 路 PWM 信号</text>
+<path d="M570,375 L648,375" fill="none" stroke="#1F6FB5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M648,375 L639.0,379.3 L639.0,370.7 Z" fill="#1F6FB5"/>
+<path d="M230,375 L340,375" fill="none" stroke="#D23B2F" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="285" y="363" font-size="12" text-anchor="middle" font-weight="700" fill="#D23B2F">7.4 V</text>
+<path d="M400,320 L400,260 L380,260 L380,232" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="372" y="290" font-size="12" text-anchor="end" font-weight="700" fill="#E07B00">5 V</text>
+<path d="M30,505 L58,505" fill="none" stroke="#D23B2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="64" y="509" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">电池电源</text>
+<path d="M126,505 L154,505" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="160" y="509" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">5 V</text>
+<path d="M209,505 L237,505" fill="none" stroke="#1F6FB5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="243" y="509" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">信号</text>
+<path d="M279,505 L307,505" fill="none" stroke="#8A8A8A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5"/>
+<text x="313" y="509" font-size="12" text-anchor="start" font-weight="400" fill="#5E6E72">蓝牙（无线）</text>
+</svg>

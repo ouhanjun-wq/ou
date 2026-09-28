@@ -1,0 +1,40 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+      Cell Size: 1
+    - Class: rviz_default_plugins/Map
+      Enabled: true
+      Name: Map
+      Topic:
+        Value: /map
+        Depth: 1
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+    - Class: rviz_default_plugins/LaserScan
+      Enabled: true
+      Name: LaserScan
+      Topic:
+        Value: /scan
+      Style: Points
+      Size (Pixels): 3
+      Color Transformer: FlatColor
+      Color: 255; 60; 60
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Name: TF
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Scale: 80
+Window Geometry:
+  Width: 1200
+  Height: 800
