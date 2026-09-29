@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude — Ignite Every Idea</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<script src="assets/katex/katex.min.js"></script>
+<style>
+  :root {
+    --ink: #f3ede4;
+    --dim: rgba(243, 237, 228, .62);
+    --faint: rgba(243, 237, 228, .34);
+    --orange: #d97757;
+    --orange2: #eb9a78;
+    --serif: 'Newsreader', 'Noto Serif SC', serif;
+    --cn: 'Noto Serif SC', serif;
+    --sans: 'Inter', 'Noto Sans SC', sans-serif;
+    --mono: 'JetBrains Mono', 'Noto Sans SC', monospace;
+    --world: 'Noto Sans', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Arabic', 'Noto Sans Hebrew',
+             'Noto Sans Devanagari', 'Noto Sans Thai', 'Noto Sans Bengali', 'Noto Sans Tamil', 'Noto Sans Georgian',
+             'Noto Sans Armenian', 'Noto Sans Ethiopic', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #050404; overflow: hidden; }
+  body { cursor: default; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden;
+           background: #0d0c0b; transform-origin: 0 0; }
+  #cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 50% 50%; }
+  canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  #grain { mix-blend-mode: overlay; opacity: .42; }
+  #dom, #hud, .scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  .scene { transform-origin: 50% 50%; }
+  .abs { position: absolute; }
+  .ch { display: inline-block; white-space: pre; }
+  .o { color: var(--orange); }
+
+  /* ---------- HUD ---------- */
+  .hud-tl { position: absolute; left: 66px; top: 50px; display: flex; align-items: center; gap: 14px;
+            font: 600 15px/1 var(--sans); letter-spacing: .36em; color: var(--ink); }
+  .hud-tr { position: absolute; right: 66px; top: 54px; font: 500 14px/1 var(--mono); letter-spacing: .22em;
+            color: var(--dim); text-align: right; }
+  .hud-tr b { color: var(--orange); font-weight: 600; }
+  .hud-bar { position: absolute; left: 66px; right: 66px; bottom: 52px; display: flex; gap: 14px; }
+  .seg { flex: 1; }
+  .seg .track { height: 2px; background: rgba(243, 237, 228, .14); position: relative; overflow: hidden; }
+  .seg .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--orange); }
+  .seg .lab { margin-top: 12px; font: 500 11px/1 var(--mono); letter-spacing: .26em; color: var(--faint); }
+
+  /* ---------- capability titles ---------- */
+  .title { position: absolute; left: 150px; bottom: 132px; isolation: isolate; }
+  .title::before { content: ''; position: absolute; left: -200px; top: -120px; right: -260px; bottom: -130px; z-index: -1;
+                   background: radial-gradient(closest-side, rgba(12, 11, 10, .72), rgba(12, 11, 10, 0)); }
+  .t-label { font: 500 17px/1 var(--mono); letter-spacing: .34em; color: var(--orange); }
+  .t-word { font: italic 300 150px/1 var(--serif); color: var(--ink); margin: 20px 0 8px -8px; letter-spacing: -.02em; }
+  .t-cn { font: 400 38px/1.3 var(--cn); color: var(--dim); letter-spacing: .16em; }
+  .t-rule { height: 1px; width: 440px; margin-top: 24px; transform-origin: 0 50%;
+            background: linear-gradient(90deg, var(--orange), rgba(217, 119, 87, 0)); }
+
+  /* ---------- intro ---------- */
+  .intro-en { position: absolute; left: 0; width: 1920px; text-align: center; font: italic 300 84px/1 var(--serif);
+              color: var(--ink); letter-spacing: -.01em; }
+  .intro-cn { position: absolute; left: 0; width: 1920px; text-align: center; font: 300 36px/1 var(--cn);
+              color: var(--dim); letter-spacing: .32em; }
+
+  /* ---------- reason ---------- */
+  .think { position: absolute; left: 150px; top: 262px; width: 700px; }
+  .think-h { font: 500 15px/1 var(--mono); letter-spacing: .3em; color: var(--faint); margin-bottom: 30px; }
+  .row { display: flex; align-items: center; height: 58px; font: 400 28px/1 var(--sans); color: var(--ink); }
+  .row .mk { position: relative; width: 26px; height: 26px; margin-right: 22px; flex: none; }
+  .row .spin { position: absolute; inset: 2px; border-radius: 50%; border: 2px solid rgba(243, 237, 228, .18);
+               border-top-color: var(--orange); }
+  .row .chk { position: absolute; inset: 0; border-radius: 50%; background: var(--orange); color: #1a1311;
+              font: 700 16px/26px var(--sans); text-align: center; }
+  .row .cn { font: 400 22px/1 var(--cn); color: var(--faint); margin-left: 18px; letter-spacing: .1em; }
+
+  /* ---------- code ---------- */
+  .persp { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 60% 45%; }
+  .win { position: absolute; border-radius: 18px; background: rgba(24, 21, 19, .94);
+         border: 1px solid rgba(243, 237, 228, .12);
+         box-shadow: 0 50px 120px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .04); }
+  .editor { left: 780px; top: 158px; width: 1010px; height: 640px; transform-origin: 20% 50%; }
+  .bar { height: 50px; display: flex; align-items: center; padding: 0 20px; gap: 9px;
+         border-bottom: 1px solid rgba(243, 237, 228, .08); }
+  .bar i { width: 12px; height: 12px; border-radius: 50%; background: rgba(243, 237, 228, .16); }
+  .bar i:first-child { background: #d97757; }
+  .tab { margin-left: 18px; font: 500 15px/1 var(--mono); color: var(--faint); padding: 8px 14px; border-radius: 8px; }
+  .tab.on { color: var(--ink); background: rgba(243, 237, 228, .07); }
+  .codebox { position: relative; display: flex; padding: 26px 0 0 0; font: 400 21px/34px var(--mono); }
+  .gutter { width: 74px; text-align: right; padding-right: 22px; color: rgba(243, 237, 228, .22); white-space: pre; }
+  .src { margin: 0; font: inherit; color: var(--ink); white-space: pre; }
+  .hl { position: absolute; left: 0; right: 0; height: 34px; background: rgba(217, 119, 87, .08);
+        border-left: 2px solid var(--orange); }
+  .caret { display: inline-block; width: 11px; height: 26px; margin-bottom: -5px; background: var(--orange); }
+  .k { color: #e0876a; } .s { color: #d9c08b; } .f { color: #93b8de; } .c { color: #857d72; font-style: italic; }
+  .n { color: #e6a572; } .p { color: rgba(243, 237, 228, .6); } .d { color: #b7a8d6; }
+  .term { left: 560px; top: 640px; width: 700px; height: 300px; padding: 0; transform-origin: 50% 100%; background: rgba(19, 17, 15, .985); }
+  .term .bar { height: 42px; }
+  .term pre { margin: 0; padding: 18px 26px; font: 400 19px/31px var(--mono); color: var(--ink); white-space: pre; }
+  .ok { color: #9cc28a; } .dim { color: var(--faint); }
+  .chip { position: absolute; font: 500 15px/1 var(--mono); padding: 11px 16px; border-radius: 999px;
+          background: rgba(217, 119, 87, .14); border: 1px solid rgba(217, 119, 87, .45); color: var(--orange2);
+          letter-spacing: .06em; }
+
+  /* ---------- math ---------- */
+  .fx { position: absolute; color: var(--ink); white-space: nowrap; transform-origin: 50% 50%; }
+  .fx .katex-display { margin: 0; }
+  .nlabel { position: absolute; font: 500 16px/1 var(--mono); letter-spacing: .2em; color: var(--orange2); }
+
+  /* ---------- language ---------- */
+  .word { position: absolute; left: 0; top: 0; white-space: nowrap; font: 400 30px/1 var(--world); color: var(--ink);
+          transform-origin: 50% 50%; }
+  .sent { position: absolute; left: 0; width: 1920px; top: 470px; text-align: center; font: italic 300 78px/1.2 var(--serif);
+          color: var(--ink); }
+  .lang { position: absolute; left: 0; width: 1920px; top: 404px; text-align: center; font: 500 16px/1 var(--mono);
+          letter-spacing: .34em; color: var(--orange2); }
+
+  /* ---------- create ---------- */
+  .poem-cn { position: absolute; left: 0; width: 1920px; top: 420px; text-align: center; font: 500 76px/1.2 var(--cn);
+             color: var(--ink); letter-spacing: .12em; }
+  .poem-en { position: absolute; left: 0; width: 1920px; top: 548px; text-align: center; font: italic 300 44px/1.2 var(--serif);
+             color: var(--dim); }
+
+  /* ---------- agents ---------- */
+  .big-en { position: absolute; left: 0; width: 1920px; top: 432px; text-align: center; font: italic 300 104px/1 var(--serif);
+            color: var(--ink); letter-spacing: -.01em; }
+  .big-cn { position: absolute; left: 0; width: 1920px; top: 572px; text-align: center; font: 400 42px/1 var(--cn);
+            color: var(--dim); letter-spacing: .3em; }
+
+  /* ---------- finale ---------- */
+  .mark { position: absolute; top: 0; left: 0; font: 400 236px/1 var(--serif); color: var(--ink); letter-spacing: -.035em;
+          white-space: nowrap; }
+  .tag-en { position: absolute; left: 0; width: 1920px; top: 668px; text-align: center; font: italic 300 54px/1 var(--serif);
+            color: var(--ink); }
+  .tag-cn { position: absolute; left: 0; width: 1920px; top: 754px; text-align: center; font: 400 36px/1 var(--cn);
+            color: var(--dim); letter-spacing: .34em; }
+  .credit { position: absolute; left: 0; width: 1920px; top: 912px; text-align: center; font: 400 19px/1.9 var(--sans);
+            color: var(--faint); letter-spacing: .06em; }
+  .credit .cn { font-family: 'Noto Sans SC', sans-serif; letter-spacing: .14em; }
+
+  /* ---------- preview player ---------- */
+  #ui { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px; display: none; gap: 12px; align-items: center;
+        font: 500 13px var(--mono, monospace); color: #cfc6ba; background: linear-gradient(0deg, rgba(0,0,0,.8), rgba(0,0,0,0)); }
+  #ui input { flex: 1; accent-color: #d97757; }
+  #ui button { font: inherit; color: inherit; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+               border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cam">
+    <canvas id="c" width="1920" height="1080"></canvas>
+    <div id="dom"></div>
+    <div id="hud"></div>
+    <canvas id="fx" width="1920" height="1080"></canvas>
+  </div>
+  <canvas id="grain" width="1920" height="1080"></canvas>
+</div>
+<div id="ui"><button id="play">▶ Play</button><input id="seek" type="range" min="0" max="30" step="0.001" value="0"><span id="tc">00.00</span></div>
+<script src="film.js"></script>
+</body>
+</html>
