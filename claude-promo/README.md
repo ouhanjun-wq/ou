@@ -3,7 +3,7 @@
 一支 **30 秒、4K（3840×2160）/ 60 fps** 的动态图形宣传片，展示 Claude 的能力。
 画面里的每一帧、配乐里的每一个音符，**全部由 Claude 用代码生成**：没有素材库，没有采样，没有剪辑软件。
 
-▶ 成片：[`claude-promo.mp4`](claude-promo.mp4)（仓库里放的是 1080p60 网页版；4K60 母版由 `./build.sh` 生成到 `build/claude-promo-4k.mp4`，约 150 MB，不进 git）
+▶ 成片：[`claude-promo.mp4`](claude-promo.mp4)（仓库里放的是 1080p60 网页版；4K60 母版由 `./build.sh` 生成到 `build/claude-promo-4k.mp4`，约 130 MB，超过 GitHub 单文件上限，不进 git）
 
 ![poster](poster.jpg)
 
