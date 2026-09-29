@@ -3,7 +3,7 @@
 一支 **30 秒、4K（3840×2160）/ 60 fps** 的动态图形宣传片，展示 Claude 的能力。
 画面里的每一帧、配乐里的每一个音符，**全部由 Claude 用代码生成**：没有素材库，没有采样，没有剪辑软件。
 
-▶ 成片：[`claude-promo.mp4`](claude-promo.mp4)
+▶ 成片：[`claude-promo.mp4`](claude-promo.mp4)（仓库里放的是 1080p60 网页版；4K60 母版由 `./build.sh` 生成到 `build/claude-promo-4k.mp4`，约 130 MB，超过 GitHub 单文件上限，不进 git）
 
 ![poster](poster.jpg)
 
@@ -34,13 +34,14 @@
 ## 重新生成 · Rebuild
 
 ```bash
-./build.sh            # 字体 + KaTeX → 配乐 → 1800 帧 → claude-promo.mp4
+./build.sh            # 字体 + KaTeX → 配乐 → 1800 帧 4K → build/claude-promo-4k.mp4 + claude-promo.mp4
 ```
 
-需要 Python 3、Node 18+ 和 Playwright（带 Chromium）。4 核机器上渲染约 15 分钟。
+需要 Python 3、Node 18+ 和 Playwright（带 Chromium）。4K 渲染在 4 核机器上约 12 分钟：页面以 1920×1080 布局、`deviceScaleFactor = 2` 截图，所以文字、公式和画布都是原生 3840×2160，不是放大。渲染按 1 秒分块写盘，中断后重跑会从断点继续。
 
 只想看某几帧：
 
 ```bash
-node tools/render.mjs --stills 5.2,13.6,29    # -> build/stills/*.png
+node tools/render.mjs --stills 5.2,13.6,29              # -> build/stills/*.png (1080p)
+node tools/render.mjs --stills 29 --scale 2 --jpeg      # 4K
 ```

@@ -33,8 +33,4 @@
 
 [`butterfly/`](butterfly/README.md)：ESP32-S3 扑翼仿生蝴蝶（G7 Pro 手柄、陀螺仪增稳、Type-C 充电、GPS 返航）。翅膀用**仿生蝴蝶材料包**做。
 
-## 还有：Claude 宣传短片 🎬
-
-[`claude-promo/`](claude-promo/README.md)：30 秒 4K60 动态图形短片 *Ignite every idea · 点亮每一个想法*。画面和配乐全部用代码生成（网页逐帧渲染 + numpy 合成音乐）。
-
 > 以前的版本：ESP32 无线版机械臂在提交 `fe0b446`（`git checkout fe0b446` 查看）。
