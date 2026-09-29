@@ -35,6 +35,6 @@
 
 ## 还有：Claude 宣传短片 🎬
 
-[`claude-promo/`](claude-promo/README.md)：30 秒 1080p60 动态图形短片 *Ignite every idea · 点亮每一个想法*。画面和配乐全部用代码生成（网页逐帧渲染 + numpy 合成音乐）。
+[`claude-promo/`](claude-promo/README.md)：30 秒 4K60 动态图形短片 *Ignite every idea · 点亮每一个想法*。画面和配乐全部用代码生成（网页逐帧渲染 + numpy 合成音乐）。
 
 > 以前的版本：ESP32 无线版机械臂在提交 `fe0b446`（`git checkout fe0b446` 查看）。

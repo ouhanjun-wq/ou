@@ -10,6 +10,9 @@
   const W = 1920, H = 1080, CX = W / 2, CY = H / 2, DURATION = 30, FPS = 60;
   const TAU = Math.PI * 2, PI = Math.PI;
   const RENDER = /[?&]render=1/.test(location.search);
+  // device pixels per CSS pixel: 2 renders the 1920x1080 layout natively at 3840x2160
+  const DPR = parseFloat(new URLSearchParams(location.search).get('dpr')) || 1;
+  const BLUR = DPR; // canvas filter blur ignores the transform, so scale it by hand
 
   // ------------------------------------------------------------------ utils
   const clamp = (x, a = 0, b = 1) => (x < a ? a : x > b ? b : x);
@@ -60,6 +63,7 @@
   const fxc = document.getElementById('fx'), fg = fxc.getContext('2d');
   const grc = document.getElementById('grain'), gg = grc.getContext('2d');
   const dom = document.getElementById('dom');
+  for (const c of [cv, fxc, grc]) { c.width = W * DPR; c.height = H * DPR; }
   const hudRoot = document.getElementById('hud');
   let SA = 1; // alpha multiplier of the scene currently drawing on the canvas
 
@@ -164,7 +168,8 @@
     return out;
   })();
   const sparkCv = document.createElement('canvas');
-  sparkCv.width = sparkCv.height = 520;
+  const SPK = 1040, SPR_R = 400; // offscreen spark canvas, ray length in its pixels
+  sparkCv.width = sparkCv.height = SPK;
   const sg = sparkCv.getContext('2d');
   function sparkPath(ctx, R, rot, grow, color) {
     ctx.save();
@@ -190,14 +195,14 @@
   }
   function drawSpark(x, y, R, rot, grow, alpha = 1, glowAmt = 0.5, color = '#d97757') {
     sg.setTransform(1, 0, 0, 1, 0, 0);
-    sg.clearRect(0, 0, 520, 520);
-    sg.translate(260, 260);
-    sparkPath(sg, 200, rot, grow, color);
-    const s = R / 200, S = 520 * s;
+    sg.clearRect(0, 0, SPK, SPK);
+    sg.translate(SPK / 2, SPK / 2);
+    sparkPath(sg, SPR_R, rot, grow, color);
+    const s = R / SPR_R, S = SPK * s;
     g.save();
     if (glowAmt > 0) {
       g.globalCompositeOperation = 'lighter';
-      g.filter = `blur(${Math.max(5, 30 * s).toFixed(1)}px)`;
+      g.filter = `blur(${(Math.max(5, 60 * s) * BLUR).toFixed(1)}px)`;
       g.globalAlpha = alpha * glowAmt * SA;
       g.drawImage(sparkCv, x - S / 2, y - S / 2, S, S);
       g.filter = 'none';
@@ -1303,7 +1308,7 @@ asyncio.run(create("anything you can imagine"))`;
     grainTiles.push(c);
   }
   function drawFx(t) {
-    fg.setTransform(1, 0, 0, 1, 0, 0);
+    fg.setTransform(DPR, 0, 0, DPR, 0, 0);
     fg.clearRect(0, 0, W, H);
     fg.globalCompositeOperation = 'source-over';
     fg.globalAlpha = 1;
@@ -1343,7 +1348,7 @@ asyncio.run(create("anything you can imagine"))`;
     gg.setTransform(1, 0, 0, 1, 0, 0);
     const tile = grainTiles[fr % grainTiles.length];
     const ox = -Math.floor(hash1(fr * 2 + 1) * 384), oy = -Math.floor(hash1(fr * 2 + 2) * 384);
-    for (let x = ox; x < W; x += 384) for (let y = oy; y < H; y += 384) gg.drawImage(tile, x, y);
+    for (let x = ox; x < W * DPR; x += 384) for (let y = oy; y < H * DPR; y += 384) gg.drawImage(tile, x, y);
   }
   function shake(t) {
     let x = 0, y = 0;
@@ -1358,7 +1363,7 @@ asyncio.run(create("anything you can imagine"))`;
 
   // ------------------------------------------------------------------ background
   function drawBackground(t) {
-    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.setTransform(DPR, 0, 0, DPR, 0, 0);
     g.globalCompositeOperation = 'source-over';
     g.globalAlpha = 1;
     g.fillStyle = '#0c0b0a';

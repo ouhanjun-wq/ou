@@ -1,6 +1,6 @@
 # Claude — *Ignite every idea.* · 点亮每一个想法
 
-一支 **30 秒、1080p / 60 fps** 的动态图形宣传片，展示 Claude 的能力。
+一支 **30 秒、4K（3840×2160）/ 60 fps** 的动态图形宣传片，展示 Claude 的能力。
 画面里的每一帧、配乐里的每一个音符，**全部由 Claude 用代码生成**：没有素材库，没有采样，没有剪辑软件。
 
 ▶ 成片：[`claude-promo.mp4`](claude-promo.mp4)
