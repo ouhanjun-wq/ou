@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','WenQuanYi Zen Hei',sans-serif">
+<rect width="1100" height="620" fill="#FFFFFF"/>
+<text x="24" y="36" font-size="20" text-anchor="start" font-weight="700" fill="#1B2A2F">图 4  手掌倾角 → 机器人动作</text>
+<text x="24" y="60" font-size="13" text-anchor="start" font-weight="400" fill="#5E6E72">倾角从标定时“手掌放平”的姿态算起；小于 8° 不动（死区），35° 最快，中间是平滑的指数曲线</text>
+<text x="200" y="100" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">前后倾（从拇指一侧看，手指朝右）</text>
+<g transform="rotate(25 110 160)"><rect x="65" y="151" width="90" height="18" rx="9" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/><circle cx="90" cy="147" r="5" fill="#1E8A5A"/></g>
+<text x="110" y="204" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">指尖朝下 = 前倾</text>
+<g transform="rotate(-25 290 160)"><rect x="245" y="151" width="90" height="18" rx="9" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/><circle cx="270" cy="147" r="5" fill="#1E8A5A"/></g>
+<text x="290" y="204" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">指尖朝上 = 后仰</text>
+<text x="200" y="290" font-size="13" text-anchor="middle" font-weight="700" fill="#1B2A2F">左右翻（从手腕往前看）</text>
+<g transform="rotate(-25 110 340)"><rect x="70" y="332" width="80" height="16" rx="8" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/></g>
+<text x="110" y="384" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">拇指侧朝下 = 左翻</text>
+<g transform="rotate(25 290 340)"><rect x="250" y="332" width="80" height="16" rx="8" fill="#F4D9C0" stroke="#2B3A3F" stroke-width="1.4"/></g>
+<text x="290" y="384" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">小指侧朝下 = 右翻</text>
+<rect x="400" y="80" width="210" height="520" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="505.0" y="106" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">张开手 · 行走</text>
+<text x="414" y="154" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">前倾</text>
+<path d="M503.36,125.03999999999999 L485.71061474158375,107.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M499.2,150.0 L474.24,150.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.36,174.96 L485.71061474158375,192.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,125.03999999999999 L554.2893852584162,107.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M540.8,150.0 L565.76,150.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,174.96 L554.2893852584162,192.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.4,125.0 L536.6,125.0 L540.8,150.0 L536.6,175.0 L503.4,175.0 L499.2,150.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M520,128 L513,140 L527,140 Z" fill="#1B2A2F"/>
+<path d="M575,165 L575,120" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M575,120 L579.3,129.0 L570.7,129.0 Z" fill="#E07B00"/>
+<text x="520" y="200" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">前进</text>
+<text x="414" y="274" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">后仰</text>
+<path d="M503.36,245.04 L485.71061474158375,227.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M499.2,270.0 L474.24,270.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.36,294.96 L485.71061474158375,312.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,245.04 L554.2893852584162,227.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M540.8,270.0 L565.76,270.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,294.96 L554.2893852584162,312.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.4,245.0 L536.6,245.0 L540.8,270.0 L536.6,295.0 L503.4,295.0 L499.2,270.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M520,248 L513,260 L527,260 Z" fill="#1B2A2F"/>
+<path d="M575,255 L575,300" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M575,300 L570.7,291.0 L579.3,291.0 Z" fill="#E07B00"/>
+<text x="520" y="320" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">后退</text>
+<text x="414" y="394" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">右翻</text>
+<path d="M503.36,365.04 L485.71061474158375,347.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M499.2,390.0 L474.24,390.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.36,414.96 L485.71061474158375,432.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,365.04 L554.2893852584162,347.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M540.8,390.0 L565.76,390.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,414.96 L554.2893852584162,432.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.4,365.0 L536.6,365.0 L540.8,390.0 L536.6,415.0 L503.4,415.0 L499.2,390.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M520,368 L513,380 L527,380 Z" fill="#1B2A2F"/>
+<path d="M481.9,368.0 A44,44 0 0 1 558.1,368.0" fill="none" stroke="#E07B00" stroke-width="3"/>
+<path d="M558.1,368.0 L549.8,362.4 L557.4,358.0 Z" fill="#E07B00"/>
+<text x="520" y="440" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">原地右转（顺时针）</text>
+<text x="414" y="514" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">左翻</text>
+<path d="M503.36,485.04 L485.71061474158375,467.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M499.2,510.0 L474.24,510.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.36,534.96 L485.71061474158375,552.6093852584162" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,485.04 L554.2893852584162,467.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M540.8,510.0 L565.76,510.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M536.64,534.96 L554.2893852584162,552.6093852584162" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M503.4,485.0 L536.6,485.0 L540.8,510.0 L536.6,535.0 L503.4,535.0 L499.2,510.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M520,488 L513,500 L527,500 Z" fill="#1B2A2F"/>
+<path d="M558.1,488.0 A44,44 0 0 0 481.9,488.0" fill="none" stroke="#E07B00" stroke-width="3"/>
+<path d="M481.9,488.0 L482.6,478.0 L490.2,482.4 Z" fill="#E07B00"/>
+<text x="520" y="560" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">原地左转（逆时针）</text>
+<rect x="630" y="80" width="210" height="520" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="735.0" y="106" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">伸食指 · 横移</text>
+<text x="644" y="154" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">前倾</text>
+<path d="M733.36,125.03999999999999 L715.7106147415838,107.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M729.2,150.0 L704.24,150.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.36,174.96 L715.7106147415838,192.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,125.03999999999999 L784.2893852584162,107.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M770.8,150.0 L795.76,150.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,174.96 L784.2893852584162,192.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.4,125.0 L766.6,125.0 L770.8,150.0 L766.6,175.0 L733.4,175.0 L729.2,150.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M750,128 L743,140 L757,140 Z" fill="#1B2A2F"/>
+<path d="M805,165 L805,120" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M805,120 L809.3,129.0 L800.7,129.0 Z" fill="#E07B00"/>
+<text x="750" y="200" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">前进</text>
+<text x="644" y="274" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">后仰</text>
+<path d="M733.36,245.04 L715.7106147415838,227.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M729.2,270.0 L704.24,270.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.36,294.96 L715.7106147415838,312.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,245.04 L784.2893852584162,227.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M770.8,270.0 L795.76,270.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,294.96 L784.2893852584162,312.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.4,245.0 L766.6,245.0 L770.8,270.0 L766.6,295.0 L733.4,295.0 L729.2,270.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M750,248 L743,260 L757,260 Z" fill="#1B2A2F"/>
+<path d="M805,255 L805,300" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M805,300 L800.7,291.0 L809.3,291.0 Z" fill="#E07B00"/>
+<text x="750" y="320" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">后退</text>
+<text x="644" y="394" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">右翻</text>
+<path d="M733.36,365.04 L715.7106147415838,347.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M729.2,390.0 L704.24,390.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.36,414.96 L715.7106147415838,432.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,365.04 L784.2893852584162,347.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M770.8,390.0 L795.76,390.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,414.96 L784.2893852584162,432.60938525841624" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.4,365.0 L766.6,365.0 L770.8,390.0 L766.6,415.0 L733.4,415.0 L729.2,390.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M750,368 L743,380 L757,380 Z" fill="#1B2A2F"/>
+<path d="M780,356 L825,356" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M825,356 L816.0,360.3 L816.0,351.7 Z" fill="#E07B00"/>
+<text x="750" y="440" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">向右平移</text>
+<text x="644" y="514" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">左翻</text>
+<path d="M733.36,485.04 L715.7106147415838,467.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M729.2,510.0 L704.24,510.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.36,534.96 L715.7106147415838,552.6093852584162" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,485.04 L784.2893852584162,467.39061474158376" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M770.8,510.0 L795.76,510.0" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M766.64,534.96 L784.2893852584162,552.6093852584162" fill="none" stroke="#2B3A3F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M733.4,485.0 L766.6,485.0 L770.8,510.0 L766.6,535.0 L733.4,535.0 L729.2,510.0 Z" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.6"/>
+<path d="M750,488 L743,500 L757,500 Z" fill="#1B2A2F"/>
+<path d="M720,476 L675,476" fill="none" stroke="#E07B00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M675,476 L684.0,471.7 L684.0,480.3 Z" fill="#E07B00"/>
+<text x="750" y="560" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">向左平移</text>
+<rect x="860" y="80" width="210" height="520" rx="8" fill="#FFFFFF" stroke="#2B3A3F" stroke-width="1.6"/>
+<text x="965.0" y="106" font-size="14" text-anchor="middle" font-weight="700" fill="#1B2A2F">剪刀手 · 机身</text>
+<text x="874" y="154" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">前倾</text>
+<g transform="rotate(12 980 150)"><rect x="930" y="142" width="100" height="16" rx="5" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.4"/></g>
+<text x="980" y="190" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">机头（右）低下</text>
+<text x="874" y="274" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">后仰</text>
+<g transform="rotate(-12 980 270)"><rect x="930" y="262" width="100" height="16" rx="5" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.4"/></g>
+<text x="980" y="310" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">机头（右）抬起</text>
+<text x="874" y="394" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">右翻</text>
+<g transform="rotate(12 980 390)"><rect x="940" y="382" width="80" height="16" rx="5" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.4"/></g>
+<text x="980" y="430" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">右侧低（后视）</text>
+<text x="874" y="514" font-size="12.5" text-anchor="start" font-weight="700" fill="#1B2A2F">左翻</text>
+<g transform="rotate(-12 980 510)"><rect x="940" y="502" width="80" height="16" rx="5" fill="#DDE6EA" stroke="#2B3A3F" stroke-width="1.4"/></g>
+<text x="980" y="550" font-size="11.5" text-anchor="middle" font-weight="400" fill="#5E6E72">左侧低（后视）</text>
+<text x="40" y="470" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">前倾 + 右翻一起做：</text>
+<text x="40" y="492" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">行走模式下就是边走边右转（走弧线）</text>
+<text x="40" y="530" font-size="13" text-anchor="start" font-weight="700" fill="#1B2A2F">方向反了？</text>
+<text x="40" y="552" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">手套串口输入 AXIS -1 1（前后反）</text>
+<text x="40" y="574" font-size="12.5" text-anchor="start" font-weight="400" fill="#5E6E72">或 AXIS 1 -1（左右反），再 SAVE</text>
+</svg>
